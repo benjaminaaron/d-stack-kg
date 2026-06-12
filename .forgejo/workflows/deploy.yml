@@ -1,0 +1,15 @@
+name: Deploy Webapp
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: codeberg-tiny
+    steps:
+      - uses: actions/checkout@v5
+      - uses: https://codeberg.org/git-pages/action@v2
+        with:
+          site: https://${{ forge.event.repository.owner.username }}.codeberg.page/${{ forge.event.repository.name }}/
+          token: ${{ forge.token }}
+          source: webapp/
