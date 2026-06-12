@@ -1,0 +1,15 @@
+{
+  "name": "d-stack-kg",
+  "version": "0.1.0",
+  "description": "Unofficial prototype: the Deutschland-Stack as knowledge graph",
+  "repository": "https://codeberg.org/benjaminaaron/d-stack-kg",
+  "author": "Benjamin Degenhart",
+  "license": "Apache-2.0",
+  "type": "module",
+  "scripts": {
+    "fetch": "node pipeline/1_fetch.js"
+  },
+  "dependencies": {
+    "js-yaml": "^4.1.0"
+  }
+}
