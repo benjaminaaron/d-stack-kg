@@ -7,7 +7,9 @@
   "license": "Apache-2.0",
   "type": "module",
   "scripts": {
-    "fetch": "node pipeline/1_fetch.js"
+    "fetch": "node src/0-build-kg/1-fetch-dataset.js",
+    "reconstruct": "node src/0-build-kg/2-reconstruct-source.js",
+    "validate": "node src/0-build-kg/3-validate-roundtrip.js"
   },
   "dependencies": {
     "js-yaml": "^4.1.0"
