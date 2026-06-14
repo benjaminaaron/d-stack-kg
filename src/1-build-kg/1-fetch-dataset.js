@@ -4,7 +4,7 @@
  * Every landscape2 site serves its compiled dataset at /data/full.json — a strict
  * superset of the site's CSV downloads. It is stored verbatim with retrieval
  * metadata (source, date, checksum) as provenance for everything derived from it.
- * The per-item logos are bundled into the committed data/upstream/logos.zip; the
+ * The per-item logos are bundled into the committed data/1-build-kg/upstream/logos.zip; the
  * unzipped copies live in gitignored data/scratch/.
  */
 
@@ -32,7 +32,7 @@ fs.writeFileSync(path.join(UPSTREAM, "full.meta.json"), JSON.stringify({
     sha256: createHash("sha256").update(raw).digest("hex"),
     bytes,
 }, null, 2) + "\n")
-console.log(`OK: ${bytes} bytes -> data/upstream/full.json`)
+console.log(`OK: ${bytes} bytes -> data/1-build-kg/upstream/full.json`)
 
 // Logos are referenced as logos/<hash>.png on the same host; fetch each once.
 // Existing files are left untouched, so reruns stay cheap (and the zip stable).
@@ -54,4 +54,4 @@ console.log(`OK: ${fetched} fetched, ${logos.length - fetched} present -> data/s
 const names = logos.map(rel => path.basename(rel)).sort()
 fs.rmSync(LOGOS_ZIP, { force: true })
 execFileSync("zip", ["-X", "-q", LOGOS_ZIP, ...names.map(n => path.join("logos", n))], { cwd: SCRATCH })
-console.log(`OK: ${names.length} logos -> data/upstream/logos.zip`)
+console.log(`OK: ${names.length} logos -> data/1-build-kg/upstream/logos.zip`)

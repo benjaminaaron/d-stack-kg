@@ -1,6 +1,6 @@
 # Modeling choices
 
-How step 4 turns `landscape.yml` into the RDF knowledge graph (`data/graph/landscape.ttl`), and the judgement calls along the way.
+How step 4 turns `landscape.yml` into the RDF knowledge graph (`data/1-build-kg/landscape.ttl`), and the judgement calls along the way.
 
 ## Lift, then transform
 
@@ -28,7 +28,7 @@ Judgement calls with defensible alternatives; each lives in a single `CONSTRUCT`
 | Homepage | `schema:url` | Alternatives e.g. `foaf:homepage` |
 | Owner | `dstack:verantwortlicheStelle` | `bs_owner` is the responsible Steckbrief body, not a DCT publisher — a source-faithful `dstack:` literal over `dct:publisher` |
 | Version | `schema:version` | Heterogeneous (`RFC 8446`, `v1.34.1`, `Release 18`, …); kept as a loose literal |
-| Logo | `dstack:landkarteLogoFile` (filename literal) | A Landkarte-projection fact, not a domain one — the `landscape2` logo basename only; the image files stay in `data/upstream/logos.zip`, staged at build time. `schema:logo` expects a URL/ImageObject, which a bare filename isn't, and the `landkarte` prefix marks it as build-support rather than a universal statement |
+| Logo | `dstack:landkarteLogoFile` (filename literal) | A Landkarte-projection fact, not a domain one — the `landscape2` logo basename only; the image files stay in `data/1-build-kg/upstream/logos.zip`, staged at build time. `schema:logo` expects a URL/ImageObject, which a bare filename isn't, and the `landkarte` prefix marks it as build-support rather than a universal statement |
 | Source order | `dstack:landkartePosition` (`xsd:integer`) | Category/subcategory/item order in the Landkarte projection, read from the Facade-X `rdf:_N` container index. RDF is unordered, so without it the roundtrip couldn't reproduce the original layout; the `landkarte` prefix keeps it distinct from domain semantics |
 | Item → category | `dct:subject` → SKOS concept | The standard "topic" link; `dcat:theme` is the DCAT-specific variant |
 | Konformität | custom reified node | A domain construct, stated honestly. `schema:Rating` implies a subjective review; [RDF Data Cube](https://www.w3.org/TR/vocab-data-cube/) would be rigorous but heavier |
@@ -39,7 +39,7 @@ Judgement calls with defensible alternatives; each lives in a single `CONSTRUCT`
 
 ### Official tile links, deferred
 
-The website deep-links each tile as `…/?item=<id>`, where `<id>` is the landscape2 build id (e.g. `-plattform---daten--comma-separated-values-csv`). We don't store it for now. It also can't be reconstructed from `landscape.yml`: the id bakes in the upstream leading-whitespace quirk that step 2 normalizes away (it would come out without the leading `-`), and landscape2's slugger has special cases a naive recompute misses (keeps `+` in `C++`, emits a double dash for some separators). The live-matching id only survives in `data/upstream/full.json`. So if we later need the official landing page, we will read the `id` from there - e.g. as `dct:identifier` plus a `foaf:page` link - rather than recomputing it.
+The website deep-links each tile as `…/?item=<id>`, where `<id>` is the landscape2 build id (e.g. `-plattform---daten--comma-separated-values-csv`). We don't store it for now. It also can't be reconstructed from `landscape.yml`: the id bakes in the upstream leading-whitespace quirk that step 2 normalizes away (it would come out without the leading `-`), and landscape2's slugger has special cases a naive recompute misses (keeps `+` in `C++`, emits a double dash for some separators). The live-matching id only survives in `data/1-build-kg/upstream/full.json`. So if we later need the official landing page, we will read the `id` from there - e.g. as `dct:identifier` plus a `foaf:page` link - rather than recomputing it.
 
 ### Group order within a Schicht, only partially recoverable
 

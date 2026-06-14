@@ -39,7 +39,7 @@ CONSTRUCT {
     OPTIONAL { ?it xyz:description ?desc }
     OPTIONAL { ?it xyz:homepage_url ?hp }
     OPTIONAL { ?it xyz:project ?project }
-    # logo filename (the image files live in data/upstream/logos.zip, staged at
+    # logo filename (the image files live in data/1-build-kg/upstream/logos.zip, staged at
     # build time); the rdf:_N index is the item's source order within its Gruppe
     OPTIONAL { ?it xyz:logo ?logo }
     BIND(xsd:integer(STRAFTER(STR(?iSlot), STR(rdf:_))) AS ?iPos)

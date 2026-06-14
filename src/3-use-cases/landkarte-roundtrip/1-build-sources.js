@@ -2,7 +2,7 @@
  * Use case · Landkarte roundtrip — step 1: build the source artefacts
  *
  * Rebuilds the landscape2 source files (landscape.yml + settings.yml) straight
- * out of data/graph/d-stack-kg.ttl with plain SPARQL SELECTs and js-yaml — no
+ * out of data/2-enrich-kg/d-stack-kg.ttl with plain SPARQL SELECTs and js-yaml — no
  * extra tooling. This is the reverse of build-kg's lift, and it closes the loop
  * the pipeline was built for: full.json → landscape.yml (reconstruct) → the graph
  * (build-kg + enrich) → landscape.yml again, now sourced entirely from the graph.
@@ -13,20 +13,20 @@
  * filename and the source order (dstack:landkartePosition). Not yet modeled, so absent
  * here: maturity dates, audits, tags and the summary_* texts.
  *
- * Output: data/use-cases/landkarte-roundtrip/{landscape.yml,settings.yml}.
+ * Output: data/3-use-cases/landkarte-roundtrip/{landscape.yml,settings.yml}.
  * Render + view them with 3-serve-landkarte.js (npm run 3-landkarte:serve).
  *
  * Run: npm run 3-landkarte
  */
 
 import { storeFromTurtles, sparqlSelect } from "@foerderfunke/sem-ops-utils"
-import { ROOT, GRAPH } from "../../common/utils.js"
+import { ROOT, DSTACK_TTL, USE_CASES } from "../../common/utils.js"
 import yaml from "js-yaml"
 import path from "path"
 import fs from "fs"
 
-const IN = path.join(GRAPH, "d-stack-kg.ttl")
-const OUT_DIR = path.join(ROOT, "data", "use-cases", "landkarte-roundtrip")
+const IN = DSTACK_TTL
+const OUT_DIR = path.join(USE_CASES, "landkarte-roundtrip")
 const OUT_YML = path.join(OUT_DIR, "landscape.yml")
 const OUT_SETTINGS = path.join(OUT_DIR, "settings.yml")
 
@@ -134,17 +134,17 @@ const dump = obj => yaml.dump(obj, { noRefs: true, lineWidth: 100, sortKeys: fal
 
 fs.mkdirSync(OUT_DIR, { recursive: true })
 fs.writeFileSync(OUT_YML,
-    "# Rebuilt from data/graph/d-stack-kg.ttl by the landkarte-roundtrip use case.\n" +
+    "# Rebuilt from data/2-enrich-kg/d-stack-kg.ttl by the landkarte-roundtrip use case.\n" +
     "# Carries the fields build-kg models, incl. logo filename and source order; the\n" +
-    "# logo files come from data/upstream/logos.zip. Not yet modeled: maturity\n" +
+    "# logo files come from data/1-build-kg/upstream/logos.zip. Not yet modeled: maturity\n" +
     "# dates, audits, tags, summary_* texts.\n" +
     dump(landscape))
 fs.writeFileSync(OUT_SETTINGS,
-    "# Rebuilt from data/graph/d-stack-kg.ttl — category tree from the SKOS taxonomy;\n" +
+    "# Rebuilt from data/2-enrich-kg/d-stack-kg.ttl — category tree from the SKOS taxonomy;\n" +
     "# foundation/url are the known instance constants.\n" +
     dump(settings))
 
 const subCount = [...byCat.values()].reduce((n, s) => n + s.size, 0)
-console.log(`OK: ${itemRows.length} items, ${byCat.size} categories, ${subCount} subcategories -> data/use-cases/landkarte-roundtrip/`)
+console.log(`OK: ${itemRows.length} items, ${byCat.size} categories, ${subCount} subcategories -> data/3-use-cases/landkarte-roundtrip/`)
 console.log("    (still unmodeled, so absent: maturity dates, audits, tags, summary_*)")
 console.log("check: npm run 3-landkarte:validate   |   view: npm run 3-landkarte:serve")

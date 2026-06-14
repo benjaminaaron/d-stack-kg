@@ -4,7 +4,7 @@
  *
  * landscape2 build is the inverse of step 2's reconstruction: fed the
  * reconstructed landscape.yml + settings.yml and the logos, it recompiles a
- * full.json. If that matches the authoritative data/upstream/full.json on every
+ * full.json. If that matches the authoritative data/1-build-kg/upstream/full.json on every
  * content field, the reconstruction is faithful. The built site is kept under
  * data/scratch/build/ (gitignored) so it can be eyeballed with `landscape2 serve`,
  * but it is not the deployment path — rendering comes later, from the graph in
@@ -56,5 +56,5 @@ const n = validateRoundtrip({
     fields, failLabel: "structural difference(s) (rebuilt vs authoritative full.json):",
 })
 
-console.log(`OK: rebuilt full.json matches data/upstream/full.json across all ${n} items`)
+console.log(`OK: rebuilt full.json matches data/1-build-kg/upstream/full.json across all ${n} items`)
 console.log(`    full site kept at data/scratch/build/ — view it with: landscape2 serve --landscape-dir data/scratch/build`)

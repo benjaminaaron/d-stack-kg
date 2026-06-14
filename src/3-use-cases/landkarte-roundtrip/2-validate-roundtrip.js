@@ -23,11 +23,11 @@
  * Requires the landscape2 CLI (no npm package): brew install cncf/landscape2/landscape2
  */
 
-import { ROOT, UPSTREAM, SCRATCH } from "../../common/utils.js"
+import { ROOT, UPSTREAM, SCRATCH, USE_CASES } from "../../common/utils.js"
 import { requireFiles, validateRoundtrip } from "../../common/landscape2.js"
 import path from "path"
 
-const OUT_DIR = path.join(ROOT, "data", "use-cases", "landkarte-roundtrip")
+const OUT_DIR = path.join(USE_CASES, "landkarte-roundtrip")
 const DATA_FILE = path.join(OUT_DIR, "landscape.yml")
 const SETTINGS_FILE = path.join(OUT_DIR, "settings.yml")
 const ORIGINAL = path.join(UPSTREAM, "full.json")

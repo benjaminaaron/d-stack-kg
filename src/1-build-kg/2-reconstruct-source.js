@@ -119,4 +119,4 @@ fs.writeFileSync(OUT_SETTINGS,
     "# and Konformitaet rendering of the original settings.yml are not public.\n" +
     dump(settings))
 
-console.log(`OK: ${items.length} items, ${cats.size} categories -> data/reconstructed/`)
+console.log(`OK: ${items.length} items, ${cats.size} categories -> data/1-build-kg/reconstructed/`)

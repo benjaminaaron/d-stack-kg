@@ -32,10 +32,10 @@ This unofficial prototype explores possibilities that would arise from modeling 
 
 | Step | What it does |
 |---|---|
-| **1. Fetch dataset** | Fetches [the compiled Landkarte dataset](https://technologie.deutschland-stack.gov.de/data/full.json) and its logos → `data/upstream/` (`full.json` + metadata, `logos.zip`) |
-| **2. Reconstruct source** | Reconstructs the landscape2 source files → `data/reconstructed/` (`landscape.yml` + a minimal `settings.yml`)                                                               |
+| **1. Fetch dataset** | Fetches [the compiled Landkarte dataset](https://technologie.deutschland-stack.gov.de/data/full.json) and its logos → `data/1-build-kg/upstream/` (`full.json` + metadata, `logos.zip`) |
+| **2. Reconstruct source** | Reconstructs the landscape2 source files → `data/1-build-kg/reconstructed/` (`landscape.yml` + a minimal `settings.yml`)                                                               |
 | **3. Validate roundtrip** | Structurally compares the rebuilt `full.json` against the authoritative one; to produce it, runs a full `landscape2 build` → `data/scratch/build/`                          |
-| **4. Build graph** | Lifts `landscape.yml` to RDF with SPARQL Anything and transforms it via SPARQL queries into a knowledge graph → `data/graph/landscape.ttl`. More about the modeling choices along the way in [modeling-choices.md](modeling-choices.md) |
+| **4. Build graph** | Lifts `landscape.yml` to RDF with SPARQL Anything and transforms it via SPARQL queries into a knowledge graph → `data/1-build-kg/landscape.ttl`. More about the modeling choices along the way in [modeling-choices.md](modeling-choices.md) |
 
 ## Running
 
@@ -60,7 +60,7 @@ npm run 1-graph
 _TODO_
 
 ```bash
-npm run 2-enrich # writes data/graph/d-stack-kg.ttl
+npm run 2-enrich # writes data/2-enrich-kg/d-stack-kg.ttl
 ```
 
 ## Use cases
@@ -86,6 +86,6 @@ A few things surfaced while working with the Landkarte's published artifacts:
 ## Disclaimer
 
 - Not an authoritative source. This is an unofficial reconstruction of official artifacts.
-- The Landkarte data (`data/upstream/full.json`) is content of the BMDS / Datenlabor BMI. No license is stated upstream; `data/upstream/full.meta.json` is kept as provenance documentation.
-- The item logos are kept verbatim in `data/upstream/logos.zip` only to rebuild the site; no rights to them are claimed.
+- The Landkarte data (`data/1-build-kg/upstream/full.json`) is content of the BMDS / Datenlabor BMI. No license is stated upstream; `data/1-build-kg/upstream/full.meta.json` is kept as provenance documentation.
+- The item logos are kept verbatim in `data/1-build-kg/upstream/logos.zip` only to rebuild the site; no rights to them are claimed.
 - Built with the help from AI coding tools; design decisions stay with the author, who reviews, understands and takes responsibility for every change.
