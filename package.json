@@ -7,11 +7,12 @@
   "license": "Apache-2.0",
   "type": "module",
   "scripts": {
-    "build-kg": "npm run fetch && npm run reconstruct && npm run validate && npm run graph",
-    "fetch": "node src/0-build-kg/1-fetch-dataset.js",
-    "reconstruct": "node src/0-build-kg/2-reconstruct-source.js",
-    "validate": "node src/0-build-kg/3-validate-roundtrip.js",
-    "graph": "node src/0-build-kg/4-build-graph.js"
+    "1-build-kg": "npm run 1-fetch && npm run 1-reconstruct && npm run 1-validate && npm run 1-graph",
+    "1-fetch": "node src/1-build-kg/1-fetch-dataset.js",
+    "1-reconstruct": "node src/1-build-kg/2-reconstruct-source.js",
+    "1-validate": "node src/1-build-kg/3-validate-roundtrip.js",
+    "1-graph": "node src/1-build-kg/4-build-graph.js",
+    "2-enrich": "node src/2-enrich-kg/1-enrich.js",
   },
   "dependencies": {
     "@foerderfunke/sem-ops-utils": "^0.5.1",

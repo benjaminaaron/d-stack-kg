@@ -25,7 +25,7 @@ This unofficial prototype explores possibilities that would arise from modeling 
 ```
 
 ## Building the knowledge graph
-`src/0-build-kg`
+`src/1-build-kg`
 
 | Step | What it does |
 |---|---|
@@ -39,16 +39,16 @@ This unofficial prototype explores possibilities that would arise from modeling 
 ```bash
 npm install
 
-npm run fetch # step 1
-npm run reconstruct # step 2
+npm run 1-fetch # step 1
+npm run 1-reconstruct # step 2
 
 # step 3
 brew install cncf/landscape2/landscape2 # landscape2 CLI is required
-npm run validate
+npm run 1-validate
 landscape2 serve --landscape-dir data/scratch/build # optional: view the built site
 
 # step 4 (needs java; the SPARQL Anything jar auto-downloads)
-npm run graph
+npm run 1-graph
 ```
 
 ## Observations

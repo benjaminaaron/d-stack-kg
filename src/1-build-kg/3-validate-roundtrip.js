@@ -17,7 +17,7 @@
  * Requires the landscape2 CLI (no npm package): brew install cncf/landscape2/landscape2
  */
 
-import { ROOT, UPSTREAM, RECONSTRUCTED, SCRATCH } from "./paths.js"
+import { ROOT, UPSTREAM, RECONSTRUCTED, SCRATCH } from "./utils.js"
 import { execFileSync } from "child_process"
 import { isDeepStrictEqual } from "util"
 import path from "path"
@@ -48,7 +48,7 @@ for (const f of [DATA_FILE, SETTINGS_FILE, ORIGINAL]) {
 // checkout builds without re-fetching (and the rebuilt logo hashes get checked).
 const haveLogos = fs.existsSync(LOGOS_PATH) && fs.readdirSync(LOGOS_PATH).some(f => f.endsWith(".png"))
 if (!haveLogos) {
-    if (!fs.existsSync(LOGOS_ZIP)) throw new Error("missing data/upstream/logos.zip — run step 1 (npm run fetch)")
+    if (!fs.existsSync(LOGOS_ZIP)) throw new Error("missing data/upstream/logos.zip — run npm run 1-fetch")
     execFileSync("unzip", ["-q", "-o", LOGOS_ZIP, "-d", SCRATCH])
 }
 
