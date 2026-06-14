@@ -1,7 +1,9 @@
 PREFIX xyz:    <http://sparql.xyz/facade-x/data/>
 PREFIX rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX skos:   <http://www.w3.org/2004/02/skos/core#>
+PREFIX xsd:    <http://www.w3.org/2001/XMLSchema#>
 PREFIX ds:     <https://deutschland-stack.gov.de/id/>
+PREFIX dstack: <https://deutschland-stack.gov.de/vocab#>
 
 # The category/subcategory nesting becomes a SKOS taxonomy: each Schicht
 # (category) is a top concept, each Gruppe (subcategory) a narrower concept
@@ -14,11 +16,13 @@ CONSTRUCT {
     ?schicht a skos:Concept ;
         skos:prefLabel ?schichtLabel ;
         skos:topConceptOf ds:landkarte ;
-        skos:inScheme ds:landkarte .
+        skos:inScheme ds:landkarte ;
+        dstack:position ?cPos .
     ?gruppe a skos:Concept ;
         skos:prefLabel ?gruppeLabel ;
         skos:broader ?schicht ;
-        skos:inScheme ds:landkarte .
+        skos:inScheme ds:landkarte ;
+        dstack:position ?sPos .
 } WHERE {
     [] xyz:categories ?cats .
     # facade-x models a YAML list as an rdf container (rdf:_1, rdf:_2, …);
@@ -29,6 +33,12 @@ CONSTRUCT {
     ?subs ?sSlot ?sub .
     FILTER(STRSTARTS(STR(?sSlot), STR(rdf:_)))
     ?sub xyz:name ?gruppeName .
+
+    # the rdf:_N container index is the source order; keep it as dstack:position
+    # (category order, and subcategory order within the category) so the graph
+    # can reproduce the original layout instead of an arbitrary one
+    BIND(xsd:integer(STRAFTER(STR(?cSlot), STR(rdf:_))) AS ?cPos)
+    BIND(xsd:integer(STRAFTER(STR(?sSlot), STR(rdf:_))) AS ?sPos)
 
     BIND(STRLANG(?schichtName, "de") AS ?schichtLabel)
     BIND(STRLANG(?gruppeName, "de") AS ?gruppeLabel)

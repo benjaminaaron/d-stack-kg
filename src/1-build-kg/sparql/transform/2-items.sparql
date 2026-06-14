@@ -3,6 +3,7 @@ PREFIX rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX skos:   <http://www.w3.org/2004/02/skos/core#>
 PREFIX dct:    <http://purl.org/dc/terms/>
 PREFIX schema: <http://schema.org/>
+PREFIX xsd:    <http://www.w3.org/2001/XMLSchema#>
 PREFIX ds:     <https://deutschland-stack.gov.de/id/>
 PREFIX dstack: <https://deutschland-stack.gov.de/vocab#>
 
@@ -19,7 +20,9 @@ CONSTRUCT {
         dstack:badge ?dstype ;
         dstack:reifegrad ?project ;
         dstack:verantwortlicheStelle ?owner ;
-        schema:version ?version .
+        schema:version ?version ;
+        dstack:logo ?logo ;
+        dstack:position ?iPos .
 } WHERE {
     [] xyz:categories ?cats .
     # walk the facade-x containers (rdf:_N members) down to each item
@@ -36,6 +39,10 @@ CONSTRUCT {
     OPTIONAL { ?it xyz:description ?desc }
     OPTIONAL { ?it xyz:homepage_url ?hp }
     OPTIONAL { ?it xyz:project ?project }
+    # logo filename (the image files live in data/upstream/logos.zip, staged at
+    # build time); the rdf:_N index is the item's source order within its Gruppe
+    OPTIONAL { ?it xyz:logo ?logo }
+    BIND(xsd:integer(STRAFTER(STR(?iSlot), STR(rdf:_))) AS ?iPos)
     OPTIONAL {
         ?it xyz:extra/xyz:annotations ?ann .
         OPTIONAL { ?ann xyz:dstype ?dstype }
