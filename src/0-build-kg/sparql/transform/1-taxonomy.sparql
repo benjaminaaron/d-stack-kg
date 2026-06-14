@@ -1,0 +1,45 @@
+PREFIX xyz:    <http://sparql.xyz/facade-x/data/>
+PREFIX rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX skos:   <http://www.w3.org/2004/02/skos/core#>
+PREFIX ds:     <https://deutschland-stack.gov.de/id/>
+
+# The category/subcategory nesting becomes a SKOS taxonomy: each Schicht
+# (category) is a top concept, each Gruppe (subcategory) a narrower concept
+# under it. Concept IRIs are slugs of the names (prefixed schicht-/gruppe- so
+# the two levels never collide).
+CONSTRUCT {
+    ds:landkarte a skos:ConceptScheme ;
+        skos:prefLabel "Tech-Stack Landkarte of the Deutschland-Stack"@en ;
+        skos:hasTopConcept ?schicht .
+    ?schicht a skos:Concept ;
+        skos:prefLabel ?schichtLabel ;
+        skos:topConceptOf ds:landkarte ;
+        skos:inScheme ds:landkarte .
+    ?gruppe a skos:Concept ;
+        skos:prefLabel ?gruppeLabel ;
+        skos:broader ?schicht ;
+        skos:inScheme ds:landkarte .
+} WHERE {
+    [] xyz:categories ?cats .
+    # facade-x models a YAML list as an rdf container (rdf:_1, rdf:_2, …);
+    # matching any rdf:_N predicate iterates its members
+    ?cats ?cSlot ?cat .
+    FILTER(STRSTARTS(STR(?cSlot), STR(rdf:_)))
+    ?cat xyz:name ?schichtName ; xyz:subcategories ?subs .
+    ?subs ?sSlot ?sub .
+    FILTER(STRSTARTS(STR(?sSlot), STR(rdf:_)))
+    ?sub xyz:name ?gruppeName .
+
+    BIND(STRLANG(?schichtName, "de") AS ?schichtLabel)
+    BIND(STRLANG(?gruppeName, "de") AS ?gruppeLabel)
+
+    # slugify Schicht name
+    BIND(REPLACE(REPLACE(REPLACE(REPLACE(LCASE(?schichtName), "ä","a"),"ö","o"),"ü","u"),"ß","ss") AS ?c0)
+    BIND(REPLACE(REPLACE(?c0, "[^a-z0-9]+","-"), "^-+|-+$","") AS ?cslug)
+    BIND(IRI(CONCAT(STR(ds:), "schicht-", ?cslug)) AS ?schicht)
+
+    # slugify Gruppe name
+    BIND(REPLACE(REPLACE(REPLACE(REPLACE(LCASE(?gruppeName), "ä","a"),"ö","o"),"ü","u"),"ß","ss") AS ?g0)
+    BIND(REPLACE(REPLACE(?g0, "[^a-z0-9]+","-"), "^-+|-+$","") AS ?gslug)
+    BIND(IRI(CONCAT(STR(ds:), "gruppe-", ?gslug)) AS ?gruppe)
+}

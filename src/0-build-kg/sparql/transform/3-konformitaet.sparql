@@ -1,0 +1,55 @@
+PREFIX xyz:    <http://sparql.xyz/facade-x/data/>
+PREFIX rdfs:   <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX skos:   <http://www.w3.org/2004/02/skos/core#>
+PREFIX xsd:    <http://www.w3.org/2001/XMLSchema#>
+PREFIX ds:     <https://deutschland-stack.gov.de/id/>
+PREFIX dstack: <https://deutschland-stack.gov.de/vocab#>
+
+# The Steckbrief's six Konformität dimensions (cf_*) become assessment nodes,
+# one per element and Kriterium. The cf_* → Kriterium mapping is the only
+# judgment here and lives in the VALUES table: five are literal name matches;
+# cf_actuality → "Zukunftsfähigkeit" is inferred (the Datenlabor's methodology
+# is unpublished), so it is contestable by editing this row. The "N von 5" label
+# yields the integer Stufe; the percentage value is normalized to a 0–100 number
+# (dstack:wertProzent) — see the BIND below for why the verbatim form is dropped.
+CONSTRUCT {
+    ?krit a dstack:Kriterium ;
+        skos:prefLabel ?kritLabel ;
+        rdfs:seeAlso <https://deutschland-stack.gov.de/kriterien/> .
+    ?kb a dstack:Konformitaetsbewertung ;
+        dstack:element ?item ;
+        dstack:kriterium ?krit ;
+        dstack:stufe ?stufe ;
+        dstack:wertProzent ?wertProzent .
+    ?item dstack:konformitaet ?kb .
+} WHERE {
+    VALUES (?labelP ?valueP ?kritLabel ?kritSlug) {
+        (xyz:cf_sovereignty_label       xyz:cf_sovereignty_value        "Digitale Souveränität"@de  "digitale-souveraenitaet")
+        (xyz:cf_interoperability_label  xyz:cf_interoperability_value   "Interoperabilität"@de      "interoperabilitaet")
+        (xyz:cf_actuality_label         xyz:cf_actuality_value          "Zukunftsfähigkeit"@de      "zukunftsfaehigkeit")
+        (xyz:cf_market_label            xyz:cf_market_value             "Marktrelevanz"@de          "marktrelevanz")
+        (xyz:cf_trustworthiness_label   xyz:cf_trustworthiness_value    "Vertrauenswürdigkeit"@de   "vertrauenswuerdigkeit")
+        (xyz:cf_sustainability_label    xyz:cf_sustainability_value     "Nachhaltigkeit"@de         "nachhaltigkeit")
+    }
+    # items are exactly the nodes carrying extra/annotations — match them directly,
+    # no need to walk the category tree here
+    ?it xyz:name ?name ; xyz:extra/xyz:annotations ?ann .
+    ?ann ?labelP ?stufeLabel .
+    BIND(xsd:integer(STRBEFORE(?stufeLabel, " ")) AS ?stufe)  # "1 von 5" -> 1
+    # the source percentage is inconsistent — "10%", German "33,3%", or a bare
+    # "63.0" with no sign — so the verbatim string isn't worth keeping; strip the
+    # "%" and normalize the decimal comma into one 0–100 xsd:decimal
+    OPTIONAL {
+        ?ann ?valueP ?wertRaw .
+        BIND(xsd:decimal(REPLACE(REPLACE(STR(?wertRaw), "%", ""), ",", ".")) AS ?wertProzent)
+    }
+
+    # item IRI (must match 2-items)
+    BIND(LCASE(REPLACE(?name, "\\(.*?\\)", "")) AS ?i0)
+    BIND(REPLACE(REPLACE(REPLACE(REPLACE(?i0, "ä","a"),"ö","o"),"ü","u"),"ß","ss") AS ?i1)
+    BIND(REPLACE(REPLACE(?i1, "[^a-z0-9]+","-"), "^-+|-+$","") AS ?islug)
+    BIND(IRI(CONCAT(STR(ds:), ?islug)) AS ?item)
+
+    BIND(IRI(CONCAT(STR(ds:), "kriterium-", ?kritSlug)) AS ?krit)
+    BIND(IRI(CONCAT(STR(ds:), "konformitaet-", ?islug, "-", ?kritSlug)) AS ?kb)
+}

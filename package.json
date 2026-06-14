@@ -7,11 +7,14 @@
   "license": "Apache-2.0",
   "type": "module",
   "scripts": {
+    "build-kg": "npm run fetch && npm run reconstruct && npm run validate && npm run graph",
     "fetch": "node src/0-build-kg/1-fetch-dataset.js",
     "reconstruct": "node src/0-build-kg/2-reconstruct-source.js",
-    "validate": "node src/0-build-kg/3-validate-roundtrip.js"
+    "validate": "node src/0-build-kg/3-validate-roundtrip.js",
+    "graph": "node src/0-build-kg/4-build-graph.js"
   },
   "dependencies": {
+    "@foerderfunke/sem-ops-utils": "^0.5.1",
     "js-yaml": "^4.1.0"
   }
 }

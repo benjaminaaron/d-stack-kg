@@ -1,8 +1,28 @@
 # Deutschland-Stack knowledge graph
 
-Unofficial prototype: the Deutschland-Stack as a knowledge graph.
+This unofficial prototype explores possibilities that would arise from modeling the Deutschland-Stack as a knowledge graph. The data it uses is the reconstructed source artifact behind the compiled Landkarte dataset published online. The authoritative source is the official [Tech-Stack Landkarte](https://technologie.deutschland-stack.gov.de/).
 
-The authoritative source is the official [Tech-Stack Landkarte](https://technologie.deutschland-stack.gov.de/).
+## The big picture
+
+```mermaid
+    flowchart TB
+    subgraph sq ["The official Tech-Stack-Landkarte"]
+        direction LR
+        repo["private repo<br/>(extended landscape2 + source artifacts)"] --> site["Tech-Stack-Landkarte<br/>website"] --> json["full.json<br/>(compiled dataset)"]
+    end
+    subgraph kg ["This project"]
+        direction LR
+        yml["reconstructed<br/>landscape.yml"] --> ttl["landscape.ttl<br/>(the Landkarte in RDF)"] --> dstack["d-stack-kg.ttl<br/>(enriched)"] --> uc["use cases<br/>(coming later)"]
+    end
+    sq -- "full.json" --> kg
+
+    classDef private stroke-dasharray:5 5
+    classDef key fill:#ffd24d,stroke:#cc8800,stroke-width:2px
+    classDef goal fill:#9ae6b4,stroke:#2f855a,stroke-width:2px
+    class repo private
+    class site key
+    class dstack goal
+```
 
 ## Building the knowledge graph
 `src/0-build-kg`
@@ -10,8 +30,9 @@ The authoritative source is the official [Tech-Stack Landkarte](https://technolo
 | Step | What it does |
 |---|---|
 | **1. Fetch dataset** | Fetches [the compiled Landkarte dataset](https://technologie.deutschland-stack.gov.de/data/full.json) and its logos → `data/upstream/` (`full.json` + metadata, `logos.zip`) |
-| **2. Reconstruct source** | Reconstructs the landscape2 source files → `data/reconstructed/` (`landscape.yml` + a minimal `settings.yml`) |
-| **3. Validate roundtrip** | Structurally compares the rebuilt `full.json` against the authoritative one; to produce it, runs a full `landscape2 build` → `data/scratch/build/` |
+| **2. Reconstruct source** | Reconstructs the landscape2 source files → `data/reconstructed/` (`landscape.yml` + a minimal `settings.yml`)                                                               |
+| **3. Validate roundtrip** | Structurally compares the rebuilt `full.json` against the authoritative one; to produce it, runs a full `landscape2 build` → `data/scratch/build/`                          |
+| **4. Build graph** | Lifts `landscape.yml` to RDF with SPARQL Anything and transforms it via SPARQL queries into a knowledge graph → `data/graph/landscape.ttl`. More about the modeling choices along the way in [modeling-choices.md](modeling-choices.md) |
 
 ## Running
 
@@ -25,6 +46,9 @@ npm run reconstruct # step 2
 brew install cncf/landscape2/landscape2 # landscape2 CLI is required
 npm run validate
 landscape2 serve --landscape-dir data/scratch/build # optional: view the built site
+
+# step 4 (needs java; the SPARQL Anything jar auto-downloads)
+npm run graph
 ```
 
 ## Observations

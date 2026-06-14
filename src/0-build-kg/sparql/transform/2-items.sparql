@@ -1,0 +1,63 @@
+PREFIX xyz:    <http://sparql.xyz/facade-x/data/>
+PREFIX rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX skos:   <http://www.w3.org/2004/02/skos/core#>
+PREFIX dct:    <http://purl.org/dc/terms/>
+PREFIX schema: <http://schema.org/>
+PREFIX ds:     <https://deutschland-stack.gov.de/id/>
+PREFIX dstack: <https://deutschland-stack.gov.de/vocab#>
+
+# Each Landkarte item becomes a typed StackElement. The STANDARD/TECHNOLOGIE
+# badge (dstype) is taken at face value here — kept verbatim as dstack:badge and
+# used to pick the subclass; it is NOT re-judged against any classification rule.
+# dct:subject links the element to its Gruppe concept (built in 1-taxonomy).
+CONSTRUCT {
+    ?item a dstack:StackElement, ?typ ;
+        skos:prefLabel ?name ;
+        dct:description ?descDe ;
+        schema:url ?homepage ;
+        dct:subject ?gruppe ;
+        dstack:badge ?dstype ;
+        dstack:reifegrad ?project ;
+        dstack:verantwortlicheStelle ?owner ;
+        schema:version ?version .
+} WHERE {
+    [] xyz:categories ?cats .
+    # walk the facade-x containers (rdf:_N members) down to each item
+    ?cats ?cSlot ?cat .
+    FILTER(STRSTARTS(STR(?cSlot), STR(rdf:_)))
+    ?cat xyz:subcategories ?subs .
+    ?subs ?sSlot ?sub .
+    FILTER(STRSTARTS(STR(?sSlot), STR(rdf:_)))
+    ?sub xyz:name ?gruppeName ; xyz:items ?items .
+    ?items ?iSlot ?it .
+    FILTER(STRSTARTS(STR(?iSlot), STR(rdf:_)))
+    ?it xyz:name ?name .
+
+    OPTIONAL { ?it xyz:description ?desc }
+    OPTIONAL { ?it xyz:homepage_url ?hp }
+    OPTIONAL { ?it xyz:project ?project }
+    OPTIONAL {
+        ?it xyz:extra/xyz:annotations ?ann .
+        OPTIONAL { ?ann xyz:dstype ?dstype }
+        OPTIONAL { ?ann xyz:bs_owner ?owner }
+        OPTIONAL { ?ann xyz:bs_number ?version }
+    }
+
+    BIND(STRLANG(?desc, "de") AS ?descDe)
+    # ?noHp / ?noTyp are deliberately never bound: the else-branch yields unbound,
+    # so the triple is simply left out (CONSTRUCT skips any unbound term)
+    BIND(IF(BOUND(?hp) && ?hp != "", IRI(?hp), ?noHp) AS ?homepage)
+    BIND(IF(?dstype = "Standard", dstack:Standard,
+         IF(?dstype = "Technologie", dstack:Technologieprodukt, ?noTyp)) AS ?typ)
+
+    # slugify Gruppe name (must match 1-taxonomy) for the dct:subject link
+    BIND(REPLACE(REPLACE(REPLACE(REPLACE(LCASE(?gruppeName), "ä","a"),"ö","o"),"ü","u"),"ß","ss") AS ?g0)
+    BIND(REPLACE(REPLACE(?g0, "[^a-z0-9]+","-"), "^-+|-+$","") AS ?gslug)
+    BIND(IRI(CONCAT(STR(ds:), "gruppe-", ?gslug)) AS ?gruppe)
+
+    # slugify the item name (drop parenthetical groups first) for its IRI
+    BIND(LCASE(REPLACE(?name, "\\(.*?\\)", "")) AS ?i0)
+    BIND(REPLACE(REPLACE(REPLACE(REPLACE(?i0, "ä","a"),"ö","o"),"ü","u"),"ß","ss") AS ?i1)
+    BIND(REPLACE(REPLACE(?i1, "[^a-z0-9]+","-"), "^-+|-+$","") AS ?islug)
+    BIND(IRI(CONCAT(STR(ds:), ?islug)) AS ?item)
+}
