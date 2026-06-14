@@ -33,3 +33,7 @@ Judgement calls with defensible alternatives; each lives in a single `CONSTRUCT`
 | Konformität value | `dstack:wertProzent` as `xsd:decimal` (0–100) | Source is inconsistent (`10%`, `33,3%`, bare `63.0`); normalized to one queryable number. `dstack:stufe` (1–5) is the independent level |
 | `cf_actuality` → "Zukunftsfähigkeit" | inferred | The other five criteria are literal name matches; this one is a guess (methodology unpublished) |
 | Vocabulary term names | German | Matches the source and audience |
+
+### Official tile links, deferred
+
+The website deep-links each tile as `…/?item=<id>`, where `<id>` is the landscape2 build id (e.g. `-plattform---daten--comma-separated-values-csv`). We don't store it for now. It also can't be reconstructed from `landscape.yml`: the id bakes in the upstream leading-whitespace quirk that step 2 normalizes away (it would come out without the leading `-`), and landscape2's slugger has special cases a naive recompute misses (keeps `+` in `C++`, emits a double dash for some separators). The live-matching id only survives in `data/upstream/full.json`. So if we later need the official landing page, we will read the `id` from there - e.g. as `dct:identifier` plus a `foaf:page` link - rather than recomputing it.
