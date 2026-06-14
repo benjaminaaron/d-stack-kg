@@ -54,6 +54,15 @@ landscape2 serve --landscape-dir data/scratch/build # optional: view the built s
 npm run 1-graph
 ```
 
+## Data
+
+`data/` mirrors the `src/` folder. Only two artefacts are committed:
+
+- `data/1-build-kg/upstream/`: the fetched artifacts plus provenance
+- `data/2-enrich-kg/d-stack-kg.ttl`: the knowledge graph (the deliverable)
+
+The intermediates, the use-case projections and `data/scratch/` are gitignored.
+
 ## Enriching the graph
 `src/2-enrich-kg`
 

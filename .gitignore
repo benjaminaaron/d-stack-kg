@@ -6,3 +6,8 @@ node_modules/
 package-lock.json
 
 data/scratch/
+
+# Derived data: deterministically regenerable, so not tracked
+data/1-build-kg/reconstructed/
+data/1-build-kg/landscape.ttl
+data/3-use-cases/
