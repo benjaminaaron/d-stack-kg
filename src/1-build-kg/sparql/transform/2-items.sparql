@@ -21,8 +21,8 @@ CONSTRUCT {
         dstack:reifegrad ?project ;
         dstack:verantwortlicheStelle ?owner ;
         schema:version ?version ;
-        dstack:logo ?logo ;
-        dstack:position ?iPos .
+        dstack:landkarteLogoFile ?logo ;
+        dstack:landkartePosition ?iPos .
 } WHERE {
     [] xyz:categories ?cats .
     # walk the facade-x containers (rdf:_N members) down to each item

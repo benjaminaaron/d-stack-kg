@@ -15,6 +15,10 @@ PREFIX dstack: <https://deutschland-stack.gov.de/vocab#>
 CONSTRUCT {
     ?krit a dstack:Kriterium ;
         skos:prefLabel ?kritLabel ;
+        # the landscape2 cf_* annotation stem (a projection fact, like logo/position
+        # — see modeling-choices.md), kept so the roundtrip can rebuild the source
+        # annotations without a hardcoded reverse map
+        dstack:landkarteAnnotationKey ?annKey ;
         rdfs:seeAlso <https://deutschland-stack.gov.de/kriterien/> .
     ?kb a dstack:Konformitaetsbewertung ;
         dstack:element ?item ;
@@ -23,13 +27,13 @@ CONSTRUCT {
         dstack:wertProzent ?wertProzent .
     ?item dstack:konformitaet ?kb .
 } WHERE {
-    VALUES (?labelP ?valueP ?kritLabel ?kritSlug) {
-        (xyz:cf_sovereignty_label       xyz:cf_sovereignty_value        "Digitale Souveränität"@de  "digitale-souveraenitaet")
-        (xyz:cf_interoperability_label  xyz:cf_interoperability_value   "Interoperabilität"@de      "interoperabilitaet")
-        (xyz:cf_actuality_label         xyz:cf_actuality_value          "Zukunftsfähigkeit"@de      "zukunftsfaehigkeit")
-        (xyz:cf_market_label            xyz:cf_market_value             "Marktrelevanz"@de          "marktrelevanz")
-        (xyz:cf_trustworthiness_label   xyz:cf_trustworthiness_value    "Vertrauenswürdigkeit"@de   "vertrauenswuerdigkeit")
-        (xyz:cf_sustainability_label    xyz:cf_sustainability_value     "Nachhaltigkeit"@de         "nachhaltigkeit")
+    VALUES (?labelP ?valueP ?kritLabel ?kritSlug ?annKey) {
+        (xyz:cf_sovereignty_label       xyz:cf_sovereignty_value        "Digitale Souveränität"@de  "digitale-souveraenitaet"  "cf_sovereignty")
+        (xyz:cf_interoperability_label  xyz:cf_interoperability_value   "Interoperabilität"@de      "interoperabilitaet"       "cf_interoperability")
+        (xyz:cf_actuality_label         xyz:cf_actuality_value          "Zukunftsfähigkeit"@de      "zukunftsfaehigkeit"       "cf_actuality")
+        (xyz:cf_market_label            xyz:cf_market_value             "Marktrelevanz"@de          "marktrelevanz"            "cf_market")
+        (xyz:cf_trustworthiness_label   xyz:cf_trustworthiness_value    "Vertrauenswürdigkeit"@de   "vertrauenswuerdigkeit"    "cf_trustworthiness")
+        (xyz:cf_sustainability_label    xyz:cf_sustainability_value     "Nachhaltigkeit"@de         "nachhaltigkeit"           "cf_sustainability")
     }
     # items are exactly the nodes carrying extra/annotations — match them directly,
     # no need to walk the category tree here

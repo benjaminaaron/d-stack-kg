@@ -8,7 +8,7 @@
  * unzipped copies live in gitignored data/scratch/.
  */
 
-import { UPSTREAM, SCRATCH } from "./utils.js"
+import { UPSTREAM, SCRATCH } from "../common/utils.js"
 import { execFileSync } from "child_process"
 import { createHash } from "crypto"
 import path from "path"

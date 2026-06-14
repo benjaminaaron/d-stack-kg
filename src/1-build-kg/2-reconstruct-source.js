@@ -17,7 +17,7 @@
  * to let landscape2 build, not a faithful copy.
  */
 
-import { UPSTREAM, RECONSTRUCTED } from "./utils.js"
+import { UPSTREAM, RECONSTRUCTED } from "../common/utils.js"
 import yaml from "js-yaml"
 import path from "path"
 import fs from "fs"

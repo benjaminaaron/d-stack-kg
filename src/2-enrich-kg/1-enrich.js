@@ -11,7 +11,7 @@
  */
 
 import { storeFromTurtles, storeToTurtle } from "@foerderfunke/sem-ops-utils"
-import { ROOT, GRAPH, PREFIXES } from "../1-build-kg/utils.js"
+import { ROOT, GRAPH, PREFIXES } from "../common/utils.js"
 import path from "path"
 import fs from "fs"
 

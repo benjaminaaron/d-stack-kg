@@ -17,12 +17,12 @@ CONSTRUCT {
         skos:prefLabel ?schichtLabel ;
         skos:topConceptOf ds:landkarte ;
         skos:inScheme ds:landkarte ;
-        dstack:position ?cPos .
+        dstack:landkartePosition ?cPos .
     ?gruppe a skos:Concept ;
         skos:prefLabel ?gruppeLabel ;
         skos:broader ?schicht ;
         skos:inScheme ds:landkarte ;
-        dstack:position ?sPos .
+        dstack:landkartePosition ?sPos .
 } WHERE {
     [] xyz:categories ?cats .
     # facade-x models a YAML list as an rdf container (rdf:_1, rdf:_2, …);
@@ -34,9 +34,9 @@ CONSTRUCT {
     FILTER(STRSTARTS(STR(?sSlot), STR(rdf:_)))
     ?sub xyz:name ?gruppeName .
 
-    # the rdf:_N container index is the source order; keep it as dstack:position
-    # (category order, and subcategory order within the category) so the graph
-    # can reproduce the original layout instead of an arbitrary one
+    # the rdf:_N container index is the source order; keep it as
+    # dstack:landkartePosition (category order, and subcategory order within the
+    # category) so the graph can reproduce the original layout, not an arbitrary one
     BIND(xsd:integer(STRAFTER(STR(?cSlot), STR(rdf:_))) AS ?cPos)
     BIND(xsd:integer(STRAFTER(STR(?sSlot), STR(rdf:_))) AS ?sPos)
 

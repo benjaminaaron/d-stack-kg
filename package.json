@@ -13,6 +13,9 @@
     "1-validate": "node src/1-build-kg/3-validate-roundtrip.js",
     "1-graph": "node src/1-build-kg/4-build-graph.js",
     "2-enrich": "node src/2-enrich-kg/1-enrich.js",
+    "3-landkarte": "node src/3-use-cases/landkarte-roundtrip/1-build-sources.js",
+    "3-landkarte:validate": "node src/3-use-cases/landkarte-roundtrip/2-validate-roundtrip.js",
+    "3-landkarte:serve": "node src/3-use-cases/landkarte-roundtrip/3-serve-landkarte.js"
   },
   "dependencies": {
     "@foerderfunke/sem-ops-utils": "^0.5.1",

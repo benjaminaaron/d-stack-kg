@@ -12,7 +12,9 @@ This unofficial prototype explores possibilities that would arise from modeling 
     end
     subgraph kg ["This project"]
         direction LR
-        yml["reconstructed<br/>landscape.yml"] --> ttl["landscape.ttl<br/>(the Landkarte in RDF)"] --> dstack["d-stack-kg.ttl<br/>(enriched)"] --> uc["use cases<br/>(coming later)"]
+        yml["reconstructed<br/>source artifacts"] --> ttl["landscape.ttl"] --> dstack["<b>d-stack-kg.ttl</b><br/>(enriched)"]
+        dstack --> roundtrip["Reconstructed:</br>Tech-Stack Landkarte"]
+        dstack --> more["more use cases..."]
     end
     sq -- "full.json" --> kg
 
@@ -21,6 +23,7 @@ This unofficial prototype explores possibilities that would arise from modeling 
     classDef goal fill:#9ae6b4,stroke:#2f855a,stroke-width:2px
     class repo private
     class site key
+    class roundtrip key
     class dstack goal
 ```
 
@@ -49,6 +52,27 @@ landscape2 serve --landscape-dir data/scratch/build # optional: view the built s
 
 # step 4 (needs java; the SPARQL Anything jar auto-downloads)
 npm run 1-graph
+```
+
+## Enriching the graph
+`src/2-enrich-kg`
+
+_TODO_
+
+```bash
+npm run 2-enrich # writes data/graph/d-stack-kg.ttl
+```
+
+## Use cases
+`src/3-use-cases`
+
+### Landkarte roundtrip
+Rebuilds the `landscape2` source files (`landscape.yml` + `settings.yml`) straight from the graph and proves the rebuilt site matches upstream.
+
+```bash
+npm run 3-landkarte          # graph → landscape.yml + settings.yml
+npm run 3-landkarte:validate # rebuild via landscape2 and structurally compare to upstream
+npm run 3-landkarte:serve    # view the rebuilt site (http://127.0.0.1:8000)
 ```
 
 ## Observations

@@ -17,7 +17,7 @@
  */
 
 import { storeFromTurtles, sparqlConstruct, storeToTurtle, addTurtleToStore, newStore } from "@foerderfunke/sem-ops-utils"
-import { ROOT, UPSTREAM, RECONSTRUCTED, GRAPH, SCRATCH, PREFIXES } from "./utils.js"
+import { ROOT, UPSTREAM, RECONSTRUCTED, GRAPH, SCRATCH, PREFIXES } from "../common/utils.js"
 import { execFileSync } from "child_process"
 import path from "path"
 import fs from "fs"
