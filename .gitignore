@@ -11,3 +11,6 @@ data/scratch/
 data/1-build-kg/reconstructed/
 data/1-build-kg/landscape.ttl
 data/3-use-cases/
+
+# landscape2 build, rendered into the webapp at deploy time
+webapp/use-case/landkarte/

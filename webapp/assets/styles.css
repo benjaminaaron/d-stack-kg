@@ -121,3 +121,25 @@ site-nav {
     padding: 0.45rem 0.6rem;
     border-radius: 6px;
 }
+
+/* full-bleed pages (e.g. an embedded landscape fills the viewport below the nav) */
+
+body.full { display: flex; flex-direction: column; min-height: 100dvh; }
+
+.frame {
+    flex: 1 1 auto;
+    min-height: 0;
+    width: 100%;
+    border: 0;
+}
+
+.notice {
+    margin: 0;
+    padding: 0.5rem 1.1rem;
+    background: #fff3cd;
+    color: #664d03;
+    border-bottom: 1px solid #ffe69c;
+    font-size: 0.9rem;
+}
+
+.notice a { color: inherit; text-decoration: underline; }

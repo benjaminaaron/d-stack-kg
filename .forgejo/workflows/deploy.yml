@@ -5,9 +5,29 @@ on:
 
 jobs:
   deploy:
-    runs-on: codeberg-tiny
+    runs-on: codeberg-small
     steps:
       - uses: actions/checkout@v5
+
+      # landscape2 CLI (no apt/brew package): xz-utils unpacks its .tar.xz release,
+      # unzip is needed later when landscape2 stages logos.zip. The trailing
+      # --version doubles as the install sanity check.
+      - name: Install landscape2
+        run: |
+          apt-get update -qq && apt-get install -y -qq xz-utils unzip
+          curl -sSfL https://github.com/cncf/landscape2/releases/download/v1.1.0/landscape2-x86_64-unknown-linux-gnu.tar.xz \
+            | tar -xJ -C /usr/local/bin --strip-components=1 landscape2-x86_64-unknown-linux-gnu/landscape2
+          landscape2 --version
+
+      - run: npm install
+
+      # Regenerate the landscape2 sources from the committed graph, then render the
+      # site into webapp/use-case/landkarte/. No fetch, no Java, no graph rebuild —
+      # data/2-enrich-kg/d-stack-kg.ttl and the logos are committed.
+      - run: npm run 3-landkarte
+      - run: npm run 3-landkarte:page
+
+      # Publish the on-disk webapp/, including the freshly built landkarte/.
       - uses: https://codeberg.org/git-pages/action@v2
         with:
           site: https://${{ forge.event.repository.owner.username }}.codeberg.page/${{ forge.event.repository.name }}/
