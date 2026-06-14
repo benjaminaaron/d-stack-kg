@@ -6,7 +6,7 @@ This unofficial prototype explores possibilities that would arise from modeling 
 
 ```mermaid
     flowchart TB
-    subgraph sq ["The official Tech-Stack-Landkarte"]
+    subgraph sq ["The official Tech-Stack Landkarte"]
         direction LR
         repo["private repo<br/>(extended landscape2 + source artifacts)"] --> site["Tech-Stack-Landkarte<br/>website"] --> json["full.json<br/>(compiled dataset)"]
     end
@@ -19,8 +19,8 @@ This unofficial prototype explores possibilities that would arise from modeling 
     sq -- "full.json" --> kg
 
     classDef private stroke-dasharray:5 5
-    classDef key fill:#ffd24d,stroke:#cc8800,stroke-width:2px
-    classDef goal fill:#9ae6b4,stroke:#2f855a,stroke-width:2px
+    classDef key fill:#ffd24d,stroke:#cc8800,color:#3d2f00,stroke-width:2px
+    classDef goal fill:#9ae6b4,stroke:#2f855a,color:#0f2e1f,stroke-width:2px
     class repo private
     class site key
     class roundtrip key
