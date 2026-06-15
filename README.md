@@ -2,6 +2,9 @@
 
 This unofficial prototype explores possibilities that would arise from modeling the Deutschland-Stack as a knowledge graph. The data it uses is the reconstructed source artifact behind the compiled Landkarte dataset published online. The authoritative source is the official [Tech-Stack Landkarte](https://technologie.deutschland-stack.gov.de/).
 
+- **Live site:** <https://benjaminaaron.codeberg.page/d-stack-kg>
+- GitHub mirror (read-only): <https://github.com/benjaminaaron/d-stack-kg>
+
 ## The big picture
 
 ```mermaid
@@ -27,6 +30,12 @@ This unofficial prototype explores possibilities that would arise from modeling 
     class dstack goal
 ```
 
+## Requirements
+
+- Node.js
+- Java for the SPARQL Anything lift in build step 4 (the jar auto-downloads)
+- the [landscape2](https://github.com/cncf/landscape2) CLI for the roundtrip build/validate/serve (`brew install cncf/landscape2/landscape2`)
+
 ## Building the knowledge graph
 `src/1-build-kg`
 
@@ -36,32 +45,6 @@ This unofficial prototype explores possibilities that would arise from modeling 
 | **2. Reconstruct source** | Reconstructs the landscape2 source files → `data/1-build-kg/reconstructed/` (`landscape.yml` + a minimal `settings.yml`)                                                               |
 | **3. Validate roundtrip** | Structurally compares the rebuilt `full.json` against the authoritative one; to produce it, runs a full `landscape2 build` → `data/scratch/build/`                          |
 | **4. Build graph** | Lifts `landscape.yml` to RDF with SPARQL Anything and transforms it via SPARQL queries into a knowledge graph → `data/1-build-kg/landscape.ttl`. More about the modeling choices along the way in [modeling-choices.md](modeling-choices.md) |
-
-## Running
-
-```bash
-npm install
-
-npm run 1-fetch # step 1
-npm run 1-reconstruct # step 2
-
-# step 3
-brew install cncf/landscape2/landscape2 # landscape2 CLI is required
-npm run 1-validate
-landscape2 serve --landscape-dir data/scratch/build # optional: view the built site
-
-# step 4 (needs java; the SPARQL Anything jar auto-downloads)
-npm run 1-graph
-```
-
-## Data
-
-`data/` mirrors the `src/` folder. Only two artefacts are committed:
-
-- `data/1-build-kg/upstream/`: the fetched artifacts plus provenance
-- `data/2-enrich-kg/d-stack-kg.ttl`: the knowledge graph (the deliverable)
-
-The intermediates, the use-case projections and `data/scratch/` are gitignored.
 
 ## Enriching the graph
 `src/2-enrich-kg`
@@ -86,6 +69,42 @@ npm run 3-landkarte:page     # render it into the webapp (webapp/use-case/landka
 ```
 
 The [deploy](.forgejo/workflows/deploy.yml) runs `3-landkarte` and `3-landkarte:page` to publish the Landkarte embedded in the [Tech-Stack Landkarte page](webapp/use-case/tech-stack-landkarte.html).
+
+## Data
+
+`data/` mirrors the `src/` folder. Only two artifacts are committed:
+
+- `data/1-build-kg/upstream/`: the fetched artifacts plus provenance
+- `data/2-enrich-kg/d-stack-kg.ttl`: the knowledge graph (the deliverable)
+
+The intermediates, the use-case projections and `data/scratch/` are gitignored.
+
+## Vocabulary
+`definitions/vocabulary.ttl`
+
+The work-in-progress vocabulary used in the knowledge graph. Rendered on the webapp's vocabulary page.
+
+## Possible future work
+
+A scratchpad of where this could go. Ideas? Please share!
+
+**Vocabularies to wire in**
+
+| Reuse | to |
+|---|---|
+| **GerPS** ontologies (openDVA / Uni Jena) | lift FIM `XDatenfelder`/`XProzess` into RDF, already aligned to the EU Core Vocabularies |
+| **CPSV-AP** + **CCCEV** (EU / SEMIC) | describe public services and their eligibility criteria + evidence the standard way |
+| **FIM / XÖV** — **XZuFi**, XDatenfelder, XProzess | add the national standards the D-Stack actually runs on as first-class elements |
+| **PVOG** Suchdienst (FITKO) | pull real Leistungen as `cpsv:PublicService` nodes |
+| **DCAT-AP.de** | catalogue the registers behind the data fields |
+| **Wikidata** | link every responsible body and standard out to the open web |
+| **eLexa** / interoperable Rechtsbegriffe (BMF/BMDS) | model deduplicated legal terms |
+
+**Enriching the graph**
+
+- `verantwortlicheStelle` strings (~70 orgs: IETF, W3C, …) → Wikidata-linked entities
+- relation edges between the items (`dependsOn`, `implements`, `competesWith`) → connect the 128 currently-isolated items into one graph
+- an administrative layer (service, legal term, data field, evidence, register), bridged to the tech layer by a single `dstack:enables` edge
 
 ## Observations
 
