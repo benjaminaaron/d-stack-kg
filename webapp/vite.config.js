@@ -9,6 +9,17 @@ export default defineConfig({
     root,
     base: "/d-stack-kg/",   // codeberg.page serves the site under this subpath
     appType: "mpa",         // a plain multi-page site, not an SPA - no history fallback
+    plugins: [{
+        // dev server serves no directory index for public/ subdirs; map the Landkarte's
+        // directory URL to its index.html so the iframe renders as it does when deployed
+        name: "landkarte-dev-index",
+        configureServer(server) {
+            server.middlewares.use((req, _res, next) => {
+                if (req.url?.endsWith("/use-case/landkarte/")) req.url += "index.html"
+                next()
+            })
+        },
+    }],
     build: {
         outDir: "dist",
         emptyOutDir: true,
