@@ -13,7 +13,7 @@ const REPO = "https://codeberg.org/benjaminaaron/d-stack-kg"
 const ITEMS = [
     { label: "Vocabulary", href: link("vocabulary.html") },
     { label: "Query", href: link("query.html") },
-    { label: "Use Cases", children: [
+    { label: "Use Cases", selectedPrefix: "Use case", children: [
         { label: "Tech-Stack Landkarte", href: link("use-case/tech-stack-landkarte.html") }
     ] }
 ]
@@ -32,14 +32,16 @@ const renderLink = item =>
     `<a class="navlink" href="${item.href}"${current(item.href)}>${item.label}</a>`
 
 const renderDropdown = item => {
-    const active = item.children.some(c => isActive(c.href)) ? " active" : ""
+    // when a child page is open, surface it in the button: "Use case: <selected>"
+    const selected = item.children.find(c => isActive(c.href))
+    const label = selected ? `${item.selectedPrefix}: ${selected.label}` : item.label
     const menu = item.children.map(c =>
         `<a role="menuitem" class="menuitem" href="${c.href}"${current(c.href)}>${c.label}</a>`
     ).join("")
     return `
         <div class="dropdown">
-            <button type="button" class="navlink${active}" aria-haspopup="true" aria-expanded="false">
-                ${item.label}<span class="caret" aria-hidden="true"></span>
+            <button type="button" class="navlink${selected ? " active" : ""}" aria-haspopup="true" aria-expanded="false">
+                ${label}<span class="caret" aria-hidden="true"></span>
             </button>
             <div class="menu" role="menu">${menu}</div>
         </div>`
