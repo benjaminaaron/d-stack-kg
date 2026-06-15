@@ -14,7 +14,7 @@
  * here: maturity dates, audits, tags and the summary_* texts.
  *
  * Output: data/3-use-cases/landkarte-roundtrip/{landscape.yml,settings.yml}.
- * Render + view them with 3-serve-landkarte.js (npm run 3-landkarte:serve).
+ * Render + view them with 3-serve-landkarte.js.
  *
  * Run: npm run 3-landkarte
  */
@@ -147,4 +147,5 @@ fs.writeFileSync(OUT_SETTINGS,
 const subCount = [...byCat.values()].reduce((n, s) => n + s.size, 0)
 console.log(`OK: ${itemRows.length} items, ${byCat.size} categories, ${subCount} subcategories -> data/3-use-cases/landkarte-roundtrip/`)
 console.log("    (still unmodeled, so absent: maturity dates, audits, tags, summary_*)")
-console.log("check: npm run 3-landkarte:validate   |   view: npm run 3-landkarte:serve")
+console.log("check: node src/3-use-cases/landkarte-roundtrip/2-validate-roundtrip.js")
+console.log("view:  node src/3-use-cases/landkarte-roundtrip/3-serve-landkarte.js")

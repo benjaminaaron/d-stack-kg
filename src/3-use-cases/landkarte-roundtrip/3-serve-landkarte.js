@@ -6,7 +6,7 @@
  * then serves the result so the Landkarte rebuilt from the knowledge graph can
  * be viewed in the browser. Requires the landscape2 CLI.
  *
- * Run: npm run 3-landkarte:serve   (then open the printed http://127.0.0.1:8000)
+ * Run: node src/3-use-cases/landkarte-roundtrip/3-serve-landkarte.js   (then open the printed http://127.0.0.1:8000)
  */
 
 import { ROOT, UPSTREAM, SCRATCH, USE_CASES } from "../../common/utils.js"

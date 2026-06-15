@@ -18,7 +18,7 @@
  * isn't checked (the comparison is keyed by name); the known group-order gap is
  * documented in modeling-choices.md.
  *
- * Run: npm run 3-landkarte:validate
+ * Run: node src/3-use-cases/landkarte-roundtrip/2-validate-roundtrip.js
  *
  * Requires the landscape2 CLI (no npm package): brew install cncf/landscape2/landscape2
  */
