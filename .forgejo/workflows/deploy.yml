@@ -27,6 +27,9 @@ jobs:
       - run: npm run 3-landkarte
       - run: npm run 3-landkarte:page
 
+      # Stage the hand-authored vocabulary into webapp/
+      - run: npm run webapp:stage
+
       # Publish the on-disk webapp/, including the freshly built landkarte/.
       - uses: https://codeberg.org/git-pages/action@v2
         with:

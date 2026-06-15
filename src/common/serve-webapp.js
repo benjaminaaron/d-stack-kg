@@ -10,7 +10,7 @@ import fs from "fs"
 
 const DIR = join(ROOT, "webapp")
 const PORT = process.env.PORT || 8000
-const TYPE = { html: "text/html", js: "text/javascript", css: "text/css", json: "application/json", svg: "image/svg+xml", png: "image/png", woff2: "font/woff2" }
+const TYPE = { html: "text/html", js: "text/javascript", css: "text/css", json: "application/json", ttl: "text/turtle", svg: "image/svg+xml", png: "image/png", woff2: "font/woff2" }
 
 createServer((req, res) => {
     let f = join(DIR, decodeURIComponent(req.url.split("?")[0]))

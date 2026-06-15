@@ -17,7 +17,9 @@
     "3-landkarte:validate": "node src/3-use-cases/landkarte-roundtrip/2-validate-roundtrip.js",
     "3-landkarte:serve": "node src/3-use-cases/landkarte-roundtrip/3-serve-landkarte.js",
     "3-landkarte:page": "node src/3-use-cases/landkarte-roundtrip/4-build-page.js",
-    "webapp": "node src/common/serve-webapp.js"
+    "webapp": "node src/common/serve-webapp.js",
+    "webapp:stage": "node src/common/stage-webapp.js",
+    "prewebapp": "npm run webapp:stage"
   },
   "dependencies": {
     "@foerderfunke/sem-ops-utils": "^0.5.1",

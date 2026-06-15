@@ -5,13 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Vocabulary</title>
     <link rel="stylesheet" href="assets/styles.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.min.css" media="(prefers-color-scheme: light)">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" media="(prefers-color-scheme: dark)">
     <script type="module" src="assets/nav-bar.js"></script>
 </head>
 <body>
     <site-nav></site-nav>
     <main class="container">
-        <h1>Vocabulary</h1>
-        <p>TODO</p>
+        <p class="lead">The work-in-progress vocabulary used in the knowledge graph:
+            <a href="https://codeberg.org/benjaminaaron/d-stack-kg/src/branch/main/definitions/vocabulary.ttl" target="_blank" rel="noopener">definitions/vocabulary.ttl</a></p>
+        <pre class="language-turtle"><code id="vocab" class="language-turtle">Loading…</code></pre>
     </main>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-turtle.min.js"></script>
+    <script>
+        const code = document.getElementById("vocab")
+        fetch("definitions/vocabulary.ttl")
+            .then(r => r.ok ? r.text() : Promise.reject(new Error("HTTP " + r.status)))
+            .then(ttl => { code.textContent = ttl; if (window.Prism) Prism.highlightElement(code) })
+            .catch(err => { code.textContent = "Failed to load vocabulary.ttl: " + err.message })
+    </script>
 </body>
 </html>

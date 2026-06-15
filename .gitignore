@@ -7,10 +7,12 @@ package-lock.json
 
 data/scratch/
 
-# Derived data: deterministically regenerable, so not tracked
+# derived data: deterministically regenerable, so not tracked
 data/1-build-kg/reconstructed/
 data/1-build-kg/landscape.ttl
 data/3-use-cases/
 
 # landscape2 build, rendered into the webapp at deploy time
 webapp/use-case/landkarte/
+# vocabulary staged into the webapp
+webapp/definitions/

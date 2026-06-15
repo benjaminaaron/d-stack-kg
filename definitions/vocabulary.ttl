@@ -1,0 +1,172 @@
+# =============================================================================
+# Deutschland-Stack KG term definitions
+# -----------------------------------------------------------------------------
+# Makes explicit the dstack: terms that the generated graph
+# (data/1-build-kg/landscape.ttl → data/2-enrich-kg/d-stack-kg.ttl) uses.
+# This is a plain RDFS description, not an OWL ontology: it documents what
+# the terms mean, it does not impose formal semantics or reasoning.
+#
+# Companion prose: modeling-choices.md (the judgment calls behind these terms).
+#
+# The graph's shape, in brief: a SKOS taxonomy (ds:landkarte ConceptScheme →
+# Schichten → Gruppen) classifies a set of dstack:StackElement items; each item
+# is scored against six dstack:Kriterium via reified dstack:Konformitaetsbewertung
+# nodes. A handful of "landkarte*" predicates carry projection/layout facts.
+# =============================================================================
+
+@prefix dstack: <https://deutschland-stack.gov.de/vocab#> .
+@prefix rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:   <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos:   <http://www.w3.org/2004/02/skos/core#> .
+@prefix dct:    <http://purl.org/dc/terms/> .
+@prefix schema: <http://schema.org/> .
+@prefix xsd:    <http://www.w3.org/2001/XMLSchema#> .
+@prefix voaf:   <http://purl.org/vocommons/voaf#> .
+
+
+# --- Vocabulary description ---------------------------------------------------
+<https://deutschland-stack.gov.de/vocab>
+    a voaf:Vocabulary ;
+    rdfs:label "Deutschland-Stack KG vocabulary"@en ;
+    rdfs:comment "Terms used by the (unofficial) Deutschland-Stack knowledge graph."@en ;
+    # the external vocabularies whose terms the graph reuses
+    # (the details are in the comment block at the foot of this file)
+    voaf:reliesOn
+        <http://www.w3.org/2004/02/skos/core#> ,
+        <http://purl.org/dc/terms/> ,
+        <http://schema.org/> ;
+    rdfs:seeAlso <https://codeberg.org/benjaminaaron/d-stack-kg> .
+
+
+# =============================================================================
+# Classes
+# =============================================================================
+
+dstack:StackElement a rdfs:Class ;
+    rdfs:label "Stack-Element"@de , "Stack element"@en ;
+    rdfs:comment "A technology or standard tile of the Tech-Stack-Landkarte; the source badge also types it as dstack:Standard or dstack:Technologieprodukt."@en .
+
+dstack:Standard a rdfs:Class ;
+    rdfs:subClassOf dstack:StackElement ;
+    rdfs:label "Standard"@de , "Standard"@en ;
+    rdfs:comment "A StackElement the source badges 'Standard'."@en .
+
+dstack:Technologieprodukt a rdfs:Class ;
+    rdfs:subClassOf dstack:StackElement ;
+    rdfs:label "Technologieprodukt"@de , "Technology product"@en ;
+    rdfs:comment "A StackElement the source badges 'Technologie'."@en .
+
+dstack:Kriterium a rdfs:Class ;
+    rdfs:subClassOf skos:Concept ;
+    rdfs:label "Bewertungskriterium"@de , "Assessment criterion"@en ;
+    rdfs:comment "One of the six fixed Konformität dimensions a StackElement is scored against."@en .
+
+dstack:Konformitaetsbewertung a rdfs:Class ;
+    rdfs:label "Konformitätsbewertung"@de , "Conformity assessment"@en ;
+    rdfs:comment "Reified score: one StackElement × one Kriterium → a level (stufe) and a percentage (wertProzent)."@en .
+
+
+# =============================================================================
+# Properties — StackElement
+# =============================================================================
+
+dstack:badge a rdf:Property ;
+    rdfs:label "Badge"@de , "badge"@en ;
+    rdfs:domain dstack:StackElement ;
+    rdfs:range rdfs:Literal ;
+    rdfs:comment "The source 'Standard'/'Technologie' badge; redundant with the rdf:type, kept for the renderer."@en .
+
+dstack:reifegrad a rdf:Property ;
+    rdfs:label "Reifegrad"@de , "maturity"@en ;
+    rdfs:domain dstack:StackElement ;
+    rdfs:comment "Maturity ('graduated', 'incubating', 'sandbox'); currently a literal."@en ;
+    rdfs:seeAlso <https://github.com/cncf/toc> .
+
+dstack:verantwortlicheStelle a rdf:Property ;
+    rdfs:label "verantwortliche Stelle"@de , "responsible body"@en ;
+    rdfs:domain dstack:StackElement ;
+    rdfs:comment "The body responsible for the element (e.g. 'IETF', 'W3C'); currently a name literal."@en ;
+    rdfs:seeAlso dct:publisher .
+
+dstack:konformitaet a rdf:Property ;
+    rdfs:label "Konformität"@de , "conformity"@en ;
+    rdfs:domain dstack:StackElement ;
+    rdfs:range dstack:Konformitaetsbewertung ;
+    rdfs:comment "A StackElement's link to one of its Konformitätsbewertungen."@en .
+
+
+# =============================================================================
+# Properties — Konformitaetsbewertung
+# =============================================================================
+
+dstack:element a rdf:Property ;
+    rdfs:label "Element"@de , "element"@en ;
+    rdfs:domain dstack:Konformitaetsbewertung ;
+    rdfs:range dstack:StackElement ;
+    rdfs:comment "The StackElement a Konformitätsbewertung is about."@en .
+
+dstack:kriterium a rdf:Property ;
+    rdfs:label "Kriterium"@de , "criterion"@en ;
+    rdfs:domain dstack:Konformitaetsbewertung ;
+    rdfs:range dstack:Kriterium ;
+    rdfs:comment "The Kriterium a Konformitätsbewertung scores against."@en .
+
+dstack:stufe a rdf:Property ;
+    rdfs:label "Stufe"@de , "level"@en ;
+    rdfs:domain dstack:Konformitaetsbewertung ;
+    rdfs:range xsd:integer ;
+    rdfs:comment "Assessment level — the N from the source's 'N von 5'."@en .
+
+dstack:wertProzent a rdf:Property ;
+    rdfs:label "Wert (Prozent)"@de , "value (percent)"@en ;
+    rdfs:domain dstack:Konformitaetsbewertung ;
+    rdfs:range xsd:decimal ;
+    rdfs:comment "Assessment value normalized to 0–100 (the source mixes '10%', '33,3%', '63.0'); optional."@en .
+
+
+# =============================================================================
+# Properties — Landkarte projection facts
+# -----------------------------------------------------------------------------
+# These describe how the data sits in the Landkarte *projection* (its layout and
+# build inputs), not domain semantics. The 'landkarte' stem keeps them distinct,
+# exactly as motivated in modeling-choices.md.
+# =============================================================================
+
+dstack:landkartePosition a rdf:Property ;
+    rdfs:label "Landkarte-Position"@de , "Landkarte position"@en ;
+    rdfs:range xsd:integer ;
+    rdfs:comment "Source order in the Landkarte (Schicht, Gruppe, item-within-Gruppe). Used on items and taxonomy concepts, hence no rdfs:domain."@en .
+
+dstack:landkarteLogoFile a rdf:Property ;
+    rdfs:label "Landkarte-Logodatei"@de , "Landkarte logo file"@en ;
+    rdfs:domain dstack:StackElement ;
+    rdfs:range rdfs:Literal ;
+    rdfs:comment "The logo filename used by the landscape2 build; a build-support fact, not a schema:logo URL."@en .
+
+dstack:landkarteAnnotationKey a rdf:Property ;
+    rdfs:label "Landkarte-Annotationsschlüssel"@de , "Landkarte annotation key"@en ;
+    rdfs:domain dstack:Kriterium ;
+    rdfs:range rdfs:Literal ;
+    rdfs:comment "The landscape2 cf_* annotation stem (e.g. 'cf_sovereignty') for the roundtrip; a projection fact."@en .
+
+
+# =============================================================================
+# Reused vocabularies (documented here, defined elsewhere)
+# -----------------------------------------------------------------------------
+# The vocabularies are declared machine-readably via voaf:reliesOn on the node at
+# the top of this file; this block keeps the per-term "for what". The graph uses
+# these external terms with their standard meaning; it does not redefine them:
+#
+#   skos:ConceptScheme              ds:landkarte — the Schicht/Gruppe taxonomy root
+#   skos:Concept                    each Schicht and each Gruppe
+#   skos:prefLabel                  labels on items, criteria, schichten, gruppen, scheme
+#   skos:hasTopConcept / topConceptOf   scheme ↔ Schicht
+#   skos:broader                    Gruppe → its Schicht
+#   skos:inScheme                   Schicht/Gruppe → ds:landkarte
+#   dct:subject                     StackElement → its Gruppe concept
+#   dct:description                 StackElement description (@de)
+#   dct:source / dct:date           provenance stamp on ds:landkarte (origin URL + retrieval date)
+#   schema:url                      StackElement homepage
+#   schema:version                  StackElement version
+#   rdfs:seeAlso / rdfs:comment     links, and the unofficial-reconstruction disclaimer on ds:landkarte
+# =============================================================================
