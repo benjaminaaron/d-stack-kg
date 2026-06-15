@@ -3,13 +3,16 @@
 // Links resolve against the webapp root derived from this module's own URL,
 // so they work locally, at the repo root, or under a deploy subpath alike.
 
-const ROOT = new URL("../", import.meta.url)
+// @vite-ignore keeps this a runtime URL — Vite would otherwise warn that it
+// "doesn't exist at build time", which is exactly the point.
+const ROOT = new URL(/* @vite-ignore */ "../", import.meta.url)
 const link = path => new URL(path, ROOT).href
 
 const REPO = "https://codeberg.org/benjaminaaron/d-stack-kg"
 
 const ITEMS = [
     { label: "Vocabulary", href: link("vocabulary.html") },
+    { label: "Query", href: link("query.html") },
     { label: "Use Cases", children: [
         { label: "Tech-Stack Landkarte", href: link("use-case/tech-stack-landkarte.html") }
     ] }

@@ -143,3 +143,64 @@ body.full { display: flex; flex-direction: column; min-height: 100dvh; }
 }
 
 .notice a { color: inherit; text-decoration: underline; }
+
+@media (prefers-color-scheme: dark) {
+    .notice {
+        background: #2a2410;
+        color: #ecdca6;
+        border-bottom-color: #463c1c;
+    }
+}
+
+/* Query page — Yasgui fills the viewport below the nav. The fake endpoint has no
+   controlbar to show. Yasgui ships only a light theme; the rules below are the
+   light baseline, and the @media block adds a dark variant to match the site. */
+
+.query-main { flex: 1 1 auto; min-height: 0; display: flex; }
+.query-main #yasgui { flex: 1 1 auto; min-height: 0; width: 100%; overflow: auto; background: #fff; color: #1a1a1a; }
+/* fake endpoint — hide its (editable) controlbar; id beats Yasgui's own rule */
+#yasgui .controlbar { display: none; }
+.yasr .dataTable td > div.rowNumber { margin-right: 8px; }
+
+@media (prefers-color-scheme: dark) {
+    .query-main #yasgui { background: var(--page-bg); color: var(--page-fg); }
+
+    /* editor — Yasqe / CodeMirror (cm-s-default) */
+    .yasgui .CodeMirror { background: #1b1e24; color: var(--page-fg); }
+    .yasgui .CodeMirror-gutters { background: #14161b; border-right-color: var(--border); }
+    .yasgui .CodeMirror-linenumber { color: #6b7280; }
+    .yasgui .CodeMirror-cursor { border-left-color: var(--page-fg); }
+    .yasgui .CodeMirror-selected { background: #33384a; }
+    .yasgui .CodeMirror-focused .CodeMirror-selected { background: #3b4156; }
+    .yasgui .CodeMirror-activeline-background { background: #20242c; }
+    /* word-match highlight (Yasqe lights up other occurrences of the selection) */
+    #yasgui .cm-matchhighlight { background: rgba(130, 170, 255, 0.18); }
+    /* tokens — id specificity beats Yasgui's own .cm-s-default .cm-* rules */
+    #yasgui .cm-keyword { color: #82aaff; }      /* PREFIX / SELECT / WHERE / … */
+    #yasgui .cm-string-2 { color: #c3e88d; }     /* prefixed names (skos:prefLabel) */
+    #yasgui .cm-variable-3 { color: #80cbc4; }   /* full <IRIs> */
+    #yasgui .cm-atom { color: var(--accent); }   /* ?variables */
+    #yasgui .cm-number { color: #f78c6c; }
+    #yasgui .cm-punc { color: var(--muted); }
+    #yasgui .cm-comment { color: #7a818c; font-style: italic; }
+
+    /* autocomplete popup (appended to <body>, so unscoped) */
+    .CodeMirror-hints { background: #1b1e24; border-color: var(--border); box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5); }
+    .CodeMirror-hint { color: var(--page-fg); }
+    li.CodeMirror-hint-active { background: var(--accent); color: #1a1a1a; }
+
+    /* results — Yasr */
+    .yasgui .yasr, .yasgui .yasr_response_chip { color: var(--muted); }
+    .yasgui .yasr table.dataTable thead th { border-bottom-color: var(--border); color: var(--page-fg); }
+    .yasgui .yasr table.dataTable tbody td { border-color: var(--border); }
+    .yasgui .yasr table.dataTable tbody tr:nth-child(even) { background: #1b1e24; }
+    .yasgui .yasr table.dataTable tbody tr:hover { background: var(--hover); }
+    .yasgui .yasr .rowNumber { color: var(--muted); }
+    .yasgui .yasr a { color: var(--accent); }
+
+    /* tabs + toolbar buttons/icons */
+    .yasgui .tabsList .tab { color: var(--muted); border-color: var(--border); }
+    .yasgui .tabsList .tab.active { color: var(--page-fg); }
+    .yasgui .yasr .yasr_btn { color: var(--page-fg); }
+    .yasgui .yasqe_buttons .yasqe_share svg { fill: var(--muted); }
+}

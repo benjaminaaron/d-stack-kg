@@ -65,10 +65,18 @@ Rebuilds the `landscape2` source files (`landscape.yml` + `settings.yml`) straig
 npm run 3-landkarte          # graph → landscape.yml + settings.yml
 npm run 3-landkarte:validate # rebuild via landscape2 and structurally compare to upstream
 npm run 3-landkarte:serve    # view the rebuilt site (http://127.0.0.1:8000)
-npm run 3-landkarte:page     # render it into the webapp (webapp/use-case/landkarte/)
+npm run 3-landkarte:page     # render it into the webapp (webapp/public/use-case/landkarte/)
 ```
 
 The [deploy](.forgejo/workflows/deploy.yml) runs `3-landkarte` and `3-landkarte:page` to publish the Landkarte embedded in the [Tech-Stack Landkarte page](webapp/use-case/tech-stack-landkarte.html).
+
+## Webapp
+`webapp/`
+
+```bash
+npm run webapp        # dev server
+npm run webapp:build  # bundle to webapp/dist/
+```
 
 ## Data
 

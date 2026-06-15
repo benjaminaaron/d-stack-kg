@@ -3,10 +3,11 @@
  *
  * Same render as 3-serve-landkarte.js — the official landscape2 build over the
  * graph-derived sources (output of 1-build-sources.js, logos from
- * data/1-build-kg/upstream/logos.zip) — but the output goes straight into the
- * webapp at webapp/use-case/landkarte/ so the deploy can publish the rebuilt
- * Landkarte embedded in the Tech-Stack Landkarte page. That directory is
- * gitignored and regenerated at deploy time; nothing built here is committed.
+ * data/1-build-kg/upstream/logos.zip) — but the output goes into the webapp's
+ * public dir at webapp/public/use-case/landkarte/, which Vite passes through to
+ * the build so the deploy can publish the rebuilt Landkarte embedded in the
+ * Tech-Stack Landkarte page. That directory is gitignored and regenerated at
+ * deploy time; nothing built here is committed.
  *
  * Run: npm run 3-landkarte && npm run 3-landkarte:page
  *
@@ -21,7 +22,7 @@ import fs from "fs"
 const OUT_DIR = path.join(USE_CASES, "landkarte-roundtrip")
 const DATA_FILE = path.join(OUT_DIR, "landscape.yml")
 const SETTINGS_FILE = path.join(OUT_DIR, "settings.yml")
-const PAGE_DIR = path.join(ROOT, "webapp", "use-case", "landkarte")
+const PAGE_DIR = path.join(ROOT, "webapp", "public", "use-case", "landkarte")
 
 requireFiles([DATA_FILE, SETTINGS_FILE], ROOT, "run npm run 3-landkarte first")
 renderSite({

@@ -12,7 +12,7 @@ data/1-build-kg/reconstructed/
 data/1-build-kg/landscape.ttl
 data/3-use-cases/
 
-# landscape2 build, rendered into the webapp at deploy time
-webapp/use-case/landkarte/
-# vocabulary staged into the webapp
-webapp/definitions/
+# vite build output, published by the deploy
+webapp/dist/
+# the landscape2 build
+webapp/public/use-case/landkarte/

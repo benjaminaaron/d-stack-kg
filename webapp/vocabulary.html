@@ -18,12 +18,12 @@
     </main>
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-turtle.min.js"></script>
-    <script>
+    <script type="module">
+        // vite ?raw inlines the committed vocabulary as a string, nothing to fetch
+        import vocab from "../definitions/vocabulary.ttl?raw"
         const code = document.getElementById("vocab")
-        fetch("definitions/vocabulary.ttl")
-            .then(r => r.ok ? r.text() : Promise.reject(new Error("HTTP " + r.status)))
-            .then(ttl => { code.textContent = ttl; if (window.Prism) Prism.highlightElement(code) })
-            .catch(err => { code.textContent = "Failed to load vocabulary.ttl: " + err.message })
+        code.textContent = vocab
+        if (window.Prism) Prism.highlightElement(code)
     </script>
 </body>
 </html>
