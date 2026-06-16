@@ -17,7 +17,8 @@ This unofficial prototype explores possibilities that would arise from modeling 
         direction LR
         yml["reconstructed<br/>source artifacts"] --> ttl["landscape.ttl"] --> dstack["<b>d-stack-kg.ttl</b><br/>(enriched)"]
         dstack --> roundtrip["Reconstructed:</br>Tech-Stack Landkarte"]
-        dstack --> more["more use cases..."]
+        dstack --> leistungen["PVOG-Leistungen"]
+        dstack --> more["<i>more use cases...</i>"]
     end
     sq -- "full.json" --> kg
 
