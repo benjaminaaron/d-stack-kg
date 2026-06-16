@@ -11,6 +11,11 @@
 <body class="full">
     <site-nav></site-nav>
     <main class="query-main">
+        <div class="query-toolbar">
+            <button id="toggle-visual" type="button" aria-expanded="false">Visual query builder</button>
+            <span class="query-hint">builds a SPARQL query into the editor below using Sparnatural</span>
+        </div>
+        <div id="sparnatural-wrap" hidden></div>
         <div id="yasgui"></div>
     </main>
 </body>

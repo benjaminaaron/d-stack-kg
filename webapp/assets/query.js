@@ -137,8 +137,128 @@ window.fetch = async (input, init) => {
 }
 
 Yasgui.Yasqe.defaults.value = INITIAL_QUERY
-new Yasgui(document.getElementById("yasgui"), {
+const yasgui = new Yasgui(document.getElementById("yasgui"), {
     requestConfig: { endpoint: ENDPOINT, method: "POST" },
     copyEndpointOnNewTab: false,
     populateFromUrl: false,
+})
+
+// --- Visual query builder (Sparnatural) ------------------------------------
+// Sparnatural ships as a heavy prebuilt browser bundle (its own jQuery + an RDF
+// stack), so we don't run it through our Vite build — we load it from a CDN, and
+// only on first toggle, to keep the default Query page light. It emits SPARQL on
+// `queryUpdated`, which we drop straight into the editor; the same fake endpoint
+// + Comunica interceptor backs both its value lists and the editor's runs.
+
+// served verbatim from public/ (a real .ttl URL so Sparnatural detects Turtle)
+const sparnaturalConfigUrl = import.meta.env.BASE_URL + "dstack.sparnatural.ttl"
+
+const SPARNATURAL_VERSION = "12.2.1"
+const cdn = path => `https://cdn.jsdelivr.net/npm/${path}`
+
+const addStylesheet = href => {
+    const link = document.createElement("link")
+    link.rel = "stylesheet"
+    link.href = href
+    document.head.append(link)
+}
+
+let loading
+let stylesAdded = false
+const loadSparnatural = () => {
+    if (loading) return loading
+    if (!stylesAdded) {
+        addStylesheet(cdn(`sparnatural@${SPARNATURAL_VERSION}/dist/browser/sparnatural.css`))
+        addStylesheet(cdn("@fortawesome/fontawesome-free@6.5.2/css/all.min.css"))
+        stylesAdded = true
+    }
+    loading = new Promise((resolve, reject) => {
+        const script = document.createElement("script")
+        script.src = cdn(`sparnatural@${SPARNATURAL_VERSION}/dist/browser/sparnatural.js`)
+        script.onload = resolve
+        script.onerror = () => reject(new Error("could not load Sparnatural from the CDN"))
+        document.head.append(script)
+    }).then(() => customElements.whenDefined("spar-natural"))
+    return loading
+}
+
+const yasqe = () => yasgui.getTab().getYasqe()
+
+const SKOS_PREFLABEL = "http://www.w3.org/2004/02/skos/core#prefLabel"
+const RDFS_LABEL = "http://www.w3.org/2000/01/rdf-schema#label"
+
+// List dropdown values come from our own store via Comunica, not the (fake) HTTP
+// endpoint. Sparnatural hands the provider the SHACL *shape* IRIs (not the real
+// class/predicate), so expandSparql maps them to graph terms before we query — the
+// same quirk as the editor query (#454). getListContent is push-based, and items
+// must be shaped { term: <SPARQL-JSON term>, label } (12.2.x).
+const makeListProvider = (el) => ({
+    init() {},
+    async getListContent(domain, predicate, range, callback, errorCallback) {
+        // match either label property, mirroring the generator's label rule. The config
+        // only points list pickers at label-bearing classes (label-less ranges become
+        // NonSelectableProperty), so this mainly guards future rdfs:label-only classes.
+        const raw = `SELECT DISTINCT ?value ?label WHERE {
+    ?s a <${domain}> ; <${predicate}> ?value .
+    ?value <${SKOS_PREFLABEL}>|<${RDFS_LABEL}> ?label .
+} ORDER BY ?label`
+        try {
+            const q = el.expandSparql ? el.expandSparql(raw) : raw
+            const result = await queryEngine.query(q, { sources: [store] })
+            const items = []
+            for await (const b of await result.execute()) {
+                const value = b.get("value")
+                if (!value) continue
+                const label = b.get("label")
+                items.push({ term: { type: "uri", value: value.value }, label: label?.value || value.value })
+            }
+            callback(items)
+        } catch (err) {
+            console.error("[sparnatural] list query failed", err)
+            if (errorCallback) errorCallback(err)
+        }
+    },
+})
+
+const buildSparnatural = (wrap) => {
+    const el = document.createElement("spar-natural")
+    const attrs = { src: sparnaturalConfigUrl, endpoint: ENDPOINT, lang: "en", defaultLang: "de", distinct: "true", limit: "100" }
+    for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, v)
+    // fill list dropdowns from our own store rather than the (fake) HTTP endpoint;
+    // set both now and on init, since either timing can be the one that's honored
+    const listDataProvider = makeListProvider(el)
+    const setCustomization = () => { el.customization = { list: { dataProvider: listDataProvider } } }
+    setCustomization()
+    el.addEventListener("init", setCustomization)
+    // mirror the visually-built query into the editor; run it on the play button.
+    // Sparnatural emits the raw query with SHACL shape IRIs by design — expandSparql
+    // rewrites them to the real sh:targetClass / sh:path terms (see Sparnatural #454).
+    el.addEventListener("queryUpdated", e => {
+        const raw = e.detail?.queryString
+        if (raw) yasqe().setValue(el.expandSparql ? el.expandSparql(raw) : raw)
+    })
+    el.addEventListener("submit", () => yasqe().query())
+    wrap.append(el)
+}
+
+const toggle = document.getElementById("toggle-visual")
+const wrap = document.getElementById("sparnatural-wrap")
+let built = false
+toggle.addEventListener("click", async () => {
+    const show = wrap.hidden
+    wrap.hidden = !show
+    toggle.setAttribute("aria-expanded", String(show))
+    if (show && !built) {
+        toggle.disabled = true
+        try {
+            await loadSparnatural()
+            buildSparnatural(wrap)
+            built = true
+        } catch (e) {
+            wrap.textContent = String(e?.message || e)
+            loading = undefined        // let a later toggle retry the failed CDN load
+        } finally {
+            toggle.disabled = false
+        }
+    }
 })

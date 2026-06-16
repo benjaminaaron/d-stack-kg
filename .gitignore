@@ -16,3 +16,5 @@ data/3-use-cases/
 webapp/dist/
 # the landscape2 build
 webapp/public/use-case/landkarte/
+# the generated Sparnatural query-builder config
+webapp/public/dstack.sparnatural.ttl

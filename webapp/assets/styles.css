@@ -156,11 +156,20 @@ body.full { display: flex; flex-direction: column; min-height: 100dvh; }
    controlbar to show. Yasgui ships only a light theme; the rules below are the
    light baseline, and the @media block adds a dark variant to match the site. */
 
-.query-main { flex: 1 1 auto; min-height: 0; display: flex; }
+.query-main { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
 .query-main #yasgui { flex: 1 1 auto; min-height: 0; width: 100%; overflow: auto; background: #fff; color: #1a1a1a; }
 /* fake endpoint — hide its (editable) controlbar; id beats Yasgui's own rule */
 #yasgui .controlbar { display: none; }
 .yasr .dataTable td > div.rowNumber { margin-right: 8px; }
+
+/* visual query builder toggle + panel (Sparnatural, light-only — no dark theme) */
+.query-toolbar { display: flex; align-items: baseline; gap: 0.6rem; padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--border); }
+#toggle-visual { font: inherit; cursor: pointer; color: var(--page-fg); background: var(--hover); border: 1px solid var(--border); border-radius: 6px; padding: 0.35rem 0.7rem; }
+#toggle-visual[aria-expanded="true"] { border-color: var(--accent); }
+.query-hint { color: var(--muted); font-size: 0.8rem; opacity: 0.75; }
+/* Sparnatural only ships a light theme, so keep its panel a light island */
+#sparnatural-wrap { flex: 0 0 auto; max-height: 55vh; overflow: auto; padding: 0.6rem; background: #fff; border-bottom: 1px solid var(--border); }
+#sparnatural-wrap[hidden] { display: none; }
 
 @media (prefers-color-scheme: dark) {
     .query-main #yasgui { background: var(--page-bg); color: var(--page-fg); }
@@ -203,4 +212,12 @@ body.full { display: flex; flex-direction: column; min-height: 100dvh; }
     .yasgui .tabsList .tab.active { color: var(--page-fg); }
     .yasgui .yasr .yasr_btn { color: var(--page-fg); }
     .yasgui .yasqe_buttons .yasqe_share svg { fill: var(--muted); }
+
+    /* Sparnatural is a light island; our dark-mode light text leaks into it and washes
+       out its options. Restore dark text on the panel and on its select2 dropdowns —
+       select2 portals those to <body>, so they're scoped by class, not #sparnatural-wrap. */
+    #sparnatural-wrap { color: #1a1a1a; }
+    .select2-dropdown, .select2-results__option,
+    .select2-selection__rendered, .select2-search__field { color: #1a1a1a; }
+    .select2-dropdown, .select2-search__field { background: #fff; }
 }

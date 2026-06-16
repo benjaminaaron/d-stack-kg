@@ -72,6 +72,13 @@ npm run 3-landkarte:page # render it into the webapp (webapp/public/use-case/lan
 
 The [deploy](.forgejo/workflows/deploy.yml) runs `3-landkarte` and `3-landkarte:page` to publish the Landkarte embedded in the [Tech-Stack Landkarte page](webapp/use-case/tech-stack-landkarte.html).
 
+### Query builder
+Profiles the graph (one class per `rdf:type`, one facet per predicate actually used on it, widgets inferred from the value types) into the SHACL config that drives the in-browser [Sparnatural](https://github.com/sparna-git/Sparnatural) visual query builder on the Query page. Labels come from the [vocabulary](definitions/vocabulary.ttl); a blocklist in the script drops build-support predicates.
+
+```bash
+npm run 3-sparnatural # d-stack-kg.ttl + vocabulary + blocklist → webapp/public/dstack.sparnatural.ttl
+```
+
 ## Webapp
 `webapp/`
 

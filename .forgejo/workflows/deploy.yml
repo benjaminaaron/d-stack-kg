@@ -25,6 +25,9 @@ jobs:
       - run: npm run 3-landkarte
       - run: npm run 3-landkarte:page
 
+      # generate the Sparnatural config from d-stack-kg.ttl
+      - run: npm run 3-sparnatural
+
       # bundle the site with vite -> webapp/dist/
       - run: npm run webapp:build
 
