@@ -11,7 +11,7 @@ export const UPSTREAM = path.join(BUILD_KG, "upstream")                // extern
 export const RECONSTRUCTED = path.join(BUILD_KG, "reconstructed")      // derived landscape2 source (2-reconstruct)
 export const LANDSCAPE_TTL = path.join(BUILD_KG, "landscape.ttl")      // lifted graph (4-build-graph)
 export const ENRICH_KG = path.join(DATA, "2-enrich-kg")                // 2-enrich-kg outputs
-export const DSTACK_TTL = path.join(ENRICH_KG, "d-stack-kg.ttl")       // the d-stack graph (2-enrich)
+export const DSTACK_TTL = path.join(ENRICH_KG, "d-stack-kg.ttl")       // the d-stack graph (kg:enrich)
 export const USE_CASES = path.join(DATA, "3-use-cases")                // use-case derived artefacts
 export const SCRATCH = path.join(DATA, "scratch")                      // gitignored regenerable
 

@@ -7,12 +7,12 @@
   "license": "Apache-2.0",
   "type": "module",
   "scripts": {
-    "1-build-kg": "node src/1-build-kg/1-fetch-dataset.js && node src/1-build-kg/2-reconstruct-source.js && node src/1-build-kg/4-build-graph.js",
-    "2-enrich": "node src/2-enrich-kg/1-enrich.js",
-    "3-landkarte": "node src/3-use-cases/landkarte-roundtrip/1-build-sources.js",
-    "3-landkarte:page": "node src/3-use-cases/landkarte-roundtrip/4-build-page.js",
-    "3-sparnatural": "node src/3-use-cases/visual-query-builder/build-config.js",
-    "webapp": "vite --config webapp/vite.config.js",
+    "kg:build": "node src/1-build-kg/1-fetch-dataset.js && node src/1-build-kg/2-reconstruct-source.js && node src/1-build-kg/4-build-graph.js",
+    "kg:enrich": "node src/2-enrich-kg/1-enrich.js",
+    "landkarte:prepare": "node src/3-use-cases/landkarte-roundtrip/1-build-sources.js",
+    "landkarte:render": "node src/3-use-cases/landkarte-roundtrip/4-build-page.js",
+    "query-builder:prepare": "node src/3-use-cases/visual-query-builder/build-config.js",
+    "webapp:serve": "vite --config webapp/vite.config.js",
     "webapp:build": "vite build --config webapp/vite.config.js"
   },
   "dependencies": {

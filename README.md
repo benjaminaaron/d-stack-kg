@@ -36,7 +36,7 @@ This unofficial prototype explores possibilities that would arise from modeling 
 - Java for the SPARQL Anything lift in build step 4 (the jar auto-downloads)
 - the [landscape2](https://github.com/cncf/landscape2) CLI for the roundtrip build/validate/serve (`brew install cncf/landscape2/landscape2`)
 
-The package.json scripts cover only the default path: build the graph → enrich → build the use cases → run the webapp. Everything else (per-stage sub-steps, the roundtrip validation, the standalone landscape2 server) isn't wired up - but you can always run it directly. For the full experience from a fresh clone, run `npm install` and then the scripts in the order they appear in `package.json` (top to bottom) - that walks the whole pipeline end to end, from fetching the upstream dataset to the running webapp. Alternatively, start at `3-landkarte` - the enriched graph it consumes (`data/2-enrich-kg/d-stack-kg.ttl`) is committed, so `1-build-kg` and `2-enrich` are optional.
+The package.json scripts cover only the default path: build the graph → enrich → build the use cases → run the webapp. Everything else (per-stage sub-steps, the roundtrip validation, the standalone landscape2 server) isn't wired up - but you can always run it directly. For the full experience from a fresh clone, run `npm install` and then the scripts in the order they appear in `package.json` (top to bottom) - that walks the whole pipeline end to end, from fetching the upstream dataset to the running webapp. Alternatively, start at `landkarte:prepare` - the enriched graph it consumes (`data/2-enrich-kg/d-stack-kg.ttl`) is committed, so `kg:build` and `kg:enrich` are optional.
 
 ## Building the knowledge graph
 `src/1-build-kg`
@@ -48,7 +48,7 @@ The package.json scripts cover only the default path: build the graph → enrich
 | **3. Validate roundtrip** | Structurally compares the rebuilt `full.json` against the authoritative one; to produce it, runs a full `landscape2 build` → `data/scratch/build/`                          |
 | **4. Build graph** | Lifts `landscape.yml` to RDF with SPARQL Anything and transforms it via SPARQL queries into a knowledge graph → `data/1-build-kg/landscape.ttl`. More about the modeling choices along the way in [modeling-choices.md](modeling-choices.md) |
 
-`npm run 1-build-kg` chains steps 1, 2 and 4. Step 3 (roundtrip validation) is an optional check, run on its own: `node src/1-build-kg/3-validate-roundtrip.js`.
+`npm run kg:build` chains steps 1, 2 and 4. Step 3 (roundtrip validation) is an optional check, run on its own: `node src/1-build-kg/3-validate-roundtrip.js`.
 
 ## Enriching the graph
 `src/2-enrich-kg`
@@ -56,7 +56,7 @@ The package.json scripts cover only the default path: build the graph → enrich
 _TODO_
 
 ```bash
-npm run 2-enrich # writes data/2-enrich-kg/d-stack-kg.ttl
+npm run kg:enrich # writes data/2-enrich-kg/d-stack-kg.ttl
 ```
 
 ## Use cases
@@ -66,24 +66,24 @@ npm run 2-enrich # writes data/2-enrich-kg/d-stack-kg.ttl
 Rebuilds the `landscape2` source files (`landscape.yml` + `settings.yml`) straight from the graph and proves the rebuilt site matches upstream.
 
 ```bash
-npm run 3-landkarte      # graph → landscape.yml + settings.yml
-npm run 3-landkarte:page # render it into the webapp (webapp/public/use-case/landkarte/)
+npm run landkarte:prepare  # graph → landscape.yml + settings.yml
+npm run landkarte:render   # render it into the webapp (webapp/public/use-case/landkarte/)
 ```
 
-The [deploy](.forgejo/workflows/deploy.yml) runs `3-landkarte` and `3-landkarte:page` to publish the Landkarte embedded in the [Tech-Stack Landkarte page](webapp/use-case/tech-stack-landkarte.html).
+The [deploy](.forgejo/workflows/deploy.yml) runs `landkarte:prepare` and `landkarte:render` to publish the Landkarte embedded in the [Tech-Stack Landkarte page](webapp/use-case/tech-stack-landkarte.html).
 
 ### Query builder
 Profiles the graph (one class per `rdf:type`, one facet per predicate actually used on it, widgets inferred from the value types) into the SHACL config that drives the in-browser [Sparnatural](https://github.com/sparna-git/Sparnatural) visual query builder on the Query page. Labels come from the [vocabulary](definitions/vocabulary.ttl); a blocklist in the script drops build-support predicates.
 
 ```bash
-npm run 3-sparnatural # d-stack-kg.ttl + vocabulary + blocklist → webapp/public/dstack.sparnatural.ttl
+npm run query-builder:prepare # d-stack-kg.ttl + vocabulary + blocklist → webapp/public/dstack.sparnatural.ttl
 ```
 
 ## Webapp
 `webapp/`
 
 ```bash
-npm run webapp        # dev server
+npm run webapp:serve  # dev server
 npm run webapp:build  # bundle to webapp/dist/
 ```
 

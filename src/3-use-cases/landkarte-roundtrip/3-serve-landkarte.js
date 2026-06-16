@@ -19,7 +19,7 @@ const DATA_FILE = path.join(OUT_DIR, "landscape.yml")
 const SETTINGS_FILE = path.join(OUT_DIR, "settings.yml")
 const BUILD_DIR = path.join(SCRATCH, "roundtrip-build")
 
-requireFiles([DATA_FILE, SETTINGS_FILE], ROOT, "run npm run 3-landkarte first")
+requireFiles([DATA_FILE, SETTINGS_FILE], ROOT, "run npm run landkarte:prepare first")
 renderSite({
     dataFile: DATA_FILE, settingsFile: SETTINGS_FILE,
     scratch: SCRATCH, logosZip: path.join(UPSTREAM, "logos.zip"),

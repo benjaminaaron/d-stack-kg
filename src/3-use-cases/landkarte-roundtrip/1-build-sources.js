@@ -16,7 +16,7 @@
  * Output: data/3-use-cases/landkarte-roundtrip/{landscape.yml,settings.yml}.
  * Render + view them with 3-serve-landkarte.js.
  *
- * Run: npm run 3-landkarte
+ * Run: npm run landkarte:prepare
  */
 
 import { storeFromTurtles, sparqlSelect } from "@foerderfunke/sem-ops-utils"
@@ -38,7 +38,7 @@ PREFIX ds:     <https://deutschland-stack.gov.de/id/>
 PREFIX dstack: <https://deutschland-stack.gov.de/vocab#>
 `
 
-if (!fs.existsSync(IN)) throw new Error(`missing ${path.relative(ROOT, IN)} — run npm run 1-build-kg && npm run 2-enrich first`)
+if (!fs.existsSync(IN)) throw new Error(`missing ${path.relative(ROOT, IN)} — run npm run kg:build && npm run kg:enrich first`)
 
 const store = storeFromTurtles([fs.readFileSync(IN, "utf8")])
 

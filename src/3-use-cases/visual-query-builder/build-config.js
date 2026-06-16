@@ -9,7 +9,7 @@
  * drops build-support noise so the generator needs no hand-curation afterwards.
  *
  * Output: webapp/public/dstack.sparnatural.ttl (gitignored, regenerated on deploy).
- * Run: node src/3-use-cases/visual-query-builder/build-config.js  (reads the committed graph + vocabulary)
+ * Run: npm run query-builder:prepare  (reads the committed graph + vocabulary)
  */
 
 import { ROOT, DSTACK_TTL } from "../../common/utils.js"

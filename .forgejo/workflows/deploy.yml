@@ -22,11 +22,11 @@ jobs:
 
       # regenerate the landscape2 sources from the committed graph, then render the
       # site into webapp/public/use-case/landkarte/
-      - run: npm run 3-landkarte
-      - run: npm run 3-landkarte:page
+      - run: npm run landkarte:prepare
+      - run: npm run landkarte:render
 
       # generate the Sparnatural config from d-stack-kg.ttl
-      - run: npm run 3-sparnatural
+      - run: npm run query-builder:prepare
 
       # bundle the site with vite -> webapp/dist/
       - run: npm run webapp:build

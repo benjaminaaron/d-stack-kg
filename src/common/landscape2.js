@@ -31,7 +31,7 @@ function stageLogos(scratch, logosZip) {
     const logosPath = path.join(scratch, "logos")
     const haveLogos = fs.existsSync(logosPath) && fs.readdirSync(logosPath).some(f => f.endsWith(".png"))
     if (!haveLogos) {
-        if (!fs.existsSync(logosZip)) throw new Error(`missing ${logosZip} — run npm run 1-build-kg first`)
+        if (!fs.existsSync(logosZip)) throw new Error(`missing ${logosZip} — run npm run kg:build first`)
         execFileSync("unzip", ["-q", "-o", logosZip, "-d", scratch])
     }
     return logosPath

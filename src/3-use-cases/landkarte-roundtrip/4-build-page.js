@@ -9,7 +9,7 @@
  * Tech-Stack Landkarte page. That directory is gitignored and regenerated at
  * deploy time; nothing built here is committed.
  *
- * Run: npm run 3-landkarte && npm run 3-landkarte:page
+ * Run: npm run landkarte:prepare && npm run landkarte:render
  *
  * Requires the landscape2 CLI (no npm package): brew install cncf/landscape2/landscape2
  */
@@ -24,7 +24,7 @@ const DATA_FILE = path.join(OUT_DIR, "landscape.yml")
 const SETTINGS_FILE = path.join(OUT_DIR, "settings.yml")
 const PAGE_DIR = path.join(ROOT, "webapp", "public", "use-case", "landkarte")
 
-requireFiles([DATA_FILE, SETTINGS_FILE], ROOT, "run npm run 3-landkarte first")
+requireFiles([DATA_FILE, SETTINGS_FILE], ROOT, "run npm run landkarte:prepare first")
 renderSite({
     dataFile: DATA_FILE, settingsFile: SETTINGS_FILE,
     scratch: SCRATCH, logosZip: path.join(UPSTREAM, "logos.zip"),

@@ -57,7 +57,7 @@ const fields = {
     annotations: modeledAnnotations,
 }
 
-requireFiles([DATA_FILE, SETTINGS_FILE, ORIGINAL], ROOT, "run npm run 3-landkarte first")
+requireFiles([DATA_FILE, SETTINGS_FILE, ORIGINAL], ROOT, "run npm run landkarte:prepare first")
 const n = validateRoundtrip({
     dataFile: DATA_FILE, settingsFile: SETTINGS_FILE, reference: ORIGINAL,
     scratch: SCRATCH, logosZip: path.join(UPSTREAM, "logos.zip"),
