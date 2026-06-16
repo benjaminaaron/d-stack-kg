@@ -5811,7 +5811,7 @@ ds:kong a dstack:StackElement, dstack:Technologieprodukt;
 
 ds:kriterium-digitale-souveraenitaet a dstack:Kriterium;
   rdfs:seeAlso <https://deutschland-stack.gov.de/kriterien/>;
-  skos:prefLabel "Digitale Souveränität"@de;
+  skos:prefLabel "Souveränität"@de;
   dstack:landkarteAnnotationKey "cf_sovereignty".
 
 ds:kriterium-interoperabilitaet a dstack:Kriterium;

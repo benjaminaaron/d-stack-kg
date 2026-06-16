@@ -1,0 +1,38 @@
+# =============================================================================
+# pvog-dstack-bridge.assumed.ttl — bridges the technical graph (d-stack-kg.ttl)
+# to the administrative one (pvog-leistungen.ttl).
+#
+# There are no public records which technologies a public service is built on. So every
+# dstack:realisiertDurch connection below is an assumption by Claude, not derived
+# data. It connects a real Onlinedienst (m8g:Channel) to the real Landkarte StackElements
+# it likely runs on. TLS is a safe bet (every form is HTTPS); the rest are informed assumptions.
+#
+# Hand-authored, not generated.
+# =============================================================================
+
+@prefix ds:     <https://deutschland-stack.gov.de/id/> .
+@prefix dstack: <https://deutschland-stack.gov.de/vocab#> .
+
+# --- Köln ---
+ds:onlinedienst-L100002-OD-121796694                    # Geburtsurkunde beantragen
+    dstack:realisiertDurch ds:transport-layer-security , ds:simple-object-access-protocol .
+ds:onlinedienst-L100002-OD-146561120                    # Gewerbe anmelden
+    dstack:realisiertDurch ds:transport-layer-security .
+ds:onlinedienst-L100002-OD-121799674                    # Hundesteuer Anmeldung
+    dstack:realisiertDurch ds:transport-layer-security .
+
+# --- Hamburg ---
+ds:onlinedienst-S100002-OD-S1000020040000000334-5805    # Personalausweis beantragen
+    dstack:realisiertDurch ds:transport-layer-security , ds:openapi .
+
+# --- Bundesamt für Justiz (Führungszeugnis) ---
+ds:onlinedienst-B100019-OD-103664010                    # Führungszeugnis (fuehrungszeugnis.bund.de)
+    dstack:realisiertDurch ds:transport-layer-security , ds:open-id-connect , ds:openapi .
+
+# --- Berlin ---
+ds:onlinedienst-L100108-OD-L100108_331668               # Wohngeld - Mietzuschuss
+    dstack:realisiertDurch ds:transport-layer-security , ds:open-id-connect , ds:open-authorization , ds:openapi , ds:simple-object-access-protocol .
+ds:onlinedienst-L100108-OD-L100108_351519               # Wohnberechtigungsschein (WBS)
+    dstack:realisiertDurch ds:transport-layer-security , ds:open-id-connect , ds:open-authorization , ds:openapi , ds:simple-object-access-protocol .
+ds:onlinedienst-L100108-OD-L100108_332871               # Parkausweis für Bewohner
+    dstack:realisiertDurch ds:transport-layer-security , ds:open-id-connect , ds:open-authorization , ds:openapi , ds:file-transfer-protocol-uber-tls .
