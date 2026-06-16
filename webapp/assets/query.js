@@ -10,6 +10,7 @@ import { storeFromTurtles, getWriter } from "@foerderfunke/sem-ops-utils/core"
 import { queryEngine } from "@foerderfunke/sem-ops-utils/sparql"
 import "@zazuko/yasgui/build/yasgui.min.css"
 import Yasgui from "@zazuko/yasgui"
+import { EXAMPLES } from "./query-examples.js"
 
 // Yasgui talks to a SPARQL endpoint over HTTP. We have none — queries run against
 // this in-memory store. So we point Yasgui at a fake URL and intercept fetches to
@@ -220,6 +221,11 @@ const makeListProvider = (el) => ({
     },
 })
 
+let sparnatural = null         // the live <spar-natural>, built lazily on first open
+let sparnaturalReady = null    // resolves on its `init` — loadQuery() needs the config parsed
+let runAfterBuild = false      // auto-run the editor once a loaded example settles
+let runTimer = null
+
 const buildSparnatural = (wrap) => {
     const el = document.createElement("spar-natural")
     const attrs = { src: sparnaturalConfigUrl, endpoint: ENDPOINT, lang: "en", defaultLang: "de", distinct: "true", limit: "100" }
@@ -236,29 +242,90 @@ const buildSparnatural = (wrap) => {
     el.addEventListener("queryUpdated", e => {
         const raw = e.detail?.queryString
         if (raw) yasqe().setValue(el.expandSparql ? el.expandSparql(raw) : raw)
+        if (runAfterBuild) {           // a picked example just loaded — run it once it settles
+            clearTimeout(runTimer)
+            runTimer = setTimeout(() => { runAfterBuild = false; yasqe().query() }, 150)
+        }
     })
     el.addEventListener("submit", () => yasqe().query())
-    wrap.append(el)
+    sparnaturalReady = new Promise(resolve => el.addEventListener("init", resolve, { once: true }))
+    wrap.replaceChildren(el)   // also clears any earlier CDN-error message
+    return el
 }
 
 const toggle = document.getElementById("toggle-visual")
 const wrap = document.getElementById("sparnatural-wrap")
-let built = false
-toggle.addEventListener("click", async () => {
-    const show = wrap.hidden
-    wrap.hidden = !show
-    toggle.setAttribute("aria-expanded", String(show))
-    if (show && !built) {
-        toggle.disabled = true
-        try {
-            await loadSparnatural()
-            buildSparnatural(wrap)
-            built = true
-        } catch (e) {
-            wrap.textContent = String(e?.message || e)
-            loading = undefined        // let a later toggle retry the failed CDN load
-        } finally {
-            toggle.disabled = false
+const builderHint = document.getElementById("builder-hint")
+
+// load the CDN bundle and build the element once; later calls reuse it
+const ensureSparnatural = async () => {
+    if (sparnatural) return sparnatural
+    toggle.disabled = true
+    try {
+        await loadSparnatural()
+        sparnatural = buildSparnatural(wrap)
+        return sparnatural
+    } catch (e) {
+        wrap.textContent = String(e?.message || e)
+        loading = undefined        // let a later open retry the failed CDN load
+        throw e
+    } finally {
+        toggle.disabled = false
+    }
+}
+
+const showBuilder = async () => {
+    wrap.hidden = false
+    builderHint.hidden = false
+    toggle.setAttribute("aria-expanded", "true")
+    return ensureSparnatural()
+}
+const hideBuilder = () => {
+    wrap.hidden = true
+    builderHint.hidden = true
+    toggle.setAttribute("aria-expanded", "false")
+}
+
+toggle.addEventListener("click", () => {
+    if (wrap.hidden) showBuilder().catch(() => {})
+    else hideBuilder()
+})
+
+// --- example queries: into the editor, or into the visual builder -----------
+const examples = document.getElementById("examples")
+let visualGroup = null
+EXAMPLES.forEach((ex, i) => {
+    const opt = document.createElement("option")
+    opt.value = String(i)
+    opt.textContent = ex.name
+    if (ex.visual) {
+        // group the builder examples under one non-selectable header (replaces the
+        // per-item "(visual query builder)" suffix)
+        if (!visualGroup) {
+            visualGroup = document.createElement("optgroup")
+            visualGroup.label = "Visual query builder"
+            examples.append(visualGroup)
         }
+        visualGroup.append(opt)
+    } else {
+        examples.append(opt)
+    }
+})
+examples.addEventListener("change", async () => {
+    const ex = EXAMPLES[Number(examples.value)]
+    if (!ex) return                // the placeholder; the picked example otherwise stays shown
+    if (ex.visual) {
+        try {
+            const el = await showBuilder()
+            await sparnaturalReady     // wait for the config to be parsed before loading
+            runAfterBuild = true       // run the query once Sparnatural mirrors it to the editor
+            el.loadQuery(structuredClone(ex.visual))
+        } catch (err) {
+            console.error("[examples] could not load the visual query", err)
+        }
+    } else {
+        hideBuilder()              // an editor example replaces the query — collapse the builder
+        yasqe().setValue(ex.sparql)
+        yasqe().query()
     }
 })
