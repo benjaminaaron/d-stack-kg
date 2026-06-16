@@ -1,12 +1,13 @@
 // Query page: a Yasgui SPARQL editor wired to an in-browser n3 store (no server).
 // A fetch interceptor routes Yasgui's fake endpoint through Comunica, so every
 // query runs in the browser against the graph — the same engine the pipeline
-// uses (sem-ops-utils / Comunica), bundled by Vite. The graph is imported
-// directly: Vite's ?raw inlines data/2-enrich-kg/d-stack-kg.ttl as a string, so
-// there is nothing to fetch or stage.
+// uses (sem-ops-utils / Comunica), bundled by Vite. The graph's three layers are
+// loaded (via the shared graph module) into one store, so the technical and
+// administrative layers are queryable together — the join the project is about —
+// with nothing to fetch or stage.
 
-import dstackTtl from "../../data/2-enrich-kg/d-stack-kg.ttl?raw"
-import { storeFromTurtles, getWriter } from "@foerderfunke/sem-ops-utils/core"
+import { graphStore } from "./graph.js"
+import { getWriter } from "@foerderfunke/sem-ops-utils/core"
 import { queryEngine } from "@foerderfunke/sem-ops-utils/sparql"
 import "@zazuko/yasgui/build/yasgui.min.css"
 import Yasgui from "@zazuko/yasgui"
@@ -16,7 +17,7 @@ import { EXAMPLES } from "./query-examples.js"
 // this in-memory store. So we point Yasgui at a fake URL and intercept fetches to
 // it, routing them through Comunica.
 const ENDPOINT = "http://local/sparql"
-const store = storeFromTurtles([dstackTtl])
+const store = graphStore()
 
 const INITIAL_QUERY = `PREFIX dstack: <https://deutschland-stack.gov.de/vocab#>
 PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
@@ -143,6 +144,15 @@ const yasgui = new Yasgui(document.getElementById("yasgui"), {
     copyEndpointOnNewTab: false,
     populateFromUrl: false,
 })
+
+// deep link: ?query=<encoded SPARQL> populates the editor and runs immediately, so
+// other pages (e.g. the Verwaltungsleistungen use case) can hand off a ready query
+const urlQuery = new URLSearchParams(location.search).get("query")
+if (urlQuery) {
+    const yq = yasgui.getTab().getYasqe()
+    yq.setValue(urlQuery)
+    yq.query()
+}
 
 // --- Visual query builder (Sparnatural) ------------------------------------
 // Sparnatural ships as a heavy prebuilt browser bundle (its own jQuery + an RDF

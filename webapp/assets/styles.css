@@ -152,6 +152,23 @@ body.full { display: flex; flex-direction: column; min-height: 100dvh; }
     }
 }
 
+/* ===========================================================================
+   Use-case page — which public services use which stack elements
+   =========================================================================== */
+
+.elbuttons { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.5rem 0 1rem; }
+.elbtn { font: inherit; cursor: pointer; color: var(--page-fg); background: var(--page-bg); border: 1px solid var(--border); border-radius: 4px; padding: 0.3rem 0.6rem; }
+.elbtn.active { border-color: var(--accent); background: var(--hover); }
+.elbtn .n { opacity: 0.6; }
+.answer:not(:empty) { background: #fffdf4; border-radius: 8px; padding: 0.75rem 1rem; margin-top: 0.6rem; }
+.answer-list { font-size: 0.9rem; opacity: 0.75; }
+
+.filter-controls select { font: inherit; margin: 0 0.2rem; }
+
+@media (prefers-color-scheme: dark) {
+    .answer:not(:empty) { background: #221f12; }
+}
+
 /* Query page — Yasgui fills the viewport below the nav. The fake endpoint has no
    controlbar to show. Yasgui ships only a light theme; the rules below are the
    light baseline, and the @media block adds a dark variant to match the site. */

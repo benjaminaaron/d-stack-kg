@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Verwaltungsleistungen &amp; Stack-Elemente</title>
+    <link rel="stylesheet" href="../assets/styles.css">
+    <script type="module" src="../assets/nav-bar.js"></script>
+    <script type="module" src="../assets/verwaltungsleistungen.js"></script>
+</head>
+<body>
+    <site-nav></site-nav>
+
+    <main class="container vl">
+        <h1>D-Stack-Elemente in den PVOG-Verwaltungsleistungen</h1>
+
+        <section>
+            <h2>Abfragebeispiel 1</h2>
+            <div id="elbuttons" class="elbuttons"></div>
+            <div id="answer" class="answer" aria-live="polite"></div>
+        </section>
+
+        <section>
+            <h2>Abfragebeispiel 2</h2>
+            <p id="filter-controls" class="filter-controls">Verwaltungsleistungen, bei denen jedes Stack-Element mindestens
+                <br>
+                <select id="threshold"></select> bei
+                <select id="criterion"></select> erreicht:</p>
+            <div id="filter-result" class="answer" aria-live="polite"></div>
+        </section>
+
+        <section>
+            <h2>Abfragebeispiele 3</h2>
+            <div id="gallery" class="gallery"></div>
+        </section>
+    </main>
+</body>
+</html>

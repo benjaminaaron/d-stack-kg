@@ -14,7 +14,8 @@ const ITEMS = [
     { label: "Vocabulary", href: link("vocabulary.html") },
     { label: "Query", href: link("query.html") },
     { label: "Use Cases", selectedPrefix: "Use case", children: [
-        { label: "Tech-Stack Landkarte", href: link("use-case/tech-stack-landkarte.html") }
+        { label: "Tech-Stack Landkarte", href: link("use-case/tech-stack-landkarte.html") },
+        { label: "Verwaltungsleistungen", href: link("use-case/verwaltungsleistungen.html") }
     ] }
 ]
 

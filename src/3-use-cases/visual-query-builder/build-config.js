@@ -5,14 +5,14 @@
  * config that drives the in-browser visual query builder: one NodeShape per class,
  * one property shape per predicate actually used on that class's instances, with the
  * widget chosen from the value type (string -> Search, number -> Number, IRI -> List).
- * Human labels come from the vocabulary (definitions/vocabulary.ttl); a small blocklist
+ * Human labels come from the vocabulary (authored/vocabulary.ttl); a small blocklist
  * drops build-support noise so the generator needs no hand-curation afterwards.
  *
  * Output: webapp/public/dstack.sparnatural.ttl (gitignored, regenerated on deploy).
  * Run: npm run query-builder:prepare  (reads the committed graph + vocabulary)
  */
 
-import { ROOT, DSTACK_TTL } from "../../common/utils.js"
+import { ROOT, DSTACK_TTL, PVOG_LEISTUNGEN_TTL, PVOG_DSTACK_BRIDGE_TTL, VOCABULARY_TTL } from "../../common/utils.js"
 import { storeFromTurtles } from "@foerderfunke/sem-ops-utils/core"
 import { queryEngine } from "@foerderfunke/sem-ops-utils/sparql"
 import fs from "fs"
@@ -25,6 +25,8 @@ const SKOS = "http://www.w3.org/2004/02/skos/core#"
 const SCHEMA = "http://schema.org/"
 const DCT = "http://purl.org/dc/terms/"
 const DSTACK = "https://deutschland-stack.gov.de/vocab#"
+const CPSV = "http://purl.org/vocab/cpsv#"
+const M8G = "http://data.europa.eu/m8g/"
 
 // prefixes for the emitted Turtle; "" is the config's own shape namespace
 const PREFIXES = {
@@ -58,10 +60,29 @@ const EXTERNAL_LABELS = {
     [SKOS + "Concept"]: { en: "Category", de: "Kategorie" },
     [SKOS + "prefLabel"]: { en: "name", de: "Name" },
     [SKOS + "broader"]: { en: "broader", de: "Oberbegriff" },
+    [SKOS + "notation"]: { en: "code", de: "Code" },
     [DCT + "subject"]: { en: "category", de: "Kategorie" },
     [DCT + "description"]: { en: "description", de: "Beschreibung" },
+    [DCT + "title"]: { en: "name", de: "Name" },
+    [DCT + "identifier"]: { en: "identifier", de: "Kennung" },
+    [DCT + "language"]: { en: "language", de: "Sprache" },
+    [DCT + "spatial"]: { en: "region (ARS)", de: "Region (ARS)" },
     [SCHEMA + "version"]: { en: "version", de: "Version" },
     [SCHEMA + "url"]: { en: "homepage", de: "Webseite" },
+    [SCHEMA + "validFrom"]: { en: "valid from", de: "gültig ab" },
+    [SCHEMA + "validThrough"]: { en: "valid through", de: "gültig bis" },
+    // the EU public-service layer (CPSV-AP / CCCEV m8g) — German labels for the builder
+    [CPSV + "PublicService"]: { en: "Public service", de: "Verwaltungsleistung" },
+    [CPSV + "Rule"]: { en: "Legal rule", de: "Rechtsgrundlage" },
+    [CPSV + "follows"]: { en: "legal basis", de: "Rechtsgrundlage" },
+    [M8G + "PublicOrganisation"]: { en: "Public organisation", de: "Zuständige Stelle" },
+    [M8G + "hasCompetentAuthority"]: { en: "competent authority", de: "zuständige Stelle" },
+    [M8G + "LifeEvent"]: { en: "Life event", de: "Lebenslage" },
+    [M8G + "isGroupedBy"]: { en: "life event", de: "Lebenslage" },
+    [M8G + "Channel"]: { en: "Online service", de: "Onlinedienst" },
+    [M8G + "hasChannel"]: { en: "online service", de: "Onlinedienst" },
+    [M8G + "Cost"]: { en: "Cost", de: "Kosten" },
+    [M8G + "hasCost"]: { en: "cost", de: "Kosten" },
 }
 
 const NUMERIC = new Set(["integer", "decimal", "double", "float", "long", "int", "short",
@@ -71,8 +92,10 @@ const TEMPORAL = new Set([XSD + "date", XSD + "dateTime"])
 
 // --- profile the graph with SPARQL -------------------------------------------
 
-const graph = storeFromTurtles([fs.readFileSync(DSTACK_TTL, "utf8")])
-const vocab = storeFromTurtles([fs.readFileSync(path.join(ROOT, "definitions", "vocabulary.ttl"), "utf8")])
+// profile the whole graph the Query page exposes: the technical layer plus the
+// administrative layers (services + bridge), composed into one store
+const graph = storeFromTurtles([DSTACK_TTL, PVOG_LEISTUNGEN_TTL, PVOG_DSTACK_BRIDGE_TTL].map(f => fs.readFileSync(f, "utf8")))
+const vocab = storeFromTurtles([fs.readFileSync(VOCABULARY_TTL, "utf8")])
 
 const select = async (query, store) => {
     const result = await queryEngine.query(query, { sources: [store] })
@@ -144,9 +167,12 @@ const titleEn = iri => labelFor(iri).en || local(iri)     // English heading for
 const labelTurtle = labels => Object.entries(labels)
     .map(([lang, v]) => `"${v.replace(/"/g, "\\\"")}"@${lang}`).join(", ")
 
-// the property that names instances of a class (so its dropdown/results read well)
+// the property that names instances of a class (so its dropdown/results read well).
+// dct:title covers the EU public-service layer (cpsv:PublicService, m8g:LifeEvent,
+// m8g:Channel), which uses dct:title rather than skos:prefLabel for names.
 const labelProp = props => props.has(SKOS + "prefLabel") ? SKOS + "prefLabel"
-    : props.has(RDFS + "label") ? RDFS + "label" : null
+    : props.has(RDFS + "label") ? RDFS + "label"
+    : props.has(DCT + "title") ? DCT + "title" : null
 
 // widget + range/datatype for a profiled property, or null to skip it
 const classify = e => {
@@ -212,7 +238,7 @@ const propBlock = (cls, entry, order) => {
 
 const lines = [
     "# GENERATED by src/3-use-cases/visual-query-builder/build-config.js — do not edit by hand.",
-    "# Profiles data/2-enrich-kg/d-stack-kg.ttl; labels from definitions/vocabulary.ttl.",
+    "# Profiles data/2-enrich-kg/d-stack-kg.ttl; labels from authored/vocabulary.ttl.",
     "# Drives the in-browser Sparnatural query builder on the webapp's Query page.",
     "",
     ...Object.entries(PREFIXES).map(([pfx, ns]) => `@prefix ${pfx}: <${ns}>.`),

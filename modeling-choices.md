@@ -34,7 +34,7 @@ Judgement calls with defensible alternatives; each lives in a single `CONSTRUCT`
 | Konformität | custom reified node | A domain construct, stated honestly. `schema:Rating` implies a subjective review; [RDF Data Cube](https://www.w3.org/TR/vocab-data-cube/) would be rigorous but heavier |
 | Konformität value | `dstack:wertProzent` as `xsd:decimal` (0–100) | Source is inconsistent (`10%`, `33,3%`, bare `63.0`); normalized to one queryable number. `dstack:stufe` (1–5) is the independent level |
 | Konformität annotation key | `dstack:landkarteAnnotationKey` (on the Kriterium) | The landscape2 `cf_*` annotation stem (e.g. `cf_sovereignty`), kept on each Kriterium so the roundtrip rebuilds the source annotations without a hardcoded reverse map. A Landkarte-projection fact like logo/position, not a domain statement |
-| `cf_actuality` → "Zukunftsfähigkeit" | inferred | The other five criteria are literal name matches; this one is a guess (methodology unpublished) |
+| Kriterium German names | transcribed from the live site | The six category names are the one input not in `full.json` (it has only the `cf_*` keys + "N von 5"/% values); read off the live Landkarte's Konformität monitor. Documented in `3-konformitaet.sparql` |
 | Vocabulary term names | German | Matches the source and audience |
 
 ### Official tile links, deferred
@@ -44,3 +44,25 @@ The website deep-links each tile as `…/?item=<id>`, where `<id>` is the landsc
 ### Group order within a Schicht, only partially recoverable
 
 `dstack:landkartePosition` carries the source order and the roundtrip reproduces it faithfully — landscape2 honours order; the catch is upstream. The official display order lives only in the original `settings.yml`, which we never had. Step 2's only input, `full.json`, lists groups in a different order (it even carries "Plattform" twice under different leading-whitespace prefixes), so Schicht and item-within-group order come out right but group order within a Schicht does not - Plattform renders KI, LowCode, Daten, Integration instead of the official Daten, Integration, KI, LowCode. Like the tile `id` above, the fix is the upstream `settings.yml`, not `full.json`; the modeling is forward-compatible once step 2 has the right order.
+
+## The administrative layer (the PVOG enrichment)
+
+The enrich phase (`src/2-enrich-kg`) adds a second floor: the public services the state delivers, ingested live from the FITKO PVOG Suchdienst and bridged to the technical layer. The rule is the opposite of the tech layer's tiny `dstack:` namespace — **reuse the standard EU public-service vocabularies directly**, so a CPSV-AP query (plain SPARQL over the EU's standard public-service vocabulary) runs on this data unchanged. It lives in its own files — `pvog-leistungen.ttl` (services) and `pvog-dstack-bridge.assumed.ttl` (bridge) — kept separate from `d-stack-kg.ttl` so the three provenances (BMDS Landkarte / FITKO PVOG / our bridge) stay distinct; consumers compose them in-store.
+
+Instances carry the authoritative EU class directly:
+
+| Element | Term |
+|---|---|
+| Public service | `cpsv:PublicService` (CPSV-AP 3.2.0; GerPS types its "Leistung" the same way) |
+| Responsible body | `m8g:PublicOrganisation` + `m8g:hasCompetentAuthority` |
+| Life situation | `m8g:LifeEvent` + `m8g:isGroupedBy` (the PVOG `personalMatters` leaf) |
+| Online service | `m8g:Channel` + `m8g:hasChannel` (carries the real `schema:url`) |
+| Legal basis / cost | `cpsv:follows`→`cpsv:Rule` / `m8g:hasCost`→`m8g:Cost` |
+| Name / description / language / validity | `dct:title` / `dct:description` / `dct:language` / `schema:validFrom`+`validThrough` |
+| PVOG lbid | `dct:identifier` |
+
+Three identifiers have no off-the-shelf term: **LeiKa-ID** (FIM has no official RDF namespace) becomes a readable local `fim:leikaId`, aligned `rdfs:subPropertyOf` the GerPS "has LeiKa-ID" property; **ARS** points `dct:spatial` at the DCAT-AP.de regional-key IRI; **lbid** is a plain `dct:identifier`.
+
+**The bridge** is a single predicate, `dstack:realisiertDurch` (`m8g:Channel` → `dstack:StackElement`), over **only real Landkarte elements**. No source records which technologies a service runs on, so the edges (`pvog-dstack-bridge.assumed.ttl`) are **assumed**, not derived.
+
+Conversion follows the build-kg idiom: SPARQL Anything lift → `CONSTRUCT` transform (`pvog/sparql/`).

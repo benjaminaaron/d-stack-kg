@@ -1,0 +1,121 @@
+PREFIX rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX xyz:    <http://sparql.xyz/facade-x/data/>
+PREFIX fx:     <http://sparql.xyz/facade-x/ns/>
+PREFIX cpsv:   <http://purl.org/vocab/cpsv#>
+PREFIX m8g:    <http://data.europa.eu/m8g/>
+PREFIX dct:    <http://purl.org/dc/terms/>
+PREFIX rdfs:   <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX skos:   <http://www.w3.org/2004/02/skos/core#>
+PREFIX schema: <http://schema.org/>
+PREFIX gerps:  <https://w3id.org/gerps/ontology/process/>
+PREFIX xsd:    <http://www.w3.org/2001/XMLSchema#>
+PREFIX ds:     <https://deutschland-stack.gov.de/id/>
+PREFIX fim:    <https://deutschland-stack.gov.de/fim#>
+
+# Transform the raw Facade-X of a PVOG v6 /detail response (an array of services)
+# into the EU public-service shape: CPSV-AP (cpsv:PublicService, cpsv:follows/Rule)
+# + CCCEV / Core Public Service "m8g" cluster (PublicOrganisation, hasCompetent-
+# Authority, LifeEvent/isGroupedBy, Channel/hasChannel, Cost). Only the LeiKa-ID has
+# no standard term, so it uses the local fim: namespace (aligned to GerPS in the
+# vocabulary). ARS becomes the official DCAT-AP.de regional-key IRI via dct:spatial.
+#
+# Each Facade-X array is an rdf:_N container; the Lebenslagen tree nests via
+# xyz:children. The PVOG personalMatters tree is a uniform 3 levels, so the leaf
+# life event is matched root -> children -> children.
+CONSTRUCT {
+    ?service a cpsv:PublicService ;
+        rdfs:seeAlso gerps:GPP_0000004 ; # GerPS-Process "Leistung" (subclass of cpsv:PublicService) — the German FIM rendering
+        dct:title ?titleDe ;
+        dct:identifier ?lbid ;
+        dct:source ?src ;
+        dct:date ?retrieved ;
+        fim:leikaId ?leika ;
+        dct:language ?lang ;
+        dct:spatial ?arsIri ;
+        dct:description ?descDe ;
+        cpsv:follows ?rule ;
+        m8g:hasCost ?cost ;
+        schema:validFrom ?validFrom ;
+        schema:validThrough ?validThrough ;
+        m8g:hasCompetentAuthority ?org ;
+        m8g:hasChannel ?chan ;
+        m8g:isGroupedBy ?leaf .
+    ?rule a cpsv:Rule ; dct:description ?legalDe .
+    ?cost a m8g:Cost ; dct:description ?kostenDe .
+    ?org a m8g:PublicOrganisation ; skos:prefLabel ?orgTitleDe ; dct:identifier ?orgId .
+    ?chan a m8g:Channel ; dct:title ?chanTitleDe ; schema:url ?chanUri ; dct:identifier ?chanId ; dct:language ?chanLang .
+    ?leaf a m8g:LifeEvent ; dct:title ?leafNameDe ; skos:notation ?leafCode .
+} WHERE {
+    ?root a fx:root ; ?sSlot ?detail .
+    FILTER(STRSTARTS(STR(?sSlot), STR(rdf:_)))
+    ?detail xyz:id ?lbid ; xyz:name ?name .
+    BIND(STRLANG(?name, "de") AS ?titleDe)
+    BIND(IRI(CONCAT(STR(ds:), "leistung-", REPLACE(?lbid, "\\.", "-"))) AS ?service)
+    # exact provenance, set by fetch.js (the v6 /detail URL needs ?ars=&validDate=)
+    ?detail xyz:sourceUrl ?srcStr ; xyz:retrievedAt ?retr .
+    BIND(IRI(?srcStr) AS ?src)
+    BIND(STRDT(?retr, xsd:date) AS ?retrieved)
+
+    # leikakeys[] -> fim:leikaId ; ars[] -> the official DCAT-AP.de regional-key IRI
+    OPTIONAL { ?detail xyz:leikakeys ?lkC . ?lkC ?lkS ?leika . FILTER(STRSTARTS(STR(?lkS), STR(rdf:_))) }
+    OPTIONAL {
+        ?detail xyz:ars ?arsC . ?arsC ?arsS ?ars . FILTER(STRSTARTS(STR(?arsS), STR(rdf:_)))
+        BIND(IRI(CONCAT("http://dcat-ap.de/def/politicalGeocoding/regionalKey/", ?ars)) AS ?arsIri)
+    }
+    OPTIONAL { ?detail xyz:availableLanguages ?laC . ?laC ?laS ?lang . FILTER(STRSTARTS(STR(?laS), STR(rdf:_))) }
+
+    # details[] modules, keyed by code: 06 Beschreibung, 07 Rechtsgrundlage, 98 Kosten.
+    # The text is already tag-stripped + entity-decoded in fetch.js, so just tag it @de.
+    OPTIONAL {
+        ?detail xyz:details ?d6C . ?d6C ?d6S ?m6 . FILTER(STRSTARTS(STR(?d6S), STR(rdf:_)))
+        ?m6 xyz:code "06" ; xyz:text ?descText .
+        BIND(STRLANG(?descText, "de") AS ?descDe)
+    }
+    OPTIONAL {
+        ?detail xyz:details ?d7C . ?d7C ?d7S ?m7 . FILTER(STRSTARTS(STR(?d7S), STR(rdf:_)))
+        ?m7 xyz:code "07" ; xyz:text ?legalText .
+        BIND(STRLANG(?legalText, "de") AS ?legalDe)
+        BIND(IRI(CONCAT(STR(ds:), "rechtsgrundlage-", REPLACE(?lbid, "\\.", "-"))) AS ?rule)
+    }
+    OPTIONAL {
+        ?detail xyz:details ?d9C . ?d9C ?d9S ?m9 . FILTER(STRSTARTS(STR(?d9S), STR(rdf:_)))
+        ?m9 xyz:code "98" ; xyz:text ?kostenText .
+        BIND(STRLANG(?kostenText, "de") AS ?kostenDe)
+        BIND(IRI(CONCAT(STR(ds:), "kosten-", REPLACE(?lbid, "\\.", "-"))) AS ?cost)
+    }
+
+    # validityPeriods[] -> schema:validFrom / validThrough
+    OPTIONAL {
+        ?detail xyz:validityPeriods ?vpC . ?vpC ?vpS ?vp . FILTER(STRSTARTS(STR(?vpS), STR(rdf:_)))
+        OPTIONAL { ?vp xyz:validFrom ?vf . BIND(STRDT(?vf, xsd:date) AS ?validFrom) }
+        OPTIONAL { ?vp xyz:validTo   ?vt . BIND(STRDT(?vt, xsd:date) AS ?validThrough) }
+    }
+
+    # organisations[] -> m8g:hasCompetentAuthority -> shared ds:stelle-* node
+    OPTIONAL {
+        ?detail xyz:organisations ?orgsC . ?orgsC ?orgsS ?orgNode . FILTER(STRSTARTS(STR(?orgsS), STR(rdf:_)))
+        ?orgNode xyz:id ?orgId ; xyz:title ?orgTitle .
+        BIND(IRI(CONCAT(STR(ds:), "stelle-", REPLACE(?orgId, "\\.", "-"))) AS ?org)
+        BIND(STRLANG(?orgTitle, "de") AS ?orgTitleDe)
+    }
+
+    # onlineServiceLinks[] -> m8g:hasChannel -> ds:onlinedienst-* node
+    OPTIONAL {
+        ?detail xyz:onlineServiceLinks ?osC . ?osC ?osS ?od . FILTER(STRSTARTS(STR(?osS), STR(rdf:_)))
+        ?od xyz:uri ?chanUriStr ; xyz:id ?chanId .
+        BIND(IRI(CONCAT(STR(ds:), "onlinedienst-", REPLACE(?chanId, "\\.", "-"))) AS ?chan)
+        BIND(IRI(?chanUriStr) AS ?chanUri)
+        OPTIONAL { ?od xyz:title ?chanTitle . BIND(STRLANG(?chanTitle, "de") AS ?chanTitleDe) }
+        OPTIONAL { ?od xyz:executionLanguages ?elC . ?elC ?elS ?chanLang . FILTER(STRSTARTS(STR(?elS), STR(rdf:_))) }
+    }
+
+    # personalMatters[] -> the leaf Lebenslage (3 levels: root -> mid -> leaf)
+    OPTIONAL {
+        ?detail xyz:personalMatters ?pmC . ?pmC ?pmS ?pmRoot . FILTER(STRSTARTS(STR(?pmS), STR(rdf:_)))
+        ?pmRoot xyz:children ?c1C . ?c1C ?c1S ?mid . FILTER(STRSTARTS(STR(?c1S), STR(rdf:_)))
+        ?mid xyz:children ?c2C . ?c2C ?c2S ?leafNode . FILTER(STRSTARTS(STR(?c2S), STR(rdf:_)))
+        ?leafNode xyz:code ?leafCode ; xyz:name ?leafName .
+        BIND(IRI(CONCAT(STR(ds:), "lebenslage-", ?leafCode)) AS ?leaf)
+        BIND(STRLANG(?leafName, "de") AS ?leafNameDe)
+    }
+}

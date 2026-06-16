@@ -31,6 +31,7 @@ export default defineConfig({
                 vocabulary: resolve(root, "vocabulary.html"),
                 query: resolve(root, "query.html"),
                 landkarte: resolve(root, "use-case/tech-stack-landkarte.html"),
+                verwaltungsleistungen: resolve(root, "use-case/verwaltungsleistungen.html"),
             },
         },
     },

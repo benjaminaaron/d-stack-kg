@@ -12,6 +12,9 @@ data/1-build-kg/reconstructed/
 data/1-build-kg/landscape.ttl
 data/3-use-cases/
 
+# JSON-responses from PVOG
+data/2-enrich-kg/pvog/
+
 # vite build output, published by the deploy
 webapp/dist/
 # the landscape2 build

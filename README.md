@@ -50,13 +50,26 @@ The package.json scripts cover only the default path: build the graph → enrich
 
 `npm run kg:build` chains steps 1, 2 and 4. Step 3 (roundtrip validation) is an optional check, run on its own: `node src/1-build-kg/3-validate-roundtrip.js`.
 
-## Enriching the graph
+## Enriching the graph: the administrative layer
 `src/2-enrich-kg`
 
-_TODO_
+The Landkarte describes what the Deutschland-Stack *runs on* — 128 standards and technologies — but nothing about what the state *does* with them. The **PVOG** (Portalverbund Online-Gateway), FITKO's federal gateway, has that: administrative services in Germany as XZuFi/FIM data. The enrich phase pulls a handful of Verwaltungsleistungen as proof of concept from the public PVOG Suchdienst and models them with the EU public-service vocabularies (CPSV-AP / CCCEV). Real services from real authorities.
+
+**The gap.** Nothing records which technologies a given service runs on. A single predicate, `dstack:realisiertDurch`, links a real Onlinedienst to the **real Landkarte elements** it is built on; since no source records this, those links are **informed assumptions** (`pvog-dstack-bridge.assumed.ttl`), not derived data.
+
+The graph is kept as **three layers in separate files** with distinct provenance, composed into one store by whatever needs the join; the Landkarte roundtrip loads only the technical layer. More in [modeling-choices.md](modeling-choices.md).
+
+| Layer | File | Built by |
+|---|---|---|
+| **Technical** | `data/2-enrich-kg/d-stack-kg.ttl` | `kg:enrich`: the lifted Landkarte |
+| **Services** | `data/2-enrich-kg/pvog-leistungen.ttl` | `pvog:fetch`: Verwaltungsleistungen ingested from PVOG |
+| **Bridge** | `authored/pvog-dstack-bridge.assumed.ttl` | hand-authored: the assumed `realisiertDurch` links |
+
+`pvog:fetch` runs the two-step PVOG Suchdienst recipe (LeiKa-ID + ARS → lbid → v6 `/detail`) and converts each service to RDF with the build-kg lift/transform idiom (`pvog/sparql/`). Only the converted TTL is committed; the raw responses are gitignored.
 
 ```bash
-npm run kg:enrich # writes data/2-enrich-kg/d-stack-kg.ttl
+npm run pvog:fetch  # fetch from live PVOG (optional; the committed TTL is enough)
+npm run kg:enrich   # write the technical d-stack-kg.ttl (the bridge is hand-authored)
 ```
 
 ## Use cases
@@ -73,10 +86,10 @@ npm run landkarte:render   # render it into the webapp (webapp/public/use-case/l
 The [deploy](.forgejo/workflows/deploy.yml) runs `landkarte:prepare` and `landkarte:render` to publish the Landkarte embedded in the [Tech-Stack Landkarte page](webapp/use-case/tech-stack-landkarte.html).
 
 ### Query builder
-Profiles the graph (one class per `rdf:type`, one facet per predicate actually used on it, widgets inferred from the value types) into the SHACL config that drives the in-browser [Sparnatural](https://github.com/sparna-git/Sparnatural) visual query builder on the Query page. Labels come from the [vocabulary](definitions/vocabulary.ttl); a blocklist in the script drops build-support predicates.
+Profiles the graph (one class per `rdf:type`, one facet per predicate actually used on it, widgets inferred from the value types) into the SHACL config that drives the in-browser [Sparnatural](https://github.com/sparna-git/Sparnatural) visual query builder on the Query page. Labels come from the [vocabulary](authored/vocabulary.ttl); a blocklist in the script drops build-support predicates.
 
 ```bash
-npm run query-builder:prepare # d-stack-kg.ttl + vocabulary + blocklist → webapp/public/dstack.sparnatural.ttl
+npm run query-builder:prepare # the three graph layers + vocabulary + blocklist → webapp/public/dstack.sparnatural.ttl
 ```
 
 ## Webapp
@@ -89,31 +102,31 @@ npm run webapp:build  # bundle to webapp/dist/
 
 ## Data
 
-`data/` mirrors the `src/` folder. Only two artifacts are committed:
+`data/` mirrors the `src/` folder. The committed artifacts are:
 
-- `data/1-build-kg/upstream/`: the fetched artifacts plus provenance
-- `data/2-enrich-kg/d-stack-kg.ttl`: the knowledge graph (the deliverable)
+- `data/1-build-kg/upstream/`: the fetched Landkarte artifacts plus provenance
+- `data/2-enrich-kg/d-stack-kg.ttl`: the technical knowledge graph
+- `data/2-enrich-kg/pvog-leistungen.ttl`: the administrative services layer (ingested from PVOG)
 
-The intermediates, the use-case projections and `data/scratch/` are gitignored.
+The intermediates (incl. `data/1-build-kg/landscape.ttl`), the fetched PVOG responses + lift intermediates (`data/2-enrich-kg/pvog/`), the use-case projections and `data/scratch/` are gitignored.
 
-## Vocabulary
-`definitions/vocabulary.ttl`
+## Authored RDF
+`authored/`
 
-The work-in-progress vocabulary used in the knowledge graph. Rendered on the webapp's vocabulary page.
+The project's hand-written RDF, kept apart from the generated/fetched `data/`:
+
+- `authored/vocabulary.ttl`: the work-in-progress vocabulary used in the knowledge graph (rendered on the webapp's vocabulary page)
+- `authored/pvog-dstack-bridge.assumed.ttl`: the assumed `realisiertDurch` bridge — the one hand-authored graph layer
 
 ## Possible future work
 
 A scratchpad of where this could go. Ideas? Please share!
 
-**Vocabularies to wire in**
-
 | Reuse | to |
 |---|---|
-| **GerPS** ontologies (openDVA / Uni Jena) | lift FIM `XDatenfelder`/`XProzess` into RDF, already aligned to the EU Core Vocabularies |
-| **CPSV-AP** + **CCCEV** (EU / SEMIC) | describe public services and their eligibility criteria + evidence the standard way |
-| **FIM / XÖV** — **XZuFi**, XDatenfelder, XProzess | add the national standards the D-Stack actually runs on as first-class elements |
-| **PVOG** Suchdienst (FITKO) | pull real Leistungen as `cpsv:PublicService` nodes |
-| **DCAT-AP.de** | catalogue the registers behind the data fields |
+| **GerPS** ontologies (openDVA / Uni Jena) | lift FIM `XDatenfelder`/`XProzess` *content* into RDF, already aligned to the EU Core Vocabularies |
+| **CPSV-AP** + **CCCEV** (EU / SEMIC) | go beyond the service core to eligibility criteria + evidence |
+| **DCAT-AP.de** | catalogue the registers behind the data fields (already used for the ARS regional key) |
 | **Wikidata** | link every responsible body and standard out to the open web |
 | **eLexa** / interoperable Rechtsbegriffe (BMF/BMDS) | model deduplicated legal terms |
 
@@ -121,7 +134,7 @@ A scratchpad of where this could go. Ideas? Please share!
 
 - `verantwortlicheStelle` strings (~70 orgs: IETF, W3C, …) → Wikidata-linked entities
 - relation edges between the items (`dependsOn`, `implements`, `competesWith`) → connect the 128 currently-isolated items into one graph
-- an administrative layer (service, legal term, data field, evidence, register), bridged to the tech layer by a single `dstack:enables` edge
+- the legal-term layer (Rechtsbegriff, data field, evidence, register) on top of the services already ingested
 
 ## Observations
 
@@ -136,4 +149,5 @@ A few things surfaced while working with the Landkarte's published artifacts:
 - Not an authoritative source. This is an unofficial reconstruction of official artifacts.
 - The Landkarte data (`data/1-build-kg/upstream/full.json`) is content of the BMDS / Datenlabor BMI. No license is stated upstream; `data/1-build-kg/upstream/full.meta.json` is kept as provenance documentation.
 - The item logos are kept verbatim in `data/1-build-kg/upstream/logos.zip` only to rebuild the site; no rights to them are claimed.
+- The PVOG service data in `data/2-enrich-kg/pvog-leistungen.ttl` is public-sector content derived from the FITKO PVOG Suchdienst; each Leistung carries its exact `dct:source` endpoint and `dct:date` retrieval date as provenance. The raw API responses are gitignored working files, not committed.
 - Built with the help from AI coding tools; design decisions stay with the author, who reviews, understands and takes responsibility for every change.

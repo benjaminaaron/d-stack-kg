@@ -8,6 +8,7 @@
   "type": "module",
   "scripts": {
     "kg:build": "node src/1-build-kg/1-fetch-dataset.js && node src/1-build-kg/2-reconstruct-source.js && node src/1-build-kg/4-build-graph.js",
+    "pvog:fetch": "node src/2-enrich-kg/pvog/fetch.js",
     "kg:enrich": "node src/2-enrich-kg/1-enrich.js",
     "landkarte:prepare": "node src/3-use-cases/landkarte-roundtrip/1-build-sources.js",
     "landkarte:render": "node src/3-use-cases/landkarte-roundtrip/4-build-page.js",

@@ -12,6 +12,14 @@
 # Schichten → Gruppen) classifies a set of dstack:StackElement items; each item
 # is scored against six dstack:Kriterium via reified dstack:Konformitaetsbewertung
 # nodes. A handful of "landkarte*" predicates carry projection/layout facts.
+#
+# An administrative layer sits on top of this technical one: real public services
+# (cpsv:PublicService, ingested from the FITKO PVOG Suchdienst) with their competent
+# authorities, online-service channels and life events — modelled with the EU
+# public-service vocabularies (CPSV-AP and the CCCEV / Core Public Service "m8g"
+# cluster) directly, not re-invented here. It is bridged to the technical layer by
+# the single predicate dstack:realisiertDurch — a hand-curated proposal for which
+# real Landkarte StackElements an Onlinedienst is built on.
 # =============================================================================
 
 @prefix dstack: <https://deutschland-stack.gov.de/vocab#> .
@@ -22,6 +30,12 @@
 @prefix schema: <http://schema.org/> .
 @prefix xsd:    <http://www.w3.org/2001/XMLSchema#> .
 @prefix voaf:   <http://purl.org/vocommons/voaf#> .
+# the EU public-service vocabularies the administrative layer reuses directly, the
+# FIM-identifier namespace (ours; unofficial), and GerPS (for the LeiKa-ID alignment)
+@prefix cpsv:   <http://purl.org/vocab/cpsv#> .                # Core Public Service Vocabulary
+@prefix m8g:    <http://data.europa.eu/m8g/> .                 # CPSV-AP / CCCEV cluster (CPSV-AP binds this as cv:)
+@prefix fim:    <https://deutschland-stack.gov.de/fim#> .      # local, unofficial RDF rendering of FIM keys
+@prefix gerps:  <https://w3id.org/gerps/ontology/process/> .   # GerPS-Process (openDVA / Uni Jena)
 
 
 # --- Vocabulary description ---------------------------------------------------
@@ -34,7 +48,9 @@
     voaf:reliesOn
         <http://www.w3.org/2004/02/skos/core#> ,
         <http://purl.org/dc/terms/> ,
-        <http://schema.org/> ;
+        <http://schema.org/> ,
+        <http://purl.org/vocab/cpsv#> ,
+        <http://data.europa.eu/m8g/> ;
     rdfs:seeAlso <https://codeberg.org/benjaminaaron/d-stack-kg> .
 
 
@@ -64,6 +80,10 @@ dstack:Kriterium a rdfs:Class ;
 dstack:Konformitaetsbewertung a rdfs:Class ;
     rdfs:label "Konformitätsbewertung"@de , "Conformity assessment"@en ;
     rdfs:comment "Reified score: one StackElement × one Kriterium → a level (stufe) and a percentage (wertProzent)."@en .
+
+# The administrative layer adds no local classes: its instances are typed directly
+# with the EU public-service classes (cpsv:PublicService, m8g:PublicOrganisation,
+# m8g:LifeEvent, m8g:Channel) — see the reused-vocabularies block at the foot.
 
 
 # =============================================================================
@@ -125,6 +145,40 @@ dstack:wertProzent a rdf:Property ;
 
 
 # =============================================================================
+# Property — the bridge between the technical and the administrative layer
+# -----------------------------------------------------------------------------
+# The one predicate that connects the two floors. There is no authoritative source
+# for which technologies an online service runs on, so its edges are a hand-curated
+# proposal (pvog-dstack-bridge.assumed.ttl), using only real Landkarte StackElements.
+# =============================================================================
+
+dstack:realisiertDurch a rdf:Property ;
+    rdfs:label "realisiert durch"@de , "realised by"@en ;
+    rdfs:domain m8g:Channel ; rdfs:range dstack:StackElement ;
+    rdfs:comment "An Onlinedienst (m8g:Channel) is built on this Landkarte StackElement. PROPOSED: no register records this today, therefore hand-curated choices for now, not derived data."@en .
+
+
+# =============================================================================
+# Properties — the FIM LeiKa-ID (the one administrative key with no standard term)
+# -----------------------------------------------------------------------------
+# Everything else in the administrative layer reuses standard EU terms directly
+# (see the reused-vocabularies block at the foot). FIM is published only as XSD/XÖV,
+# with no official RDF namespace, so the LeiKa-ID lives in a local, explicitly
+# unofficial namespace and is aligned to the GerPS/openDVA ontology, which is the
+# one published RDF rendering of this concept. The lbid uses dct:identifier and the
+# ARS the official DCAT-AP.de regional-key IRI (via dct:spatial) — no local terms.
+# =============================================================================
+
+fim:leikaId a rdf:Property ;
+    rdfs:label "LeiKa-ID"@de , "LeiKa ID"@en ;
+    rdfs:domain cpsv:PublicService ; rdfs:range rdfs:Literal ;
+    rdfs:subPropertyOf gerps:GPP_0000030 ;   # GerPS-Process "has LeiKa-ID" (see modeling-choices.md)
+    rdfs:comment "Leistungskatalog key (PVOG leikakeys[]); the FIM/PVOG join key. Local, unofficial RDF term aligned to GerPS; the authoritative scheme is the XRepository LeiKa code list."@en ;
+    rdfs:seeAlso <https://w3id.org/gerps/ontology/process/GPP_0000030> ,
+                 <https://www.xrepository.de/details/urn:xoev-de:fim:codeliste:leika> .
+
+
+# =============================================================================
 # Properties — Landkarte projection facts
 # -----------------------------------------------------------------------------
 # These describe how the data sits in the Landkarte *projection* (its layout and
@@ -157,6 +211,7 @@ dstack:landkarteAnnotationKey a rdf:Property ;
 # the top of this file; this block keeps the per-term "for what". The graph uses
 # these external terms with their standard meaning; it does not redefine them:
 #
+# Technical layer (the Landkarte):
 #   skos:ConceptScheme              ds:landkarte — the Schicht/Gruppe taxonomy root
 #   skos:Concept                    each Schicht and each Gruppe
 #   skos:prefLabel                  labels on items, criteria, schichten, gruppen, scheme
@@ -168,5 +223,24 @@ dstack:landkarteAnnotationKey a rdf:Property ;
 #   dct:source / dct:date           provenance stamp on ds:landkarte (origin URL + retrieval date)
 #   schema:url                      StackElement homepage
 #   schema:version                  StackElement version
+#
+# Administrative layer (the PVOG services) — the EU public-service vocabularies,
+# reused directly so a CPSV-AP query runs on this data unchanged:
+#   cpsv:PublicService              a Verwaltungsleistung (the service node)
+#   cpsv:follows → cpsv:Rule        the legal basis (Rechtsgrundlage, free text on the Rule)
+#   m8g:PublicOrganisation          a zuständige Stelle
+#   m8g:hasCompetentAuthority       PublicService → its responsible Stelle(n)
+#   m8g:LifeEvent                   a Lebenslage; m8g:isGroupedBy links the service to it
+#   m8g:Channel                     an Onlinedienst; m8g:hasChannel links the service to it
+#   m8g:hasCost → m8g:Cost          the cost/fee info (Kosten, free text on the Cost)
+#   dct:title                       names of the service / channel / life event
+#   dct:description / dct:language  service description and languages
+#   dct:identifier                  the PVOG lbid (service), and PVOG ids on Stelle / Channel
+#   dct:source                      per-Leistung PVOG v6 /detail URL (provenance)
+#   dct:spatial                     the ARS, as the official dcat-ap.de regional-key concept IRI
+#   skos:prefLabel                  PublicOrganisation name
+#   skos:notation                   LifeEvent code
+#   schema:url                      Channel (Onlinedienst) URL
+#   schema:validFrom / validThrough service validity period
 #   rdfs:seeAlso / rdfs:comment     links, and the unofficial-reconstruction disclaimer on ds:landkarte
 # =============================================================================

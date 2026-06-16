@@ -14,7 +14,7 @@
     <main class="container">
         <h2>Vocabulary</h2>
         <p class="lead">The work-in-progress vocabulary used in the knowledge graph:
-            <a href="https://codeberg.org/benjaminaaron/d-stack-kg/src/branch/main/definitions/vocabulary.ttl" target="_blank" rel="noopener">definitions/vocabulary.ttl</a></p>
+            <a href="https://codeberg.org/benjaminaaron/d-stack-kg/src/branch/main/authored/vocabulary.ttl" target="_blank" rel="noopener">authored/vocabulary.ttl</a></p>
         <pre class="language-turtle"><code id="vocab" class="language-turtle">Loading…</code></pre>
 
         <h2>Knowledge graph</h2>
@@ -26,7 +26,7 @@
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-turtle.min.js"></script>
     <script type="module">
         // vite ?raw inlines the committed vocabulary as a string, nothing to fetch
-        import vocab from "../definitions/vocabulary.ttl?raw"
+        import vocab from "../authored/vocabulary.ttl?raw"
         // the graph is ~7k lines, so import only its URL and preview the head
         import dstackUrl from "../data/2-enrich-kg/d-stack-kg.ttl?url"
 
