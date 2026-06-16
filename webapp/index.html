@@ -12,6 +12,19 @@
     <main class="container">
         <h1>Deutschland-Stack Wissensgraph</h1>
         <p class="lead">Ein inoffizieller Prototyp, der den Deutschland-Stack als Wissensgraphen modelliert und sich daraus ergebende Möglichkeiten skizziert.</p>
+        <p>
+            Der erste Schritt war, aus der offiziellen <a href="https://technologie.deutschland-stack.gov.de/" target="_blank" rel="noopener">Tech-Stack Landkarte</a> die Quelldaten zu rekonstruieren – offen verfügbar sind diese nämlich nicht. Diese wurden dann zu Linked Data umgewandelt: der Grundstein für den D-Stack als Wissensgraphen. Unter <a href="vocabulary.html" target="_blank" rel="noopener">Vokabular</a> findet sich die Struktur dieses Wissensgraphen und eine Vorschau des Inhaltes.
+        </p>
+        <ul>
+            <li><strong>Erster Anwendungsfall:</strong> nichts Neues, sondern ein "proof-of-concept roundtrip" – die Neugenerierung der Tech-Stack Landkarte auf Basis des Wissensgraphen. Das hat auch geklappt – bis auf Layout/Darstellungs-Details, an die man mangels offener offizieller Quelle nicht kommt.</li>
+            <li><strong>Zweiter Anwendungsfall:</strong> zeigt beispielhaft auf, was möglich wird, wenn wir Leistungen aus dem <a href="https://produktportal.pvog.fitko.de/" target="_blank" rel="noopener">Portalverbund Online-Gateway (PVOG)</a> ebenfalls semantisch modellieren und dabei eine fehlende Brücke manuell herstellen: Wir tun so, als wäre hinterlegt, welche Elemente aus dem D-Stack in einer Leistung verwendet werden.</li>
+        </ul>
+        <p>Auf der <a href="query.html" target="_blank" rel="noopener">Query</a>-Seite kann der Wissensgraph durch SPARQL-Abfragen erkundet werden. Dafür wurden die folgenden semantischen Artefakte zusammengeführt:</p>
+        <ul>
+            <li><a href="https://codeberg.org/benjaminaaron/d-stack-kg/src/branch/main/data/2-enrich-kg/d-stack-kg.ttl" target="_blank" rel="noopener">d-stack-kg.ttl</a> &rarr; der Deutschland-Stack</li>
+            <li><a href="https://codeberg.org/benjaminaaron/d-stack-kg/src/branch/main/data/2-enrich-kg/pvog-leistungen.ttl" target="_blank" rel="noopener">pvog-leistungen.ttl</a> &rarr; eine Handvoll ausgewählter PVOG-Leistungen</li>
+            <li><a href="https://codeberg.org/benjaminaaron/d-stack-kg/src/branch/main/authored/pvog-dstack-bridge.assumed.ttl" target="_blank" rel="noopener">pvog-dstack-bridge.assumed.ttl</a> &rarr; die manuell hergestellte und geratene Brücke: Leistung verknüpft mit D-Stack Elementen, die sie nutzen</li>
+        </ul>
     </main>
 </body>
 </html>
