@@ -6,11 +6,11 @@ PREFIX ds:     <https://deutschland-stack.gov.de/id/>
 PREFIX dstack: <https://deutschland-stack.gov.de/vocab#>
 
 # The Steckbrief's six Konformität dimensions (cf_*) become assessment nodes,
-# one per element and Kriterium. The cf_* → Kriterium mapping is the only
-# judgment here and lives in the VALUES table: five are literal name matches;
-# cf_actuality → "Zukunftsfähigkeit" is inferred (the Datenlabor's methodology
-# is unpublished), so it is contestable by editing this row. The "N von 5" label
-# yields the integer Stufe; the percentage value is normalized to a 0–100 number
+# one per element and Kriterium. The six German Kriterium names in the VALUES table
+# below are the ONE input here that is not in full.json: it carries only the cf_*
+# annotation keys (cf_sovereignty, …) and the "N von 5" / percentage values, not the
+# category names. The names are transcribed by eye from the live Tech-Stack-Landkarte
+# Konformität monitor. The "N von 5" label yields the integer Stufe; the percentage is normalized
 # (dstack:wertProzent) — see the BIND below for why the verbatim form is dropped.
 CONSTRUCT {
     ?krit a dstack:Kriterium ;
@@ -28,7 +28,7 @@ CONSTRUCT {
     ?item dstack:konformitaet ?kb .
 } WHERE {
     VALUES (?labelP ?valueP ?kritLabel ?kritSlug ?annKey) {
-        (xyz:cf_sovereignty_label       xyz:cf_sovereignty_value        "Digitale Souveränität"@de  "digitale-souveraenitaet"  "cf_sovereignty")
+        (xyz:cf_sovereignty_label       xyz:cf_sovereignty_value        "Souveränität"@de  "digitale-souveraenitaet"  "cf_sovereignty")
         (xyz:cf_interoperability_label  xyz:cf_interoperability_value   "Interoperabilität"@de      "interoperabilitaet"       "cf_interoperability")
         (xyz:cf_actuality_label         xyz:cf_actuality_value          "Zukunftsfähigkeit"@de      "zukunftsfaehigkeit"       "cf_actuality")
         (xyz:cf_market_label            xyz:cf_market_value             "Marktrelevanz"@de          "marktrelevanz"            "cf_market")

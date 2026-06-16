@@ -130,7 +130,7 @@ SELECT ?element ?category ?type ?percent WHERE {
     ?el skos:prefLabel ?element ;
         dct:subject/skos:prefLabel ?category ;
         dstack:badge ?type .
-    FILTER(STR(?crit) = "Digitale Souveränität")  # try "Interoperabilität", "Nachhaltigkeit", ...
+    FILTER(STR(?crit) = "Souveränität")  # try "Interoperabilität", "Nachhaltigkeit", ...
     FILTER(?percent >= 80)                        # lower this to see more
 }
 ORDER BY DESC(?percent) ?element`,
