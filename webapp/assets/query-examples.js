@@ -53,7 +53,7 @@ const visualQuery = steps => {
 
 export const EXAMPLES = [
     {
-        name: "Browse all stack elements",
+        name: "Alle Stack-Elemente durchsuchen",
         sparql: `${PREFIXES}
 
 # A browsable inventory of all 128 stack elements. The WHERE block is a shape
@@ -70,7 +70,7 @@ ORDER BY ?category ?element
 # Tinker: add "LIMIT 10" to peek, or remove a line plus its ?var above to simplify.`,
     },
     {
-        name: "Which categories contain the most elements?",
+        name: "Welche Kategorien enthalten die meisten Elemente?",
         sparql: `${PREFIXES}
 
 # Count elements per category: GROUP BY collapses rows sharing a ?category,
@@ -83,7 +83,7 @@ GROUP BY ?category
 ORDER BY DESC(?elements)    # largest first; drop DESC() to flip the order`,
     },
     {
-        name: "Standards vs. technologies per category",
+        name: "Standards vs. Technologien je Kategorie",
         sparql: `${PREFIXES}
 
 # How each category splits between standards and technology products.
@@ -102,7 +102,7 @@ ORDER BY DESC(?total)
 # Comes out all-standard (KI), all-technology (Browser), or mixed (Daten).`,
     },
     {
-        name: "Who is responsible for the most elements?",
+        name: "Wer ist für die meisten Elemente verantwortlich?",
         sparql: `${PREFIXES}
 
 # Responsible bodies ranked by element count — the same GROUP BY / COUNT pattern
@@ -116,7 +116,7 @@ ORDER BY DESC(?elements)
 # IETF leads by far; the long tail of single-element bodies shows how spread-out the stack is.`,
     },
     {
-        name: "Which elements score highest on digital sovereignty?",
+        name: "Welche Elemente erreichen die höchste digitale Souveränität?",
         sparql: `${PREFIXES}
 
 # Each element is scored on six criteria, but the scores don't sit on the element
@@ -136,7 +136,7 @@ SELECT ?element ?category ?type ?percent WHERE {
 ORDER BY DESC(?percent) ?element`,
     },
     {
-        name: "Conformity scorecard for OAuth",
+        name: "Konformitäts-Steckbrief für OAuth",
         sparql: `${PREFIXES}
 
 # The flip side of the previous query: one element, all six criteria — a handy
@@ -153,14 +153,14 @@ SELECT ?criterion ?level ?percent WHERE {
 ORDER BY ?criterion`,
     },
     {
-        name: "Elements and their category",
+        name: "Elemente und ihre Kategorie",
         visual: visualQuery([
             { label: "Stack element", cls: "StackElement", pick: true },
             { label: "Category", cls: "Concept", via: "StackElement_subject", pick: true },
         ]),
     },
     {
-        name: "Element conformity by criterion",
+        name: "Element-Konformität nach Kriterium",
         visual: visualQuery([
             { label: "Stack element", cls: "StackElement", pick: true },
             { label: "Conformity assessment", cls: "Konformitaetsbewertung", via: "StackElement_konformitaet" },
@@ -168,7 +168,7 @@ ORDER BY ?criterion`,
         ]),
     },
     {
-        name: "Categories and their parent layer",
+        name: "Kategorien und ihre übergeordnete Schicht",
         visual: visualQuery([
             { label: "Category", cls: "Concept", pick: true },
             { label: "Category", cls: "Concept", via: "Concept_broader", pick: true },

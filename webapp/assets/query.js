@@ -238,7 +238,7 @@ let runTimer = null
 
 const buildSparnatural = (wrap) => {
     const el = document.createElement("spar-natural")
-    const attrs = { src: sparnaturalConfigUrl, endpoint: ENDPOINT, lang: "en", defaultLang: "de", distinct: "true", limit: "100" }
+    const attrs = { src: sparnaturalConfigUrl, endpoint: ENDPOINT, lang: "de", defaultLang: "de", distinct: "true", limit: "100" }
     for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, v)
     // fill list dropdowns from our own store rather than the (fake) HTTP endpoint;
     // set both now and on init, since either timing can be the one that's honored
@@ -265,8 +265,6 @@ const buildSparnatural = (wrap) => {
 
 const toggle = document.getElementById("toggle-visual")
 const wrap = document.getElementById("sparnatural-wrap")
-const builderHint = document.getElementById("builder-hint")
-
 // load the CDN bundle and build the element once; later calls reuse it
 const ensureSparnatural = async () => {
     if (sparnatural) return sparnatural
@@ -286,13 +284,11 @@ const ensureSparnatural = async () => {
 
 const showBuilder = async () => {
     wrap.hidden = false
-    builderHint.hidden = false
     toggle.setAttribute("aria-expanded", "true")
     return ensureSparnatural()
 }
 const hideBuilder = () => {
     wrap.hidden = true
-    builderHint.hidden = true
     toggle.setAttribute("aria-expanded", "false")
 }
 
@@ -313,7 +309,7 @@ EXAMPLES.forEach((ex, i) => {
         // per-item "(visual query builder)" suffix)
         if (!visualGroup) {
             visualGroup = document.createElement("optgroup")
-            visualGroup.label = "Visual query builder"
+            visualGroup.label = "Visueller Abfrage-Builder"
             examples.append(visualGroup)
         }
         visualGroup.append(opt)

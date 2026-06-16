@@ -181,15 +181,10 @@ body.full { display: flex; flex-direction: column; min-height: 100dvh; }
 
 /* visual query builder toggle + panel (Sparnatural, light-only — no dark theme) */
 .query-toolbar { display: flex; flex-wrap: wrap; align-items: stretch; gap: 0.6rem; padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--border); }
-.toolbar-label { align-self: center; color: var(--muted); font-size: 0.9rem; }
 #examples { font: inherit; cursor: pointer; max-width: 28rem; color: var(--page-fg); background: var(--page-bg); border: 1px solid var(--border); border-radius: 6px; padding: 0.35rem 0.5rem; }
-/* "build your own" is a separate action from picking an example — push it to the far
-   right so the two don't read as one control */
-#toggle-visual { display: inline-flex; align-items: center; gap: 0.45rem; margin-left: auto; font: inherit; cursor: pointer; color: var(--page-fg); background: var(--hover); border: 1px solid var(--border); border-radius: 6px; padding: 0.35rem 0.7rem; }
+#toggle-visual { display: inline-flex; align-items: center; gap: 0.45rem; font: inherit; cursor: pointer; color: var(--page-fg); background: var(--hover); border: 1px solid var(--border); border-radius: 6px; padding: 0.35rem 0.7rem; }
 #toggle-visual[aria-expanded="true"] { border-color: var(--accent); }
 #toggle-visual[aria-expanded="true"] .caret { transform: rotate(180deg); }
-#builder-hint { margin: 0; padding: 0.45rem 0.75rem; color: var(--muted); font-size: 0.85rem; border-bottom: 1px solid var(--border); }
-#builder-hint[hidden] { display: none; }
 /* Sparnatural only ships a light theme, so keep its panel a light island */
 #sparnatural-wrap { flex: 0 0 auto; max-height: 55vh; overflow: auto; padding: 0.6rem; background: #fff; border-bottom: 1px solid var(--border); }
 #sparnatural-wrap[hidden] { display: none; }

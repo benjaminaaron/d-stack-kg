@@ -11,11 +11,11 @@ const link = path => new URL(path, ROOT).href
 const REPO = "https://codeberg.org/benjaminaaron/d-stack-kg"
 
 const ITEMS = [
-    { label: "Vocabulary", href: link("vocabulary.html") },
+    { label: "Vokabular", href: link("vocabulary.html") },
     { label: "Query", href: link("query.html") },
-    { label: "Use Cases", selectedPrefix: "Use case", children: [
-        { label: "Tech-Stack Landkarte", href: link("use-case/tech-stack-landkarte.html") },
-        { label: "Verwaltungsleistungen", href: link("use-case/verwaltungsleistungen.html") }
+    { label: "Anwendungsfälle", selectedPrefix: "Anwendungsfall", children: [
+        { label: "Tech-Stack Landkarte", href: link("use-case/landkarte.html") },
+        { label: "PVOG-Verwaltungsleistungen", href: link("use-case/leistungen.html") }
     ] }
 ]
 

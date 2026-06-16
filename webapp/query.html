@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -12,13 +12,11 @@
     <site-nav></site-nav>
     <main class="query-main">
         <div class="query-toolbar">
-            <label class="toolbar-label" for="examples">Examples</label>
-            <select id="examples" aria-label="Example queries">
-                <option value="" selected disabled>Select an example…</option>
+            <select id="examples" aria-label="Beispielabfragen">
+                <option value="" selected disabled>Beispiel wählen…</option>
             </select>
-            <button id="toggle-visual" type="button" aria-expanded="false">Build your own query<span class="caret"></span></button>
+            <button id="toggle-visual" type="button" aria-expanded="false" title="powered by Sparnatural">Query visuell bauen<span class="caret"></span></button>
         </div>
-        <p id="builder-hint" hidden>Build a query by clicking through the graph — it fills the editor below and runs. Powered by Sparnatural.</p>
         <div id="sparnatural-wrap" hidden></div>
         <div id="yasgui"></div>
     </main>

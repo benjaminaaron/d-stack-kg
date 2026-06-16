@@ -43,4 +43,4 @@ const html = fs.readFileSync(indexFile, "utf8")
 if (!html.includes(marker)) throw new Error(`base_path inject failed: ${marker} not found in ${path.relative(ROOT, indexFile)}`)
 fs.writeFileSync(indexFile, html.replace(marker, `${inject}\n      ${marker}`))
 
-console.log(`built -> ${path.relative(ROOT, PAGE_DIR)}/  (embedded by webapp/use-case/tech-stack-landkarte.html)`)
+console.log(`built -> ${path.relative(ROOT, PAGE_DIR)}/  (embedded by webapp/use-case/landkarte.html)`)

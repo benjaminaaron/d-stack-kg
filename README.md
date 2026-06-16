@@ -83,7 +83,7 @@ npm run landkarte:prepare  # graph → landscape.yml + settings.yml
 npm run landkarte:render   # render it into the webapp (webapp/public/use-case/landkarte/)
 ```
 
-The [deploy](.forgejo/workflows/deploy.yml) runs `landkarte:prepare` and `landkarte:render` to publish the Landkarte embedded in the [Tech-Stack Landkarte page](webapp/use-case/tech-stack-landkarte.html).
+The [deploy](.forgejo/workflows/deploy.yml) runs `landkarte:prepare` and `landkarte:render` to publish the Landkarte embedded in the [Tech-Stack Landkarte page](webapp/use-case/landkarte.html).
 
 ### Query builder
 Profiles the graph (one class per `rdf:type`, one facet per predicate actually used on it, widgets inferred from the value types) into the SHACL config that drives the in-browser [Sparnatural](https://github.com/sparna-git/Sparnatural) visual query builder on the Query page. Labels come from the [vocabulary](authored/vocabulary.ttl); a blocklist in the script drops build-support predicates.
