@@ -2,12 +2,14 @@ PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX xyz: <http://sparql.xyz/facade-x/data/>
 PREFIX fx:  <http://sparql.xyz/facade-x/ns/>
 
+# Generic Facade-X lift. It dumps the whole source verbatim as raw triples for a downstream CONSTRUCT
+# to reshape. The source file (?_location) and its media-type (?_mediatype) are both passed in via -v
 CONSTRUCT {
     ?s ?p ?o
 } WHERE {
     SERVICE <x-sparql-anything:> {
         fx:properties fx:location ?_location ;
-            fx:media-type "application/yaml" .
+            fx:media-type ?_mediatype .
         ?s ?p ?o .
     }
 }
