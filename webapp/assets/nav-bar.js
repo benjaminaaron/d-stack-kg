@@ -88,3 +88,16 @@ class SiteNav extends HTMLElement {
 }
 
 customElements.define("site-nav", SiteNav)
+
+// Umami injected from this shared module, so it loads on every page - except during local dev
+const UMAMI_ID = "32d60a6f-041c-4879-ad06-e4da83fc3995"
+const isLocal = location.protocol === "file:"
+    || ["localhost", "127.0.0.1", "0.0.0.0", "::1"].includes(location.hostname)
+    || location.hostname.endsWith(".local")
+if (!isLocal && !document.querySelector(`script[data-website-id="${UMAMI_ID}"]`)) {
+    const umami = document.createElement("script")
+    umami.defer = true
+    umami.src = "https://cloud.umami.is/script.js"
+    umami.dataset.websiteId = UMAMI_ID
+    document.head.append(umami)
+}
