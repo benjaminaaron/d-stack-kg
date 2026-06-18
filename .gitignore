@@ -10,7 +10,7 @@ data/scratch/
 # derived data: deterministically regenerable, so not tracked
 data/1-build-kg/reconstructed/
 data/1-build-kg/landscape.ttl
-data/3-use-cases/
+data/3-prepare-webapp/
 
 # JSON-responses from PVOG
 data/2-enrich-kg/pvog/

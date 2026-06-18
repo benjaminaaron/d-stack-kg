@@ -4,7 +4,7 @@
 //   { name, visual }  -> opens the visual builder, pre-populated via loadQuery()
 //
 // The visual queries reference the SHACL *shape* IRIs emitted by
-// src/3-use-cases/visual-query-builder/build-config.js (e.g. :StackElement,
+// src/3-prepare-webapp/visual-query-builder/build-config.js (e.g. :StackElement,
 // :StackElement_subject). Keep them in sync if that script's shape naming changes.
 
 const PREFIXES = `# PREFIX lines are shorthands for the long vocabulary IRIs used below

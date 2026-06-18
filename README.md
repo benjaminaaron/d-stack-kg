@@ -80,8 +80,8 @@ npm run fit-connect:fetch  # FIT-Connect: Zustellpunkte + the Fachdatenschemata 
 npm run kg:enrich          # write the technical d-stack-kg.ttl (the fetches are optional; the committed TTL is enough)
 ```
 
-## Use cases
-`src/3-use-cases`
+## Preparing the webapp
+`src/3-prepare-webapp`
 
 ### Landkarte roundtrip
 Rebuilds the `landscape2` source files (`landscape.yml` + `settings.yml`) straight from the graph and proves the rebuilt site matches upstream.

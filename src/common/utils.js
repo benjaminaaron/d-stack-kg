@@ -19,7 +19,7 @@ export const DSTACK_TTL = path.join(ENRICH_KG, "d-stack-kg.ttl")       // the te
 export const PVOG_LEISTUNGEN_TTL = path.join(ENRICH_KG, "pvog-leistungen.ttl")    // administrative services (pvog:fetch)
 export const FIT_CONNECT_TTL = path.join(ENRICH_KG, "fit-connect.ttl")            // Zustellpunkte + Fachdatenschemas (fit-connect:fetch)
 export const FIM_LEISTUNGEN_TTL = path.join(ENRICH_KG, "fim-leistungen.ttl")      // FIM Steckbrief enrichment per LeiKa (fim:fetch)
-export const USE_CASES = path.join(DATA, "3-use-cases")                // use-case derived artefacts
+export const PREPARE_WEBAPP = path.join(DATA, "3-prepare-webapp")      // webapp artefacts (landkarte sources, sparnatural config)
 export const SCRATCH = path.join(DATA, "scratch")                      // gitignored regenerable
 
 // authored/ holds the project's hand-written RDF (not generated/fetched): the

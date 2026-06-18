@@ -14,12 +14,12 @@
  * Requires the landscape2 CLI (no npm package): brew install cncf/landscape2/landscape2
  */
 
-import { ROOT, UPSTREAM, SCRATCH, USE_CASES } from "../../common/utils.js"
+import { ROOT, UPSTREAM, SCRATCH, PREPARE_WEBAPP } from "../../common/utils.js"
 import { requireFiles, renderSite } from "../../common/landscape2.js"
 import path from "path"
 import fs from "fs"
 
-const OUT_DIR = path.join(USE_CASES, "landkarte-roundtrip")
+const OUT_DIR = path.join(PREPARE_WEBAPP, "landkarte-roundtrip")
 const DATA_FILE = path.join(OUT_DIR, "landscape.yml")
 const SETTINGS_FILE = path.join(OUT_DIR, "settings.yml")
 const PAGE_DIR = path.join(ROOT, "webapp", "public", "use-case", "landkarte")

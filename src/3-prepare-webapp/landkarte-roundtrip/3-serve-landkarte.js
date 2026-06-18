@@ -6,15 +6,15 @@
  * then serves the result so the Landkarte rebuilt from the knowledge graph can
  * be viewed in the browser. Requires the landscape2 CLI.
  *
- * Run: node src/3-use-cases/landkarte-roundtrip/3-serve-landkarte.js   (then open the printed http://127.0.0.1:8000)
+ * Run: node src/3-prepare-webapp/landkarte-roundtrip/3-serve-landkarte.js   (then open the printed http://127.0.0.1:8000)
  */
 
-import { ROOT, UPSTREAM, SCRATCH, USE_CASES } from "../../common/utils.js"
+import { ROOT, UPSTREAM, SCRATCH, PREPARE_WEBAPP } from "../../common/utils.js"
 import { requireFiles, renderSite } from "../../common/landscape2.js"
 import { execFileSync } from "child_process"
 import path from "path"
 
-const OUT_DIR = path.join(USE_CASES, "landkarte-roundtrip")
+const OUT_DIR = path.join(PREPARE_WEBAPP, "landkarte-roundtrip")
 const DATA_FILE = path.join(OUT_DIR, "landscape.yml")
 const SETTINGS_FILE = path.join(OUT_DIR, "settings.yml")
 const BUILD_DIR = path.join(SCRATCH, "roundtrip-build")

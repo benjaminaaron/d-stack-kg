@@ -8,7 +8,7 @@
  * content field, the reconstruction is faithful. The built site is kept under
  * data/scratch/build/ (gitignored) so it can be eyeballed with `landscape2 serve`,
  * but it is not the deployment path — rendering comes later, from the graph in
- * src/3-use-cases.
+ * src/3-prepare-webapp.
  *
  * The one expected difference is the category/subcategory whitespace that step 2
  * normalizes (upstream mixes U+0020 and U+2000); the comparison trims those, so

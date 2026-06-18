@@ -18,16 +18,16 @@
  * isn't checked (the comparison is keyed by name); the known group-order gap is
  * documented in modeling-choices.md.
  *
- * Run: node src/3-use-cases/landkarte-roundtrip/2-validate-roundtrip.js
+ * Run: node src/3-prepare-webapp/landkarte-roundtrip/2-validate-roundtrip.js
  *
  * Requires the landscape2 CLI (no npm package): brew install cncf/landscape2/landscape2
  */
 
-import { ROOT, UPSTREAM, SCRATCH, USE_CASES } from "../../common/utils.js"
+import { ROOT, UPSTREAM, SCRATCH, PREPARE_WEBAPP } from "../../common/utils.js"
 import { requireFiles, validateRoundtrip } from "../../common/landscape2.js"
 import path from "path"
 
-const OUT_DIR = path.join(USE_CASES, "landkarte-roundtrip")
+const OUT_DIR = path.join(PREPARE_WEBAPP, "landkarte-roundtrip")
 const DATA_FILE = path.join(OUT_DIR, "landscape.yml")
 const SETTINGS_FILE = path.join(OUT_DIR, "settings.yml")
 const ORIGINAL = path.join(UPSTREAM, "full.json")

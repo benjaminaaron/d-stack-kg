@@ -13,20 +13,20 @@
  * filename and the source order (dstack:landkartePosition). Not yet modeled, so absent
  * here: maturity dates, audits, tags and the summary_* texts.
  *
- * Output: data/3-use-cases/landkarte-roundtrip/{landscape.yml,settings.yml}.
+ * Output: data/3-prepare-webapp/landkarte-roundtrip/{landscape.yml,settings.yml}.
  * Render + view them with 3-serve-landkarte.js.
  *
  * Run: npm run landkarte:prepare
  */
 
 import { storeFromTurtles, sparqlSelect } from "@foerderfunke/sem-ops-utils"
-import { ROOT, DSTACK_TTL, USE_CASES } from "../../common/utils.js"
+import { ROOT, DSTACK_TTL, PREPARE_WEBAPP } from "../../common/utils.js"
 import yaml from "js-yaml"
 import path from "path"
 import fs from "fs"
 
 const IN = DSTACK_TTL
-const OUT_DIR = path.join(USE_CASES, "landkarte-roundtrip")
+const OUT_DIR = path.join(PREPARE_WEBAPP, "landkarte-roundtrip")
 const OUT_YML = path.join(OUT_DIR, "landscape.yml")
 const OUT_SETTINGS = path.join(OUT_DIR, "settings.yml")
 
@@ -145,7 +145,7 @@ fs.writeFileSync(OUT_SETTINGS,
     dump(settings))
 
 const subCount = [...byCat.values()].reduce((n, s) => n + s.size, 0)
-console.log(`OK: ${itemRows.length} items, ${byCat.size} categories, ${subCount} subcategories -> data/3-use-cases/landkarte-roundtrip/`)
+console.log(`OK: ${itemRows.length} items, ${byCat.size} categories, ${subCount} subcategories -> data/3-prepare-webapp/landkarte-roundtrip/`)
 console.log("    (still unmodeled, so absent: maturity dates, audits, tags, summary_*)")
-console.log("check: node src/3-use-cases/landkarte-roundtrip/2-validate-roundtrip.js")
-console.log("view:  node src/3-use-cases/landkarte-roundtrip/3-serve-landkarte.js")
+console.log("check: node src/3-prepare-webapp/landkarte-roundtrip/2-validate-roundtrip.js")
+console.log("view:  node src/3-prepare-webapp/landkarte-roundtrip/3-serve-landkarte.js")
