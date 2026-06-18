@@ -173,6 +173,8 @@ const GALLERY = [
 } GROUP BY ?element ORDER BY DESC(?services)`,
     },
     {
+        // GROUP BY ?l is required: with an all-aggregate projection and no GROUP BY, Comunica's
+        // implicit grouping returns the row but binds only the first aggregate and drops the rest
         q: "Wohngeld auf einen Blick: Lebenslagen, zuständige Stellen und Technik",
         sparql: `SELECT
     (SAMPLE(?t) AS ?leistung)
@@ -186,7 +188,7 @@ WHERE {
     OPTIONAL { ?l m8g:isGroupedBy/dct:title ?lebenslage }
     OPTIONAL { ?l m8g:hasCompetentAuthority ?stelle }
     OPTIONAL { ?l m8g:hasChannel/dstack:realisiertDurch/skos:prefLabel ?stackElement }
-}`,
+} GROUP BY ?l`,
     },
 ]
 
