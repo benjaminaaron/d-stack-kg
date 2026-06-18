@@ -130,7 +130,7 @@ The project's hand-written RDF, kept apart from the generated/fetched `data/`:
 
 ## Possible future work
 
-A scratchpad of where this could go. Ideas? Please share!
+Potential reuse targets and enrichment tasks: which existing vocabularies to reuse, and which enrichments to apply to the data already in hand. This is the technical companion to the [ideas page](webapp/ideen.html).
 
 | Reuse | to |
 |---|---|
@@ -160,4 +160,4 @@ A few things surfaced while working with the Landkarte's published artifacts:
 - The Landkarte data (`data/1-build-kg/upstream/full.json`) is content of the BMDS / Datenlabor BMI. No license is stated upstream; `data/1-build-kg/upstream/full.meta.json` is kept as provenance documentation.
 - The item logos are kept verbatim in `data/1-build-kg/upstream/logos.zip` only to rebuild the site; no rights to them are claimed.
 - The administrative data (`data/2-enrich-kg/pvog-leistungen.ttl`, `fim-leistungen.ttl`, `fit-connect.ttl`) is public-sector content derived from the FITKO PVOG Suchdienst, the FIM Portal and FIT-Connect; each fact carries its exact `dct:source` and retrieval date as provenance. The raw API responses are gitignored working files, not committed.
-- Built with the help from AI coding tools; design decisions stay with the author, who reviews, understands and takes responsibility for every change.
+- Built with the help of AI coding tools; design decisions stay with the author, who reviews, understands and takes responsibility for every change. Although, in all honesty, compartmentalized code blocks (a fetch script, say, or code that merely executes a declarative instruction such as a SPARQL transform) are sometimes reviewed only loosely.

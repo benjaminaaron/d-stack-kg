@@ -17,7 +17,8 @@ const ITEMS = [
         { label: "Tech-Stack Landkarte", href: link("use-case/landkarte.html") },
         { label: "PVOG-Leistungen", href: link("use-case/leistungen.html") },
         { label: "FIM & FIT-Connect", href: link("use-case/fachdaten.html") }
-    ] }
+    ] },
+    { label: "Ideen", href: link("ideen.html") }
 ]
 
 const isActive = href => {

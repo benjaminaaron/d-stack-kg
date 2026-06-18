@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Ideen für weitere Anwendungsfälle</title>
+    <link rel="stylesheet" href="assets/styles.css">
+    <script type="module" src="assets/nav-bar.js"></script>
+</head>
+<body>
+    <site-nav></site-nav>
+
+    <main class="container">
+        <h1>Ideen für weitere Anwendungsfälle</h1>
+        <p class="lead">Eine Sammlung an Ideen dazu, was sich an den bestehenden Graphen anschließen ließe.</p>
+
+        <p>Die Grundidee: Modelliert man den Deutschland-Stack als Wissensgraph und hängt die vielen schon vorhandenen, aber getrennten Datenquellen semantisch daran, wird der Stack zum <b>Kristallisationspunkt</b>, an dem das übrige Verwaltungs-Ökosystem andocken kann. Jede zusätzliche Quelle macht eine neue Klasse von Fragen beantwortbar, ohne dass eine zentrale Plattform alles vorhalten müsste; die Verknüpfung entsteht über gemeinsame Schlüssel und offene Standards.</p>
+
+        <p>Im Prototyp umgesetzt ist bisher das <b>Rückgrat der Leistungserbringung</b>: vom Gesetz über die <a href="use-case/leistungen.html" target="_blank" rel="noopener">Verwaltungsleistung</a> und ihren digitalen Empfang bis zu den <a href="use-case/fachdaten.html" target="_blank" rel="noopener">einzelnen Datenfeldern und ihrem Format</a>.</p>
+
+        <h2>Weitere Ideen</h2>
+        <ul>
+            <li><b>Die Stack-Elemente untereinander verknüpfen.</b> Die rund 128 Elemente stehen bislang isoliert nebeneinander. Zieht man Kanten zwischen ihnen (z.B. <code>hängt ab von</code>, <code>implementiert</code>, <code>konkurriert mit</code>), wird aus dem Katalog erst ein echter Graph: Fragen wie "welche Standards sind tragend?" oder "was bricht weg, wenn einer wegfällt?" werden so berechenbar.</li>
+            <li><b>Eine kommunale IT-Landschaft prüfen.</b> Wenn der D-Stack maschinenlesbar vorliegt und die Beschreibung einer (geplanten) kommunalen IT-Landschaft ebenso (bspw. in ArchiMate/AMEFF, angehoben auf RDF), ließe sich "messen", wie stark die Stack-Konformität bereits ist und wo nachjustiert werden sollte.</li>
+            <li><b>Anschluss an benachbarte Stacks.</b> Der GovStack ist bereits ein als offene, maschinenlesbare Spezifikation entwickelter Baukasten. Es ließen sich Brücken herstellen und bspw. zwischen "exact Match" und "close Match" von Elementen unterscheiden. So könnten dann automatisch Leistungen, die D-Stack-Elemente hinterlegt haben, auch im GovStack-System beschrieben werden.</li>
+            <li><b>Kommunikation direkt aus dem Graphen.</b> Erklärungen über den D-Stack (einfache Sprache, Einseiter, Glossar) werden heute getrennt vom Modell gepflegt, und sie veralten. Hängt man sie jedoch direkt an die Knoten des Graphen, lassen sich "communication snippets" einfach "rausrendern" per Abfrage. Sie werden so zu einer Projektion des Graphen.</li>
+            <li><b>Identität.</b> Wer eine Einreichung überhaupt freischaltet: BundID/DeutschlandID, das ELSTER-basierte "Mein Unternehmenskonto", die Online-Ausweisfunktion (eID).</li>
+            <li><b>Standard &harr; Umsetzung.</b> Über <a href="https://yml.publiccode.tools/" target="_blank" rel="noopener">publiccode.yml</a> auf openCode ließe sich ein D-Stack-Standard mit der quelloffenen Software verbinden, die ihn umsetzt.</li>
+            <li><b>Prozesse, nicht nur Datenfelder.</b> Über <b>XProzess</b> ließen sich Abläufe über die LeiKa-ID an dieselben Leistungen knüpfen; vorgemacht hat das openDVA (Uni Jena) mit der Stadt Jena. Der Prozesskatalog ist liftbar, die normgenaue Tiefe bleibt Handarbeit am Einzelfall.</li>
+            <li><b>Einer für Alle (EfA).</b> Hängt man die Nachnutzungs-Beziehungen (welches Land baut, wer nutzt nach) an die Onlinedienste, entsteht die Wiederverwendungsschicht; zusammen mit FIM und PVOG ein "digitaler Zwilling der Verwaltung", dessen Technik-Soll der Stack-Graph beschreibt. Ob die Nachnutzung als strukturierte Daten abrufbar ist (FIT-Store / EfA-Marktplatz), wäre erst zu erkunden.</li>
+            <li><b>Offene Inhaltsschicht für EAM-Werkzeuge.</b> Quelloffene Werkzeuge fürs Enterprise Architecture Management könnten den D-Stack-Graphen als mitgeliefertes Referenzmodell führen.</li>
+            <li><b>Kontext statt Pauschalempfehlung.</b> Ein Stack ist wie der Rat "kauf Nudeln und Pesto": erst im Kontext wirklich brauchbar. Hängt man Kontext-Tripel an die Elemente (Zielgruppe, Lebenslage, Rahmenbedingungen, Bestandssysteme, am ehesten via CCCEV), wird aus einer flachen Liste eine bedingte, abfragbare Empfehlung.</li>
+        </ul>
+
+        <p>Weitere <strong>potenziell relevante Integrationsziele</strong>, hier nicht weiter ausformuliert:</p>
+        <ul>
+            <li>Once-Only</li>
+            <li>Behördenfinder / 115</li>
+            <li>Gemeindeverzeichnis des Statistischen Bundesamts</li>
+            <li>Deutsches Verwaltungsdiensteverzeichnis (DVDV)</li>
+            <li>Die ganze XÖV-Familie</li>
+            <li>Gesetze mit stabilen Identifikatoren (ELI)</li>
+        </ul>
+        <br>
+        <p class="lead">
+            Hinweise, Ideen und Zusammenarbeit sind willkommen!
+            <br>
+            Etwa per <a href="https://codeberg.org/benjaminaaron/d-stack-kg/issues" target="_blank" rel="noopener">Codeberg-Issue</a> oder E-Mail an <a href="mailto:benjamin.degenhart@foerderfunke.org">benjamin.degenhart@foerderfunke.org</a>.
+        </p>
+    </main>
+</body>
+</html>
