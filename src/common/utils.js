@@ -1,7 +1,11 @@
 import { fileURLToPath } from "url"
 import path from "path"
 
-export const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "..")
+const COMMON = path.dirname(fileURLToPath(import.meta.url))
+export const ROOT = path.join(COMMON, "..", "..")
+
+// the generic Facade-X lift every pipeline shares (parameterised by -v location + mediatype)
+export const LIFT_SPARQL = path.join(COMMON, "sparql", "lift.sparql")
 
 // data/ mirrors src/'s phase folders: each artefact sits under the phase that
 // produces it. All committed except scratch.
@@ -13,6 +17,8 @@ export const LANDSCAPE_TTL = path.join(BUILD_KG, "landscape.ttl")      // lifted
 export const ENRICH_KG = path.join(DATA, "2-enrich-kg")                // 2-enrich-kg outputs
 export const DSTACK_TTL = path.join(ENRICH_KG, "d-stack-kg.ttl")       // the technical graph (kg:enrich)
 export const PVOG_LEISTUNGEN_TTL = path.join(ENRICH_KG, "pvog-leistungen.ttl")    // administrative services (pvog:fetch)
+export const FIT_CONNECT_TTL = path.join(ENRICH_KG, "fit-connect.ttl")            // Zustellpunkte + Fachdatenschemas (fit-connect:fetch)
+export const FIM_LEISTUNGEN_TTL = path.join(ENRICH_KG, "fim-leistungen.ttl")      // FIM Steckbrief enrichment per LeiKa (fim:fetch)
 export const USE_CASES = path.join(DATA, "3-use-cases")                // use-case derived artefacts
 export const SCRATCH = path.join(DATA, "scratch")                      // gitignored regenerable
 
@@ -34,4 +40,5 @@ export const PREFIXES = {
     cpsv: "http://purl.org/vocab/cpsv#",
     m8g: "http://data.europa.eu/m8g/",
     fim: "https://deutschland-stack.gov.de/fim#",
+    fitconnect: "https://deutschland-stack.gov.de/fit-connect#",
 }

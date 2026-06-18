@@ -18,6 +18,7 @@ This unofficial prototype explores possibilities that would arise from modeling 
         yml["reconstructed<br/>source artifacts"] --> ttl["landscape.ttl"] --> dstack["<b>d-stack-kg.ttl</b><br/>(enriched)"]
         dstack --> roundtrip["Reconstructed:</br>Tech-Stack Landkarte"]
         dstack --> leistungen["PVOG-Leistungen"]
+        dstack --> fachdaten["FIM &amp; FIT-Connect"]
         dstack --> more["<i>more use cases...</i>"]
     end
     sq -- "full.json" --> kg
@@ -58,19 +59,25 @@ The Landkarte describes what the Deutschland-Stack *runs on* — 128 standards a
 
 **The gap.** Nothing records which technologies a given service runs on. A single predicate, `dstack:realisiertDurch`, links a real Onlinedienst to the **real Landkarte elements** it is built on; since no source records this, those links are **informed assumptions** (`pvog-dstack-bridge.assumed.ttl`), not derived data.
 
-The graph is kept as **three layers in separate files** with distinct provenance, composed into one store by whatever needs the join; the Landkarte roundtrip loads only the technical layer. More in [modeling-choices.md](modeling-choices.md).
+**The depth layer (FIM + FIT-Connect).** A second enrichment goes deeper on the same Leistungen, joined by the real **LeiKa-ID** rather than an assumed bridge: the **FIM Portal** adds each service's Steckbrief (legal basis, OZG-Themenfeld), and **FIT-Connect** adds the **Zustellpunkt** a Behörde registers to receive submissions plus the **Fachdatenschema** they must conform to, down to the individual FIM data fields and the Landkarte format tile they ride in. This is the *Vom Gesetz zur Einreichung* use case, explored on the [FIM & FIT-Connect page](webapp/use-case/fachdaten.html).
+
+The graph is kept as **separate layer files** with distinct provenance, composed into one store by whatever needs the join (the Landkarte roundtrip loads only the technical layer). More in [modeling-choices.md](modeling-choices.md).
 
 | Layer | File | Built by |
 |---|---|---|
 | **Technical** | `data/2-enrich-kg/d-stack-kg.ttl` | `kg:enrich`: the lifted Landkarte |
-| **Services** | `data/2-enrich-kg/pvog-leistungen.ttl` | `pvog:fetch`: Verwaltungsleistungen ingested from PVOG |
+| **Services (PVOG)** | `data/2-enrich-kg/pvog-leistungen.ttl` | `pvog:fetch`: Verwaltungsleistungen from PVOG |
+| **Services (FIM)** | `data/2-enrich-kg/fim-leistungen.ttl` | `fim:fetch`: FIM Steckbriefe + one central FIM Datenschema |
+| **Data schemas (FIT-Connect)** | `data/2-enrich-kg/fit-connect.ttl` | `fit-connect:fetch`: Zustellpunkte + Fachdatenschemata |
 | **Bridge** | `authored/pvog-dstack-bridge.assumed.ttl` | hand-authored: the assumed `realisiertDurch` links |
 
-`pvog:fetch` runs the two-step PVOG Suchdienst recipe (LeiKa-ID + ARS → lbid → v6 `/detail`) and converts each service to RDF with the build-kg lift/transform idiom (`pvog/sparql/`). Only the converted TTL is committed; the raw responses are gitignored.
+Each `*:fetch` reads a public API and converts to RDF with the build-kg lift/transform idiom; only the converted TTL is committed, the raw responses are gitignored.
 
 ```bash
-npm run pvog:fetch  # fetch from live PVOG (optional; the committed TTL is enough)
-npm run kg:enrich   # write the technical d-stack-kg.ttl (the bridge is hand-authored)
+npm run pvog:fetch         # PVOG Suchdienst: services, authorities, online-service channels
+npm run fim:fetch          # FIM Portal: Leistungs-Steckbriefe + a central FIM Datenschema
+npm run fit-connect:fetch  # FIT-Connect: Zustellpunkte + the Fachdatenschemata they collect
+npm run kg:enrich          # write the technical d-stack-kg.ttl (the fetches are optional; the committed TTL is enough)
 ```
 
 ## Use cases
@@ -108,8 +115,10 @@ npm run webapp:build  # bundle to webapp/dist/
 - `data/1-build-kg/upstream/`: the fetched Landkarte artifacts plus provenance
 - `data/2-enrich-kg/d-stack-kg.ttl`: the technical knowledge graph
 - `data/2-enrich-kg/pvog-leistungen.ttl`: the administrative services layer (ingested from PVOG)
+- `data/2-enrich-kg/fim-leistungen.ttl`: FIM Steckbriefe + a central FIM Datenschema (FIM Portal)
+- `data/2-enrich-kg/fit-connect.ttl`: FIT-Connect Zustellpunkte + the Fachdatenschemata they collect
 
-The intermediates (incl. `data/1-build-kg/landscape.ttl`), the fetched PVOG responses + lift intermediates (`data/2-enrich-kg/pvog/`), the use-case projections and `data/scratch/` are gitignored.
+The intermediates (incl. `data/1-build-kg/landscape.ttl`), the fetched PVOG/FIM/FIT-Connect responses + lift intermediates (`data/2-enrich-kg/{pvog,fim,fit-connect}/`), the use-case projections and `data/scratch/` are gitignored.
 
 ## Authored RDF
 `authored/`
@@ -150,5 +159,5 @@ A few things surfaced while working with the Landkarte's published artifacts:
 - Not an authoritative source. This is an unofficial reconstruction of official artifacts.
 - The Landkarte data (`data/1-build-kg/upstream/full.json`) is content of the BMDS / Datenlabor BMI. No license is stated upstream; `data/1-build-kg/upstream/full.meta.json` is kept as provenance documentation.
 - The item logos are kept verbatim in `data/1-build-kg/upstream/logos.zip` only to rebuild the site; no rights to them are claimed.
-- The PVOG service data in `data/2-enrich-kg/pvog-leistungen.ttl` is public-sector content derived from the FITKO PVOG Suchdienst; each Leistung carries its exact `dct:source` endpoint and `dct:date` retrieval date as provenance. The raw API responses are gitignored working files, not committed.
+- The administrative data (`data/2-enrich-kg/pvog-leistungen.ttl`, `fim-leistungen.ttl`, `fit-connect.ttl`) is public-sector content derived from the FITKO PVOG Suchdienst, the FIM Portal and FIT-Connect; each fact carries its exact `dct:source` and retrieval date as provenance. The raw API responses are gitignored working files, not committed.
 - Built with the help from AI coding tools; design decisions stay with the author, who reviews, understands and takes responsibility for every change.

@@ -14,6 +14,10 @@ data/3-use-cases/
 
 # JSON-responses from PVOG
 data/2-enrich-kg/pvog/
+# raw FIT-Connect responses
+data/2-enrich-kg/fit-connect/
+# raw FIM responses
+data/2-enrich-kg/fim/
 
 # vite build output, published by the deploy
 webapp/dist/

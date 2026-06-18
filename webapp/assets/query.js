@@ -1,10 +1,10 @@
 // Query page: a Yasgui SPARQL editor wired to an in-browser n3 store (no server).
 // A fetch interceptor routes Yasgui's fake endpoint through Comunica, so every
 // query runs in the browser against the graph — the same engine the pipeline
-// uses (sem-ops-utils / Comunica), bundled by Vite. The graph's three layers are
+// uses (sem-ops-utils / Comunica), bundled by Vite. The graph's layers are
 // loaded (via the shared graph module) into one store, so the technical and
-// administrative layers are queryable together — the join the project is about —
-// with nothing to fetch or stage.
+// administrative layers (PVOG, FIM, FIT-Connect, the assumed bridge) are queryable
+// together — the join the project is about — with nothing to fetch or stage.
 
 import { graphStore } from "./graph.js"
 import { getWriter } from "@foerderfunke/sem-ops-utils/core"

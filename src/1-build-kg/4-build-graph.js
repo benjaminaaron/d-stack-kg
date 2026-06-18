@@ -3,7 +3,7 @@
  *
  * Two phases, after the directory-builder lift/transform split:
  *   1. lift      — SPARQL Anything (java) triplifies landscape.yml into the raw
- *                  facade-x model and dumps it verbatim (sparql/lift.sparql). No
+ *                  facade-x model and dumps it verbatim (the shared common/sparql/lift.sparql). No
  *                  interpretation.
  *   2. transform — CONSTRUCT queries (sparql/transform/*.sparql, run in order)
  *                  navigate that raw model and emit a clean RDF/SKOS graph,
@@ -17,14 +17,13 @@
  */
 
 import { storeFromTurtles, sparqlConstruct, storeToTurtle, addTurtleToStore, newStore } from "@foerderfunke/sem-ops-utils"
-import { ROOT, UPSTREAM, RECONSTRUCTED, LANDSCAPE_TTL, SCRATCH, PREFIXES } from "../common/utils.js"
+import { ROOT, UPSTREAM, RECONSTRUCTED, LANDSCAPE_TTL, SCRATCH, PREFIXES, LIFT_SPARQL } from "../common/utils.js"
 import { execFileSync } from "child_process"
 import path from "path"
 import fs from "fs"
 
 const SA_VERSION = "v1.1.0"
 const JAR = path.join(SCRATCH, "tools", "sparql-anything.jar")
-const LIFT_QUERY = path.join(import.meta.dirname, "sparql", "lift.sparql")
 const TRANSFORM_DIR = path.join(import.meta.dirname, "sparql", "transform")
 const LANDSCAPE = path.join(RECONSTRUCTED, "landscape.yml")
 const RAW = path.join(SCRATCH, "landscape-raw.ttl")
@@ -57,8 +56,8 @@ await ensureJar()
 // Phase 1: lift landscape.yml -> raw facade-x TTL.
 console.log("lift   data/1-build-kg/reconstructed/landscape.yml -> facade-x")
 fs.mkdirSync(SCRATCH, { recursive: true })
-execFileSync("java", ["-jar", JAR, "-q", LIFT_QUERY,
-    "-v", `location=${LANDSCAPE}`, "-f", "TTL", "-o", RAW], { stdio: ["ignore", "ignore", "inherit"] })
+execFileSync("java", ["-jar", JAR, "-q", LIFT_SPARQL,
+    "-v", `location=${LANDSCAPE}`, "-v", "mediatype=application/yaml", "-f", "TTL", "-o", RAW], { stdio: ["ignore", "ignore", "inherit"] })
 
 // Phase 2: transform it into the knowledge graph.
 const raw = storeFromTurtles([fs.readFileSync(RAW, "utf8")])

@@ -10,8 +10,8 @@
  *
  * The JSON → RDF conversion follows the repo's lift/transform idiom (the same one
  * build-kg uses): SPARQL Anything triplifies the responses into the raw Facade-X
- * model (sparql/lift.sparql), then a CONSTRUCT reshapes them into the EU public-
- * service vocabularies (sparql/transform/*.sparql).
+ * model (the shared common/sparql/lift.sparql), then a CONSTRUCT reshapes them into the
+ * EU public-service vocabularies (sparql/transform/*.sparql).
  *
  * Writes:
  *   data/2-enrich-kg/pvog-leistungen.ttl   the converted RDF (committed — the services layer)
@@ -26,7 +26,7 @@
  */
 
 import { storeFromTurtles, sparqlConstruct, storeToTurtle, newStore } from "@foerderfunke/sem-ops-utils"
-import { ENRICH_KG, SCRATCH, PREFIXES, PVOG_LEISTUNGEN_TTL } from "../../common/utils.js"
+import { ENRICH_KG, SCRATCH, PREFIXES, PVOG_LEISTUNGEN_TTL, LIFT_SPARQL } from "../../common/utils.js"
 import { execFileSync } from "child_process"
 import path from "path"
 import fs from "fs"
@@ -128,8 +128,8 @@ const details = (await Promise.all(SERVICES.map(fetchDetail))).filter(Boolean)
 // 2. lift the combined responses to raw Facade-X with SPARQL Anything
 await ensureJar()
 fs.writeFileSync(COMBINED, JSON.stringify(details))
-execFileSync("java", ["-jar", JAR, "-q", path.join(SQL_DIR, "lift.sparql"),
-    "-v", `location=${COMBINED}`, "-f", "TTL", "-o", RAW], { stdio: ["ignore", "ignore", "inherit"] })
+execFileSync("java", ["-jar", JAR, "-q", LIFT_SPARQL,
+    "-v", `location=${COMBINED}`, "-v", "mediatype=application/json", "-f", "TTL", "-o", RAW], { stdio: ["ignore", "ignore", "inherit"] })
 
 // 3. transform Facade-X → the EU public-service shape (CONSTRUCT queries, in order)
 const raw = storeFromTurtles([fs.readFileSync(RAW, "utf8")])

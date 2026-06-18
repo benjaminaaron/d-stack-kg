@@ -15,7 +15,8 @@ const ITEMS = [
     { label: "Query", href: link("query.html") },
     { label: "Anwendungsfälle", selectedPrefix: "Anwendungsfall", children: [
         { label: "Tech-Stack Landkarte", href: link("use-case/landkarte.html") },
-        { label: "PVOG-Verwaltungsleistungen", href: link("use-case/leistungen.html") }
+        { label: "PVOG-Verwaltungsleistungen", href: link("use-case/leistungen.html") },
+        { label: "FIM & FIT-Connect", href: link("use-case/fachdaten.html") }
     ] }
 ]
 

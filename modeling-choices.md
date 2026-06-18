@@ -66,3 +66,11 @@ Three identifiers have no off-the-shelf term: **LeiKa-ID** (FIM has no official 
 **The bridge** is a single predicate, `dstack:realisiertDurch` (`m8g:Channel` → `dstack:StackElement`), over **only real Landkarte elements**. No source records which technologies a service runs on, so the edges (`pvog-dstack-bridge.assumed.ttl`) are **assumed**, not derived.
 
 Conversion follows the build-kg idiom: SPARQL Anything lift → `CONSTRUCT` transform (`pvog/sparql/`).
+
+### Frontend channel vs. delivery point
+
+PVOG and FIT-Connect describe the *same* LeiKa-joined service from opposite ends: PVOG the citizen-facing **frontend channel** (`m8g:Channel`, the Onlinedienst with its URL), FIT-Connect the **backend delivery point** (`fitconnect:Zustellpunkt` plus the Fachdatenschema). Each end carries its own link into the technical layer, on a different node and with a different epistemic status: on the channel, no source reveals the runtime stack, so `dstack:realisiertDurch` is **assumed** (standards/protocols only, never products); on the delivery point the running system reveals the schema's serialisation format, so `dstack:serialisiertAls` is **observed**. Holding both on one service is what lets the graph contrast *expected* against *actual*.
+
+### GerPS alignment, deliberate but not load-bearing
+
+The local FIM terms (`fim:leikaId`, `fim:Datenfeld`, `fim:Datenfeldgruppe`; FIM publishes no official RDF) are aligned upward to openDVA's **GerPS**, the one published RDF rendering of these concepts. The alignment is **not load-bearing**. We add it anyway, to anchor the local terms to an existing standard and let a GerPS-aware consumer reach our instances.

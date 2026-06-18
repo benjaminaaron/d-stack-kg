@@ -84,7 +84,7 @@ const selectElement = (iri) => {
     const e = elements.find(x => x.iri === iri)
     $("elbuttons").querySelectorAll(".elbtn").forEach(b => b.classList.toggle("active", b.dataset.iri === iri))
     const items = e.services.map(s => `<li>${esc(s)}</li>`).join("")
-    $("answer").innerHTML = `<p><a class="run-link" href="${queryLink(usedByQuery(iri, e.label))}" target="_blank" rel="noopener">Diese Abfrage als Query ausführen ↗</a></p>
+    $("answer").innerHTML = `<p><a class="run-link" href="${queryLink(usedByQuery(iri, e.label))}" target="_blank" rel="noopener">Diese Abfrage ausführen ↗</a></p>
         <p class="answer-head"><b>${esc(e.count)}</b> von ${totalServices} Verwaltungsleistungen nutz${e.count === 1 ? "t" : "en"} <b>${esc(e.label)}</b>:</p>
         <ul class="answer-list">${items}</ul>`
 }
@@ -135,7 +135,7 @@ const runFilter = async () => {
     const crit = $("criterion").value, t = Number($("threshold").value)
     const unit = isGesamt() ? "%" : "/5", critLabel = isGesamt() ? "Gesamt-Durchschnitt" : crit
     const rows = await select(filterQuery(crit, t))
-    const link = `<p><a class="run-link" href="${queryLink(filterQuery(crit, t))}" target="_blank" rel="noopener">Diese Abfrage als Query ausführen ↗</a></p>`
+    const link = `<p><a class="run-link" href="${queryLink(filterQuery(crit, t))}" target="_blank" rel="noopener">Diese Abfrage ausführen ↗</a></p>`
     $("filter-result").innerHTML = link + (rows.length
         ? `Bei <span class="answer-head"><b>${rows.length}</b> von ${totalServices} kommen nur Stack-Elemente zum Einsatz, die bei <em>${esc(critLabel)}</em> mit ${t}${unit} bewertet sind:</span>
            <ul class="answer-list">${rows.map(r => `<li>${esc(r.leistung)}</li>`).join("")}</ul>`

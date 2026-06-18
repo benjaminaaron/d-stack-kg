@@ -13,34 +13,29 @@
     <site-nav></site-nav>
     <main class="container">
         <h2>Vokabular</h2>
-        <p class="lead">Das in Arbeit befindliche Vokabular des Wissensgraphen:
-            <a href="https://codeberg.org/benjaminaaron/d-stack-kg/src/branch/main/authored/vocabulary.ttl" target="_blank" rel="noopener">authored/vocabulary.ttl</a></p>
+        <p class="lead">Das work-in-progress Vokabular des Wissensgraphen
+            (<a href="https://codeberg.org/benjaminaaron/d-stack-kg/src/branch/main/authored/vocabulary.ttl" target="_blank" rel="noopener">authored/vocabulary.ttl</a>):</p>
         <pre class="language-turtle"><code id="vocab" class="language-turtle">Lädt…</code></pre>
 
-        <h2>Wissensgraph</h2>
-        <p class="lead">Eine Vorschau des generierten Graphen <code>data/2-enrich-kg/d-stack-kg.ttl</code> — die ersten 100 Zeilen:</p>
-        <pre class="language-turtle"><code id="dstack" class="language-turtle">Lädt…</code></pre>
-        <p>… den vollständigen Graphen <a href="https://codeberg.org/benjaminaaron/d-stack-kg/src/branch/main/data/2-enrich-kg/d-stack-kg.ttl" target="_blank" rel="noopener">hier ansehen</a></p>
+        <h2 id="artefakte">Alle semantischen Artefakte</h2>
+        <p class="lead">Die Artefakte, die in den Graphen fließen (das Vokabular oben beschreibt ihre Struktur):</p>
+        <ul>
+            <li><a href="https://codeberg.org/benjaminaaron/d-stack-kg/src/branch/main/data/2-enrich-kg/d-stack-kg.ttl" target="_blank" rel="noopener">d-stack-kg.ttl</a> &rarr; der technische Deutschland-Stack, gelifted aus der Tech-Stack Landkarte</li>
+            <li><a href="https://codeberg.org/benjaminaaron/d-stack-kg/src/branch/main/data/2-enrich-kg/pvog-leistungen.ttl" target="_blank" rel="noopener">pvog-leistungen.ttl</a> &rarr; eine Handvoll PVOG-Verwaltungsleistungen</li>
+            <li><a href="https://codeberg.org/benjaminaaron/d-stack-kg/src/branch/main/data/2-enrich-kg/fim-leistungen.ttl" target="_blank" rel="noopener">fim-leistungen.ttl</a> &rarr; FIM-Steckbriefe je LeiKa plus ein zentrales FIM-Datenschema</li>
+            <li><a href="https://codeberg.org/benjaminaaron/d-stack-kg/src/branch/main/data/2-enrich-kg/fit-connect.ttl" target="_blank" rel="noopener">fit-connect.ttl</a> &rarr; FIT-Connect-Zustellpunkte und die Fachdatenschemata, die sie empfangen</li>
+            <li><a href="https://codeberg.org/benjaminaaron/d-stack-kg/src/branch/main/authored/pvog-dstack-bridge.assumed.ttl" target="_blank" rel="noopener">pvog-dstack-bridge.assumed.ttl</a> &rarr; die manuell hergestellte, geratene Brücke von Leistung zu D-Stack-Elementen</li>
+        </ul>
     </main>
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-turtle.min.js"></script>
     <script type="module">
         // vite ?raw inlines the committed vocabulary as a string, nothing to fetch
         import vocab from "../authored/vocabulary.ttl?raw"
-        // the graph is ~7k lines, so import only its URL and preview the head
-        import dstackUrl from "../data/2-enrich-kg/d-stack-kg.ttl?url"
 
-        const render = (id, ttl) => {
-            const code = document.getElementById(id)
-            code.textContent = ttl
-            if (window.Prism) Prism.highlightElement(code)
-        }
-        render("vocab", vocab)
-
-        // Preview the first 100 lines
-        fetch(dstackUrl, { headers: { Range: "bytes=0-16383" } })
-            .then(r => r.text())
-            .then(ttl => render("dstack", ttl.split("\n").slice(0, 100).join("\n")))
+        const code = document.getElementById("vocab")
+        code.textContent = vocab
+        if (window.Prism) Prism.highlightElement(code)
     </script>
 </body>
 </html>

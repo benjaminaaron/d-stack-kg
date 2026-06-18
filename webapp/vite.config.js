@@ -32,6 +32,7 @@ export default defineConfig({
                 query: resolve(root, "query.html"),
                 landkarte: resolve(root, "use-case/landkarte.html"),
                 leistungen: resolve(root, "use-case/leistungen.html"),
+                fachdaten: resolve(root, "use-case/fachdaten.html"),
             },
         },
     },

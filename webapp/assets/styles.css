@@ -162,6 +162,33 @@ body.full { display: flex; flex-direction: column; min-height: 100dvh; }
 .elbtn .n { opacity: 0.6; }
 .answer:not(:empty) { background: #fffdf4; border-radius: 8px; padding: 0.75rem 1rem; margin-top: 0.6rem; }
 .answer-list { font-size: 0.9rem; opacity: 0.75; }
+/* collapsible Datenfeldgruppen: the disclosure triangle is the marker, so drop the li bullet */
+.answer-list li.grp { list-style: none; }
+.answer-list summary { cursor: pointer; }
+/* the Leistung picker: a normal select on its own line, a touch more present than the native
+   default (long option labels are middle-ellipsised in JS so the closed display still fits) */
+.picker-row { margin: 0.6rem 0 0; }
+#leistung-picker {
+    display: block;
+    max-width: min(100%, 36rem);
+    margin-top: 0.25rem;
+    font: inherit;
+    padding: 0.3rem 0.5rem;
+    color: var(--page-fg);
+    background: var(--page-bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+/* Abfragebeispiel 1 profile: each Fachdatenschema as its own bordered card, so its
+   Datenfelder section and field-query link clearly belong to that schema */
+.schema-card { border: 1px solid var(--border); border-radius: 8px; padding: 0.4rem 0.9rem 0.7rem; margin: 0.9rem 0 0; }
+.schema-card .answer-head { margin: 0.55rem 0; }
+
+/* Abfragebeispiel 2: each Zustellpunkt as a small multi-line card (no ·-concatenation) */
+.phil-card { margin-bottom: 0.7rem; }
+.phil-card .muted { margin-top: 0.1rem; }
 
 .filter-controls select { font: inherit; margin: 0 0.2rem; }
 

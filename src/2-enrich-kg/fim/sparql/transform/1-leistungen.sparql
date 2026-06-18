@@ -1,0 +1,53 @@
+PREFIX rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX xyz:    <http://sparql.xyz/facade-x/data/>
+PREFIX fx:     <http://sparql.xyz/facade-x/ns/>
+PREFIX cpsv:   <http://purl.org/vocab/cpsv#>
+PREFIX dct:    <http://purl.org/dc/terms/>
+PREFIX skos:   <http://www.w3.org/2004/02/skos/core#>
+PREFIX xsd:    <http://www.w3.org/2001/XMLSchema#>
+PREFIX ds:     <https://deutschland-stack.gov.de/id/>
+PREFIX fim:    <https://deutschland-stack.gov.de/fim#>
+
+# Enrich the LeiKa-keyed Leistung hubs with their canonical FIM Steckbrief (one flat
+# record per LeiKa, prepared by fetch.js): the name (dct:title), the legal basis
+# (cpsv:follows → cpsv:Rule, the "vom Gesetzestext" link), the LeiKa Leistungstyp, and
+# the OZG-Themenfeld it groups under. Keyed by LeiKa, so it lands on the same hub the
+# FIT-Connect layer created. Codelist-coded facts (typisierung, PV-Lagen, …) are deferred.
+CONSTRUCT {
+    ?leistung a cpsv:PublicService ;
+        dct:title ?name ;
+        dct:alternative ?altName ;
+        fim:leistungstyp ?leistungstyp ;
+        cpsv:follows ?rule ;
+        dct:subject ?themenfeld ;
+        dct:source ?src ;
+        dct:date ?date .
+    ?rule a cpsv:Rule ; dct:description ?legal .
+    ?themenfeld a skos:Concept ; skos:prefLabel ?themenfeldLabel .
+} WHERE {
+    ?root a fx:root ; ?slot ?rec .
+    FILTER(STRSTARTS(STR(?slot), STR(rdf:_)))
+    ?rec xyz:leika ?leika ;
+        xyz:name ?nameStr ;
+        xyz:sourceUrl ?srcStr ;
+        xyz:retrievedAt ?retr .
+    BIND(IRI(CONCAT(STR(ds:), "leistung-leika-", ?leika)) AS ?leistung)
+    BIND(STRLANG(?nameStr, "de") AS ?name)
+    BIND(IRI(?srcStr) AS ?src)
+    BIND(STRDT(?retr, xsd:date) AS ?date)
+    OPTIONAL { ?rec xyz:altName ?altStr . BIND(STRLANG(?altStr, "de") AS ?altName) }
+    OPTIONAL { ?rec xyz:leistungstyp ?leistungstyp }
+    # NB: re-match leika INSIDE this OPTIONAL (?leikaR). A BIND in a single-triple OPTIONAL
+    # that references a variable bound OUTSIDE it stays unbound in this engine (Comunica/
+    # sparqljs quirk), which would silently drop the whole Rule.
+    OPTIONAL {
+        ?rec xyz:rechtsgrundlagen ?legalStr ; xyz:leika ?leikaR .
+        BIND(STRLANG(?legalStr, "de") AS ?legal)
+        BIND(IRI(CONCAT(STR(ds:), "rechtsgrundlage-leika-", ?leikaR)) AS ?rule)
+    }
+    OPTIONAL {
+        ?rec xyz:themenfeld ?tf ; xyz:themenfeldLabel ?tfLabelStr .
+        BIND(IRI(CONCAT(STR(ds:), "ozg-themenfeld-", ?tf)) AS ?themenfeld)
+        BIND(STRLANG(?tfLabelStr, "de") AS ?themenfeldLabel)
+    }
+}

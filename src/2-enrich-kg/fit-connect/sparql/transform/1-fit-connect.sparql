@@ -1,0 +1,106 @@
+PREFIX rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs:   <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xyz:    <http://sparql.xyz/facade-x/data/>
+PREFIX fx:     <http://sparql.xyz/facade-x/ns/>
+PREFIX cpsv:   <http://purl.org/vocab/cpsv#>
+PREFIX dct:    <http://purl.org/dc/terms/>
+PREFIX schema: <http://schema.org/>
+PREFIX xsd:    <http://www.w3.org/2001/XMLSchema#>
+PREFIX ds:     <https://deutschland-stack.gov.de/id/>
+PREFIX dstack: <https://deutschland-stack.gov.de/vocab#>
+PREFIX fim:    <https://deutschland-stack.gov.de/fim#>
+PREFIX fitconnect: <https://deutschland-stack.gov.de/fit-connect#>
+
+# Transform the raw Facade-X of the FIT-Connect destination reads (one flat record per
+# Leistung × Fachdatenschema, prepared by fetch.js) into the graph's third layer:
+#   Leistung --dstack:zustellpunkt--> Zustellpunkt (region, status, source)
+#   Leistung --dct:conformsTo--> Fachdatenschema (its data schema; URN or URL)
+# fetch.js keys each Leistung by a slug: "leika-<LeiKa>" where a LeiKa exists (then fim:leikaId is
+# set), else "govos-<id>" for a govOS/THAVEL service that has NO federal LeiKa — that one carries
+# dct:identifier (its vendor URN) and dct:title (from its schema) instead, and the absence of
+# fim:leikaId is itself the finding: it sits outside the federal LeiKa join. Governed XÖV standards
+# (xrepoUrl set by fetch.js) are additionally typed dstack:ReferenzierterStandard / inLandkarte false.
+CONSTRUCT {
+    ?leistung a cpsv:PublicService ;
+        fim:leikaId ?leika ;
+        dct:identifier ?govosId ;
+        dct:title ?ltitle ;
+        fitconnect:zustellpunkt ?zp ;
+        dct:conformsTo ?schema .
+    ?zp a fitconnect:Zustellpunkt ;
+        fitconnect:status ?status ;
+        dct:spatial ?regionIri ;
+        dct:source ?src ;
+        dct:date ?date .
+    ?schema a dstack:Fachdatenschema ;
+        dct:source ?schemaIri ;
+        dct:format ?mime ;
+        dstack:serialisiertAls ?formatTile ;
+        schema:version ?ver ;
+        rdfs:label ?label ;
+        dct:publisher ?pub ;
+        a ?refStdClass ;
+        dstack:inLandkarte ?inLandkarte ;
+        rdfs:seeAlso ?xrepo .
+    ?parent fim:datenfeld ?datenfeld .
+    ?datenfeld a ?nodeType ;
+        rdfs:label ?flabel ;
+        dct:identifier ?fkey ;
+        fim:baustein ?baustein ;
+        rdfs:seeAlso ?fimportal .
+} WHERE {
+    ?root a fx:root ; ?slot ?rec .
+    FILTER(STRSTARTS(STR(?slot), STR(rdf:_)))
+    ?rec xyz:leistungSlug ?lslug ;
+        xyz:destinationId ?did ;
+        xyz:status ?status ;
+        xyz:regionKey ?regionKey ;
+        xyz:schemaUri ?schemaUriStr ;
+        xyz:mimeType ?mime ;
+        xyz:schemaSlug ?slug ;
+        xyz:sourceUrl ?srcStr ;
+        xyz:retrievedAt ?retr .
+    BIND(IRI(CONCAT(STR(ds:), "leistung-", ?lslug)) AS ?leistung)
+    # LeiKa hubs carry fim:leikaId; a govOS service (no LeiKa) carries dct:identifier + dct:title
+    OPTIONAL { ?rec xyz:leika ?leika }
+    OPTIONAL { ?rec xyz:govosIdentifier ?govosId }
+    OPTIONAL { ?rec xyz:leistungTitle ?ltitle }
+    BIND(IRI(CONCAT(STR(ds:), "zustellpunkt-", ?did)) AS ?zp)
+    BIND(IRI(CONCAT(STR(ds:), "fachdatenschema-", ?slug)) AS ?schema)
+    BIND(IRI(CONCAT("http://dcat-ap.de/def/politicalGeocoding/regionalKey/", ?regionKey)) AS ?regionIri)
+    BIND(IRI(?srcStr) AS ?src)
+    BIND(IRI(?schemaUriStr) AS ?schemaIri)
+    BIND(STRDT(?retr, xsd:date) AS ?date)
+    # the Landkarte data-format tile the schema is serialised in (XML / JSON) — the positive bridge
+    OPTIONAL { ?rec xyz:formatTileSlug ?formatSlug . BIND(IRI(CONCAT(STR(ds:), ?formatSlug)) AS ?formatTile) }
+    # the actual Datenfelder a citizen submits — only bespoke per-service JSON schemas carry them.
+    # fetch.js flattened the schema's field tree (Datenfeldgruppe → Datenfelder) to one node per row;
+    # parentSlug "ROOT" attaches a node to the Fachdatenschema, otherwise to its parent node. Each
+    # node may cite the FIM Baustein it is based on and — where that id is central — a resolved link.
+    OPTIONAL {
+        ?rec xyz:fields ?fieldsC ; xyz:schemaSlug ?fSchemaSlug .
+        ?fieldsC ?fSlot ?field .
+        FILTER(STRSTARTS(STR(?fSlot), STR(rdf:_)))
+        ?field xyz:nodeSlug ?nodeSlug ; xyz:parentSlug ?parentSlug ;
+            xyz:key ?fkey ; xyz:label ?flabel ; xyz:kind ?kind .
+        BIND(IRI(CONCAT(STR(ds:), "datenfeld-", ?fSchemaSlug, "-", ?nodeSlug)) AS ?datenfeld)
+        # rebuild the schema IRI from the inner ?fSchemaSlug (NOT the outer ?schema): referencing a
+        # variable bound outside the OPTIONAL inside this BIND leaves it unbound in Comunica
+        BIND(IF(?parentSlug = "ROOT",
+            IRI(CONCAT(STR(ds:), "fachdatenschema-", ?fSchemaSlug)),
+            IRI(CONCAT(STR(ds:), "datenfeld-", ?fSchemaSlug, "-", ?parentSlug))) AS ?parent)
+        BIND(IF(?kind = "group", fim:Datenfeldgruppe, fim:Datenfeld) AS ?nodeType)
+        OPTIONAL { ?field xyz:baustein ?baustein }
+        OPTIONAL { ?field xyz:fimportal ?fimportalStr . BIND(IRI(?fimportalStr) AS ?fimportal) }
+    }
+    OPTIONAL { ?rec xyz:schemaVersion ?ver }
+    OPTIONAL { ?rec xyz:schemaPublisher ?pub }
+    OPTIONAL { ?rec xyz:schemaLabel ?label }
+    # the gap marker + XRepository link only for governed XÖV standards (xrepoUrl set by fetch.js)
+    OPTIONAL {
+        ?rec xyz:xrepoUrl ?xrepoStr .
+        BIND(IRI(?xrepoStr) AS ?xrepo)
+        BIND(dstack:ReferenzierterStandard AS ?refStdClass)
+        BIND(false AS ?inLandkarte)
+    }
+}
