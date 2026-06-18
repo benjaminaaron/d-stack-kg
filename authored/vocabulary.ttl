@@ -35,7 +35,9 @@
 @prefix cpsv:   <http://purl.org/vocab/cpsv#> .                # Core Public Service Vocabulary
 @prefix m8g:    <http://data.europa.eu/m8g/> .                 # CPSV-AP / CCCEV cluster (CPSV-AP binds this as cv:)
 @prefix fim:    <https://deutschland-stack.gov.de/fim#> .      # local, unofficial RDF rendering of FIM keys
-@prefix gerps:  <https://w3id.org/gerps/ontology/process/> .   # GerPS-Process (openDVA / Uni Jena)
+@prefix gerps:   <https://w3id.org/gerps/ontology/process/> .   # GerPS-Process (openDVA / Uni Jena)
+@prefix gerpsdf: <https://w3id.org/gerps/ontology/datafield/> . # GerPS-Datafield (openDVA's RDF rendering of XDatenfelder)
+@prefix fitconnect: <https://deutschland-stack.gov.de/fit-connect#> . # local, unofficial RDF rendering of FIT-Connect concepts (no official RDF / GerPS term exists)
 
 
 # --- Vocabulary description ---------------------------------------------------
@@ -177,6 +179,89 @@ fim:leikaId a rdf:Property ;
     rdfs:seeAlso <https://w3id.org/gerps/ontology/process/GPP_0000030> ,
                  <https://www.xrepository.de/details/urn:xoev-de:fim:codeliste:leika> .
 
+fim:leistungstyp a rdf:Property ;
+    rdfs:label "Leistungstyp"@de , "service type"@en ;
+    rdfs:domain cpsv:PublicService ; rdfs:range rdfs:Literal ;
+    rdfs:comment "The LeiKa Leistungstyp from the FIM Steckbrief: 'lo' (Leistungsobjekt), 'lov' (mit Verrichtung) or 'lovd' (mit Verrichtung und Detaillierung). Local, unofficial FIM term."@en .
+
+
+# =============================================================================
+# The FIT-Connect / Fachdatenschema layer
+# -----------------------------------------------------------------------------
+# A third layer joins services to the data they collect: from a FIT-Connect Zustellpunkt
+# (read anonymously) we learn, per Leistung (by LeiKa), the Fachdatenschema its submissions
+# must conform to, a real link FIM itself does not expose. The schema is either a governed
+# XÖV standard (e.g. XSozial) or a bespoke per-service JSON schema; dct:conformsTo links it,
+# dct:source is its authoritative URN/URL. The Zustellpunkt lives in our (unofficial)
+# fitconnect: namespace, since FIT-Connect publishes no RDF and GerPS covers the process,
+# not the transmission layer. dstack:ReferenzierterStandard + dstack:inLandkarte mark the
+# referenced XÖV standards absent from the Tech-Stack-Landkarte: a queryable finding, not a
+# claim they belong there. The Datenfelder a schema is built from live in fim: (see below).
+# =============================================================================
+
+fitconnect:Zustellpunkt a rdfs:Class ;
+    rdfs:label "Zustellpunkt"@de , "delivery point"@en ;
+    rdfs:comment "A FIT-Connect delivery point where a Behörde receives applications, for the Leistungen and region it serves."@en ;
+    rdfs:seeAlso <https://docs.fitko.de/fit-connect/> .
+
+fitconnect:zustellpunkt a rdf:Property ;
+    rdfs:label "Zustellpunkt"@de , "delivery point"@en ;
+    rdfs:domain cpsv:PublicService ; rdfs:range fitconnect:Zustellpunkt ;
+    rdfs:comment "A FIT-Connect delivery point that receives applications for this Leistung (for the region it covers). A Leistung may have several."@en .
+
+fitconnect:status a rdf:Property ;
+    rdfs:label "Status"@de , "status"@en ;
+    rdfs:domain fitconnect:Zustellpunkt ; rdfs:range rdfs:Literal ;
+    rdfs:comment "The FIT-Connect Zustellpunkt status (e.g. 'active'), as returned by the Submission API."@en .
+
+dstack:Fachdatenschema a rdfs:Class ;
+    rdfs:label "Fachdatenschema"@de , "subject data schema"@en ;
+    rdfs:comment "The data schema a Leistung's submission must conform to, declared by a Zustellpunkt: a governed standard or a bespoke per-service schema (dct:source is its authoritative URN or URL)."@en .
+
+dstack:ReferenzierterStandard a rdfs:Class ;
+    rdfs:label "referenzierter Standard"@de , "referenced standard"@en ;
+    rdfs:comment "A governed standard that real administrative data references (e.g. the XÖV standard XSozial) but that is absent from the Tech-Stack-Landkarte (dstack:inLandkarte false). A finding, not a claim that it belongs there."@en .
+
+dstack:inLandkarte a rdf:Property ;
+    rdfs:label "in der Landkarte"@de , "in the Landkarte"@en ;
+    rdfs:domain dstack:ReferenzierterStandard ; rdfs:range xsd:boolean ;
+    rdfs:comment "Whether this referenced standard appears as a tile in the Tech-Stack-Landkarte. false marks a coverage gap the graph surfaces."@en .
+
+dstack:serialisiertAls a rdf:Property ;
+    rdfs:label "serialisiert als"@de , "serialised as"@en ;
+    rdfs:domain dstack:Fachdatenschema ; rdfs:range dstack:StackElement ;
+    rdfs:comment "The Landkarte data-format tile (e.g. XML, JSON) a Fachdatenschema is serialised in: the format is a tile even where the domain standard (e.g. XSozial) is not. A format identification, not a guess."@en .
+
+# The Datenfeld is a FIM concept (the FIM Baukasten), kept in fim: though the graph reaches it
+# via the FIT-Connect Fachdatenschema. A schema's fields form a tree (Datenfeldgruppe contains
+# Datenfelder / sub-groups), as the Baukasten does. We keep a lightweight local class (label +
+# cited Baustein) and align it upward, like fim:leikaId: rdfs:subClassOf openDVA's GerPS-Datafield
+# (its published RDF rendering), rdfs:seeAlso the XÖV standard XDatenfelder (KoSIT/XRepository)
+# that GerPS-Datafield renders.
+fim:Datenfeld a rdfs:Class ;
+    rdfs:subClassOf gerpsdf:GPD_0000004 ;   # GerPS-Datafield "Versioned datafield"
+    rdfs:label "Datenfeld"@de , "data field"@en ;
+    rdfs:comment "A single (leaf) data field a submission collects, defined by its Fachdatenschema. Only bespoke per-service (JSON) schemas expose these; generic standards like XSozial-Basis do not."@en ;
+    rdfs:seeAlso <https://w3id.org/gerps/ontology/datafield/GPD_0000004> ,
+                 <https://www.xrepository.de/details/urn:xoev-de:fim:standard:xdatenfelder> .
+
+fim:Datenfeldgruppe a rdfs:Class ;
+    rdfs:subClassOf gerpsdf:GPD_0000005 ;   # GerPS-Datafield "Versioned datafield group"
+    rdfs:label "Datenfeldgruppe"@de , "data field group"@en ;
+    rdfs:comment "A group of Datenfelder (and sub-groups) within a Fachdatenschema — the FIM Datenfeldgruppe. It contains its members via fim:datenfeld."@en ;
+    rdfs:seeAlso <https://w3id.org/gerps/ontology/datafield/GPD_0000005> ,
+                 <https://www.xrepository.de/details/urn:xoev-de:fim:standard:xdatenfelder> .
+
+fim:datenfeld a rdf:Property ;
+    rdfs:label "Datenfeld"@de , "data field"@en ;
+    rdfs:comment "Containment edge: a Fachdatenschema or Datenfeldgruppe contains this member (a fim:Datenfeld or nested fim:Datenfeldgruppe), chaining down the field tree."@en .
+
+fim:baustein a rdf:Property ;
+    rdfs:label "FIM-Baustein"@de , "FIM building block"@en ;
+    rdfs:range rdfs:Literal ;
+    rdfs:comment "The FIM Baukasten id (a Datenfeld 'F…' or Datenfeldgruppe 'G…') a field/group declares itself based on, read from the schema's own text. Local, unofficial term. Where the id resolves centrally, the node also carries an rdfs:seeAlso to its FIM Portal page; its absence flags a block not centrally published (e.g. a vendor's own Nummernkreis)."@en ;
+    rdfs:seeAlso <https://fimportal.de/fields/baukasten> .
+
 
 # =============================================================================
 # Properties — Landkarte projection facts
@@ -190,6 +275,11 @@ dstack:landkartePosition a rdf:Property ;
     rdfs:label "Landkarte-Position"@de , "Landkarte position"@en ;
     rdfs:range xsd:integer ;
     rdfs:comment "Source order in the Landkarte (Schicht, Gruppe, item-within-Gruppe). Used on items and taxonomy concepts, hence no rdfs:domain."@en .
+
+dstack:landkarteItemId a rdf:Property ;
+    rdfs:label "Landkarte-Item-ID"@de , "Landkarte item id"@en ;
+    rdfs:domain dstack:StackElement ; rdfs:range rdfs:Literal ;
+    rdfs:comment "The landscape2 item id of a StackElement (its category/subcategory/name slug, e.g. '-plattform---daten--extensible-markup-language-xml'), taken verbatim from the published full.json. It is the tile's deep-link: technologie.deutschland-stack.gov.de/?item=<id>. A projection fact, not domain semantics."@en .
 
 dstack:landkarteLogoFile a rdf:Property ;
     rdfs:label "Landkarte-Logodatei"@de , "Landkarte logo file"@en ;
