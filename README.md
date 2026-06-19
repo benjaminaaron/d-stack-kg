@@ -107,7 +107,7 @@ The [deploy](.forgejo/workflows/deploy.yml) runs `landkarte:prepare` and `landka
 Profiles the graph into the SHACL config that drives the in-browser [Sparnatural](https://github.com/sparna-git/Sparnatural) visual query builder on the Query page (one class per `rdf:type`, one facet per predicate used, widgets inferred from value types). Labels come from the [vocabulary](authored/vocabulary.ttl); a blocklist drops build-support predicates.
 
 ```bash
-npm run query-builder:prepare # the three graph layers + vocabulary + blocklist → webapp/public/dstack.sparnatural.ttl
+npm run query-builder:prepare # the full composed graph + vocabulary + blocklist → webapp/public/dstack.sparnatural.ttl
 ```
 
 ## Webapp

@@ -7,11 +7,27 @@
 // src/3-prepare-webapp/visual-query-builder/build-config.js (e.g. :StackElement,
 // :StackElement_subject). Keep them in sync if that script's shape naming changes.
 
-const PREFIXES = `# PREFIX lines are shorthands for the long vocabulary IRIs used below
-PREFIX dstack: <https://deutschland-stack.gov.de/vocab#>
+const PREFIXES = `PREFIX dstack: <https://deutschland-stack.gov.de/vocab#>
 PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX dct: <http://purl.org/dc/terms/>
-PREFIX schema: <http://schema.org/>`
+PREFIX schema: <http://schema.org/>
+PREFIX cpsv: <http://purl.org/vocab/cpsv#>
+PREFIX m8g: <http://data.europa.eu/m8g/>
+PREFIX archimate: <https://purl.org/archimate#>
+PREFIX mus: <https://example.org/musterstadt#>`
+
+// Every sparql example interpolates the full PREFIXES block above; trimPrefixes then drops the
+// PREFIX lines whose prefix never appears in the query body, so each example shows only what it uses.
+const trimPrefixes = sparql => {
+    const all = sparql.split("\n")
+    const body = all.filter(l => !/^(# PREFIX lines|PREFIX )/.test(l)).join("\n").replace(/^\n+/, "")
+    const kept = all.filter(l => {
+        const m = l.match(/^PREFIX (\w+):/)
+        return m && new RegExp(`\\b${m[1]}:`).test(body)
+    })
+    return `${kept.join("\n")}\n\n${body}`
+}
 
 // --- Sparnatural query-JSON builders (keep the nested literal readable) -------
 const CONFIG = "https://deutschland-stack.gov.de/sparnatural-config#"
@@ -51,7 +67,7 @@ const visualQuery = steps => {
     )
 }
 
-export const EXAMPLES = [
+const RAW_EXAMPLES = [
     {
         name: "Alle Stack-Elemente durchsuchen",
         sparql: `${PREFIXES}
@@ -153,6 +169,45 @@ SELECT ?criterion ?level ?percent WHERE {
 ORDER BY ?criterion`,
     },
     {
+        name: "Welche D-Stack-Elemente nutzt eine PVOG-Leistung?",
+        sparql: `${PREFIXES}
+
+# Über die administrative Ebene: jede Verwaltungsleistung (PVOG) mit den D-Stack-Elementen,
+# auf denen ihr Onlinedienst aufbaut. Die Brücke dstack:realisiertDurch ist von Hand angenommen.
+SELECT ?leistung ?element WHERE {
+    ?l a cpsv:PublicService ;
+        dct:title ?leistung ;
+        m8g:hasChannel/dstack:realisiertDurch/skos:prefLabel ?element .
+}
+ORDER BY ?leistung ?element`,
+    },
+    {
+        name: "Vom Gesetz zum Fachdatenschema (FIM & FIT-Connect)",
+        sparql: `${PREFIXES}
+
+# Die durchgehende Kette über die echte LeiKa-ID: jede Leistung mit ihrer Rechtsgrundlage
+# (aus dem FIM-Steckbrief) und dem Fachdatenschema, dem ihre Einreichung genügt (FIT-Connect).
+SELECT ?leistung ?gesetz ?fachdatenschema WHERE {
+    ?l dct:title ?leistung ;
+        cpsv:follows/dct:description ?gesetz ;       # die Rechtsgrundlage
+        dct:conformsTo/rdfs:label ?fachdatenschema . # das Fachdatenschema
+}
+ORDER BY ?leistung`,
+    },
+    {
+        name: "Musterstadts IT-Komponenten und ihre Standards",
+        sparql: `${PREFIXES}
+
+# Die fiktive kommunale IT-Landschaft: jede Komponente von "Stadt Musterstadt" und der
+# Standard, dem sie folgt. Leeres ?standard = proprietäre Insellösung ohne offenen Standard.
+SELECT ?komponente ?standard WHERE {
+    mus:it-landschaft dct:hasPart ?c .
+    ?c archimate:name ?komponente .
+    OPTIONAL { ?c dct:conformsTo ?std . ?std (skos:prefLabel|rdfs:label) ?standard }
+}
+ORDER BY ?komponente`,
+    },
+    {
         name: "Elemente und ihre Kategorie",
         visual: visualQuery([
             { label: "Stack element", cls: "StackElement", pick: true },
@@ -174,4 +229,36 @@ ORDER BY ?criterion`,
             { label: "Category", cls: "Concept", via: "Concept_broader", pick: true },
         ]),
     },
+    {
+        // four hops across three layers: PVOG service -> its online channel -> the (assumed) Stack
+        // element it runs on -> that element's category
+        name: "Von der Verwaltungsleistung bis zur Stack-Kategorie",
+        visual: visualQuery([
+            { label: "Public service", cls: "PublicService", pick: true },
+            { label: "Online service", cls: "Channel", via: "PublicService_hasChannel" },
+            { label: "Stack element", cls: "StackElement", via: "Channel_realisiertDurch" },
+            { label: "Category", cls: "Concept", via: "StackElement_subject", pick: true },
+        ]),
+    },
+    {
+        // the municipal landscape into the taxonomy: component -> the Stack element it follows -> category
+        name: "Von Musterstadts Komponente zur Stack-Kategorie",
+        visual: visualQuery([
+            { label: "Component", cls: "ApplicationComponent", pick: true },
+            { label: "Stack element", cls: "StackElement", via: "ApplicationComponent_conformsTo" },
+            { label: "Category", cls: "Concept", via: "StackElement_subject", pick: true },
+        ]),
+    },
+    {
+        // the planning layer: the chatbot project -> the capabilities it needs -> their candidate elements
+        name: "Chatbot-Projekt: Fähigkeiten und Kandidaten-Elemente",
+        visual: visualQuery([
+            { label: "Project", cls: "WorkPackage", pick: true },
+            { label: "Capability", cls: "Capability", via: "WorkPackage_benoetigt", pick: true },
+            { label: "Stack element", cls: "StackElement", via: "Capability_kandidat", pick: true },
+        ]),
+    },
 ]
+
+// trim each sparql example's prefix block to only the prefixes it uses; visual examples pass through
+export const EXAMPLES = RAW_EXAMPLES.map(e => e.sparql ? { ...e, sparql: trimPrefixes(e.sparql) } : e)

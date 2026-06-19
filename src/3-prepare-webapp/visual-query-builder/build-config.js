@@ -1,8 +1,10 @@
 /**
  * Use case · Query builder — generate the Sparnatural configuration
  *
- * Profiles the knowledge graph (data/2-enrich-kg/d-stack-kg.ttl) and emits the SHACL
- * config that drives the in-browser visual query builder: one NodeShape per class,
+ * Profiles the full composed knowledge graph (the same layers graph.js loads: technical,
+ * PVOG/FIM/FIT-Connect, the assumed bridge, the fictional Musterstadt landscape + chatbot
+ * scenario) and emits the SHACL config that drives the in-browser visual query builder:
+ * one NodeShape per class,
  * one property shape per predicate actually used on that class's instances, with the
  * widget chosen from the value type (string -> Search, number -> Number, IRI -> List).
  * Human labels come from the vocabulary (authored/vocabulary.ttl); a small blocklist
@@ -12,7 +14,8 @@
  * Run: npm run query-builder:prepare  (reads the committed graph + vocabulary)
  */
 
-import { ROOT, DSTACK_TTL, PVOG_LEISTUNGEN_TTL, PVOG_DSTACK_BRIDGE_TTL, VOCABULARY_TTL } from "../../common/utils.js"
+import { ROOT, DSTACK_TTL, PVOG_LEISTUNGEN_TTL, FIM_LEISTUNGEN_TTL, FIT_CONNECT_TTL,
+    PVOG_DSTACK_BRIDGE_TTL, MUSTERSTADT_LANDSCHAFT_TTL, MUSTERSTADT_CHATBOT_TTL, VOCABULARY_TTL } from "../../common/utils.js"
 import { storeFromTurtles } from "@foerderfunke/sem-ops-utils/core"
 import { queryEngine } from "@foerderfunke/sem-ops-utils/sparql"
 import fs from "fs"
@@ -27,6 +30,10 @@ const DCT = "http://purl.org/dc/terms/"
 const DSTACK = "https://deutschland-stack.gov.de/vocab#"
 const CPSV = "http://purl.org/vocab/cpsv#"
 const M8G = "http://data.europa.eu/m8g/"
+const FIM = "https://deutschland-stack.gov.de/fim#"
+const FITCONNECT = "https://deutschland-stack.gov.de/fit-connect#"
+const ARCHIMATE = "https://purl.org/archimate#"
+const DCAT = "http://www.w3.org/ns/dcat#"
 
 // prefixes for the emitted Turtle; "" is the config's own shape namespace
 const PREFIXES = {
@@ -35,6 +42,7 @@ const PREFIXES = {
     rdf: RDF, rdfs: RDFS, xsd: XSD, owl: "http://www.w3.org/2002/07/owl#",
     core: "http://data.sparna.fr/ontologies/sparnatural-config-core#",
     skos: SKOS, dct: DCT, schema: SCHEMA, dstack: DSTACK,
+    cpsv: CPSV, m8g: M8G, fim: FIM, fitconnect: FITCONNECT, archimate: ARCHIMATE, dcat: DCAT,
     "": "https://deutschland-stack.gov.de/sparnatural-config#",
 }
 const CONFIG_IRI = "https://deutschland-stack.gov.de/sparnatural-config"
@@ -49,7 +57,7 @@ const BLOCK_CLASSES = new Set([
 // and the konformitaet inverse back-pointer
 const BLOCK_PROPS = new Set([
     RDF + "type",
-    DSTACK + "landkartePosition", DSTACK + "landkarteLogoFile", DSTACK + "landkarteAnnotationKey",
+    DSTACK + "landkartePosition", DSTACK + "landkarteLogoFile", DSTACK + "landkarteAnnotationKey", DSTACK + "landkarteItemId",
     DSTACK + "element",
     SKOS + "inScheme", SKOS + "topConceptOf", SKOS + "hasTopConcept",
     DCT + "source", DCT + "date", RDFS + "seeAlso", RDFS + "comment",
@@ -59,6 +67,7 @@ const BLOCK_PROPS = new Set([
 const EXTERNAL_LABELS = {
     [SKOS + "Concept"]: { en: "Category", de: "Kategorie" },
     [SKOS + "prefLabel"]: { en: "name", de: "Name" },
+    [RDFS + "label"]: { en: "name", de: "Name" },
     [SKOS + "broader"]: { en: "broader", de: "Oberbegriff" },
     [SKOS + "notation"]: { en: "code", de: "Code" },
     [DCT + "subject"]: { en: "category", de: "Kategorie" },
@@ -83,6 +92,24 @@ const EXTERNAL_LABELS = {
     [M8G + "hasChannel"]: { en: "online service", de: "Onlinedienst" },
     [M8G + "Cost"]: { en: "Cost", de: "Kosten" },
     [M8G + "hasCost"]: { en: "cost", de: "Kosten" },
+    // the IT-landscape layer: ArchiMate (the ontology) + DCAT, plus the dct: join predicates.
+    // The fim:/fitconnect:/dstack: terms are labelled in vocabulary.ttl, so they need nothing here.
+    [ARCHIMATE + "ApplicationComponent"]: { en: "Application component", de: "Anwendungskomponente" },
+    [ARCHIMATE + "ApplicationService"]: { en: "Application service", de: "Anwendungsdienst" },
+    [ARCHIMATE + "TechnologyService"]: { en: "Technology service", de: "Technologiedienst" },
+    [ARCHIMATE + "SystemSoftware"]: { en: "System software", de: "Systemsoftware" },
+    [ARCHIMATE + "Node"]: { en: "Node", de: "Infrastrukturknoten" },
+    [ARCHIMATE + "WorkPackage"]: { en: "Project", de: "Vorhaben" },
+    [ARCHIMATE + "Capability"]: { en: "Capability", de: "Fähigkeit" },
+    [ARCHIMATE + "name"]: { en: "name", de: "Name" },
+    [ARCHIMATE + "serving"]: { en: "serves", de: "bedient" },
+    [DCAT + "Dataset"]: { en: "IT landscape", de: "IT-Landschaft" },
+    [DCT + "conformsTo"]: { en: "conforms to", de: "konform zu" },
+    [DCT + "hasPart"]: { en: "has component", de: "Komponente" },
+    [DCT + "format"]: { en: "format", de: "Format" },
+    [DCT + "publisher"]: { en: "publisher", de: "Herausgeber" },
+    [DCT + "provenance"]: { en: "provenance", de: "Herkunft" },
+    [DCT + "alternative"]: { en: "alternative name", de: "alternative Bezeichnung" },
 }
 
 const NUMERIC = new Set(["integer", "decimal", "double", "float", "long", "int", "short",
@@ -92,9 +119,13 @@ const TEMPORAL = new Set([XSD + "date", XSD + "dateTime"])
 
 // --- profile the graph with SPARQL -------------------------------------------
 
-// profile the whole graph the Query page exposes: the technical layer plus the
-// administrative layers (services + bridge), composed into one store
-const graph = storeFromTurtles([DSTACK_TTL, PVOG_LEISTUNGEN_TTL, PVOG_DSTACK_BRIDGE_TTL].map(f => fs.readFileSync(f, "utf8")))
+// profile the whole graph the Query page exposes (the same layers graph.js composes): the
+// technical layer, the administrative layers (PVOG services, FIM Steckbriefe, FIT-Connect
+// schemas, the assumed bridge) and the fictional municipal IT landscape + its chatbot scenario
+const graph = storeFromTurtles([
+    DSTACK_TTL, PVOG_LEISTUNGEN_TTL, FIM_LEISTUNGEN_TTL, FIT_CONNECT_TTL,
+    PVOG_DSTACK_BRIDGE_TTL, MUSTERSTADT_LANDSCHAFT_TTL, MUSTERSTADT_CHATBOT_TTL,
+].map(f => fs.readFileSync(f, "utf8")))
 const vocab = storeFromTurtles([fs.readFileSync(VOCABULARY_TTL, "utf8")])
 
 const select = async (query, store) => {
@@ -169,10 +200,12 @@ const labelTurtle = labels => Object.entries(labels)
 
 // the property that names instances of a class (so its dropdown/results read well).
 // dct:title covers the EU public-service layer (cpsv:PublicService, m8g:LifeEvent,
-// m8g:Channel), which uses dct:title rather than skos:prefLabel for names.
+// m8g:Channel); archimate:name covers the IT-landscape components (which use neither
+// skos:prefLabel nor dct:title), so their dropdowns show names and links into them stay selectable.
 const labelProp = props => props.has(SKOS + "prefLabel") ? SKOS + "prefLabel"
     : props.has(RDFS + "label") ? RDFS + "label"
-    : props.has(DCT + "title") ? DCT + "title" : null
+    : props.has(DCT + "title") ? DCT + "title"
+    : props.has(ARCHIMATE + "name") ? ARCHIMATE + "name" : null
 
 // widget + range/datatype for a profiled property, or null to skip it
 const classify = e => {
@@ -238,7 +271,7 @@ const propBlock = (cls, entry, order) => {
 
 const lines = [
     "# GENERATED by src/3-prepare-webapp/visual-query-builder/build-config.js — do not edit by hand.",
-    "# Profiles data/2-enrich-kg/d-stack-kg.ttl; labels from authored/vocabulary.ttl.",
+    "# Profiles the full composed graph (all enrich layers + the authored landscape/scenario); labels from authored/vocabulary.ttl.",
     "# Drives the in-browser Sparnatural query builder on the webapp's Query page.",
     "",
     ...Object.entries(PREFIXES).map(([pfx, ns]) => `@prefix ${pfx}: <${ns}>.`),
