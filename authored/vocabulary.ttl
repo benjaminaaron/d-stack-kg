@@ -6,7 +6,7 @@
 # This is a plain RDFS description, not an OWL ontology: it documents what
 # the terms mean, it does not impose formal semantics or reasoning.
 #
-# Companion prose: modeling-choices.md (the judgment calls behind these terms).
+# Companion prose: modeling-notes.md (the judgment calls behind these terms).
 #
 # The graph's shape, in brief: a SKOS taxonomy (ds:landkarte ConceptScheme →
 # Schichten → Gruppen) classifies a set of dstack:StackElement items; each item
@@ -174,7 +174,7 @@ dstack:realisiertDurch a rdf:Property ;
 fim:leikaId a rdf:Property ;
     rdfs:label "LeiKa-ID"@de , "LeiKa ID"@en ;
     rdfs:domain cpsv:PublicService ; rdfs:range rdfs:Literal ;
-    rdfs:subPropertyOf gerps:GPP_0000030 ;   # GerPS-Process "has LeiKa-ID" (see modeling-choices.md)
+    rdfs:subPropertyOf gerps:GPP_0000030 ;   # GerPS-Process "has LeiKa-ID" (see modeling-notes.md)
     rdfs:comment "Leistungskatalog key (PVOG leikakeys[]); the FIM/PVOG join key. Local, unofficial RDF term aligned to GerPS; the authoritative scheme is the XRepository LeiKa code list."@en ;
     rdfs:seeAlso <https://w3id.org/gerps/ontology/process/GPP_0000030> ,
                  <https://www.xrepository.de/details/urn:xoev-de:fim:codeliste:leika> .
@@ -273,7 +273,7 @@ fim:baustein a rdf:Property ;
 # -----------------------------------------------------------------------------
 # These describe how the data sits in the Landkarte *projection* (its layout and
 # build inputs), not domain semantics. The 'landkarte' stem keeps them distinct,
-# exactly as motivated in modeling-choices.md.
+# exactly as motivated in modeling-notes.md.
 # =============================================================================
 
 dstack:landkartePosition a rdf:Property ;

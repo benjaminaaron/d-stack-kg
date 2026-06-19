@@ -16,7 +16,7 @@
  * — are excluded, not expected to match. cf_*_value is normalized to a number on
  * both sides (the source mixes "33,3%"/"10%"; the graph stores 33.3). Item order
  * isn't checked (the comparison is keyed by name); the known group-order gap is
- * documented in modeling-choices.md.
+ * documented in modeling-notes.md.
  *
  * Run: node src/3-prepare-webapp/landkarte-roundtrip/2-validate-roundtrip.js
  *
@@ -66,4 +66,4 @@ const n = validateRoundtrip({
 })
 
 console.log(`OK: the graph-derived Landkarte reproduces upstream full.json on every modeled field, across all ${n} items`)
-console.log("    (item order and the not-yet-modeled fields are out of scope — see modeling-choices.md)")
+console.log("    (item order and the not-yet-modeled fields are out of scope — see modeling-notes.md)")

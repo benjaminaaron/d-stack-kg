@@ -16,7 +16,7 @@ CONSTRUCT {
     ?krit a dstack:Kriterium ;
         skos:prefLabel ?kritLabel ;
         # the landscape2 cf_* annotation stem (a projection fact, like logo/position
-        # — see modeling-choices.md), kept so the roundtrip can rebuild the source
+        # — see modeling-notes.md), kept so the roundtrip can rebuild the source
         # annotations without a hardcoded reverse map
         dstack:landkarteAnnotationKey ?annKey ;
         rdfs:seeAlso <https://deutschland-stack.gov.de/kriterien/> .

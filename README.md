@@ -2,8 +2,22 @@
 
 This unofficial prototype explores possibilities that would arise from modeling the Deutschland-Stack as a knowledge graph. The data it uses is the reconstructed source artifact behind the compiled Landkarte dataset published online. The authoritative source is the official [Tech-Stack Landkarte](https://technologie.deutschland-stack.gov.de/).
 
-- **Live site:** <https://benjaminaaron.codeberg.page/d-stack-kg>
-- GitHub mirror (read-only): <https://github.com/benjaminaaron/d-stack-kg>
+- **Live site:** [benjaminaaron.codeberg.page/d-stack-kg](https://benjaminaaron.codeberg.page/d-stack-kg)
+- Repository: [codeberg.org/benjaminaaron/d-stack-kg](https://codeberg.org/benjaminaaron/d-stack-kg)
+- GitHub mirror (read-only): [github.com/benjaminaaron/d-stack-kg](https://github.com/benjaminaaron/d-stack-kg)
+
+## Quickstart
+
+The graph data is committed, so a fresh clone needs no fetching. One command builds the webapp's generated parts and serves it:
+
+```bash
+npm install
+npm run demo
+```
+
+Then open the `localhost` URL it prints to browse the webapp. The only extra tool is the [landscape2](https://github.com/cncf/landscape2) CLI (`brew install cncf/landscape2/landscape2`), used to embed the Tech-Stack Landkarte; but even without it everything else still runs.
+
+Everything below documents the full pipeline (re-generating the data from the live sources, and the individual steps). None of it is needed just to run the webapp.
 
 ## The big picture
 
@@ -35,33 +49,29 @@ This unofficial prototype explores possibilities that would arise from modeling 
 ## Requirements
 
 - Node.js
-- Java for the SPARQL Anything lift in build step 4 (the jar auto-downloads)
-- the [landscape2](https://github.com/cncf/landscape2) CLI for the roundtrip build/validate/serve (`brew install cncf/landscape2/landscape2`)
+- the [landscape2](https://github.com/cncf/landscape2) CLI (`brew install cncf/landscape2/landscape2`), for the Landkarte embed/roundtrip
+- Java, only for *re-generating* data (the SPARQL Anything lift in `kg:build`/`*:fetch`; the jar auto-downloads)
 
-The package.json scripts cover only the default path: build the graph → enrich → build the use cases → run the webapp. Everything else (per-stage sub-steps, the roundtrip validation, the standalone landscape2 server) isn't wired up - but you can always run it directly. For the full experience from a fresh clone, run `npm install` and then the scripts in the order they appear in `package.json` (top to bottom) - that walks the whole pipeline end to end, from fetching the upstream dataset to the running webapp. Alternatively, start at `landkarte:prepare` - the enriched graph it consumes (`data/2-enrich-kg/d-stack-kg.ttl`) is committed, so `kg:build` and `kg:enrich` are optional.
+Just running the app needs only the **Quickstart** above. To **re-generate the data from the live sources** instead of using the committed graph, run the `package.json` scripts top-to-bottom: `kg:build` → `pvog:fetch`/`fim:fetch`/`fit-connect:fetch` → `kg:enrich`, then the `landkarte:*` + `query-builder:prepare` prep (which `npm run demo` also does). The remaining sub-steps and checks (roundtrip validation, the standalone landscape2 server) aren't wired into npm scripts; run those files directly.
 
 ## Building the knowledge graph
 `src/1-build-kg`
 
 | Step | What it does |
 |---|---|
-| **1. Fetch dataset** | Fetches [the compiled Landkarte dataset](https://technologie.deutschland-stack.gov.de/data/full.json) and its logos → `data/1-build-kg/upstream/` (`full.json` + metadata, `logos.zip`) |
-| **2. Reconstruct source** | Reconstructs the landscape2 source files → `data/1-build-kg/reconstructed/` (`landscape.yml` + a minimal `settings.yml`)                                                               |
-| **3. Validate roundtrip** | Structurally compares the rebuilt `full.json` against the authoritative one; to produce it, runs a full `landscape2 build` → `data/scratch/build/`                          |
-| **4. Build graph** | Lifts `landscape.yml` to RDF with SPARQL Anything and transforms it via SPARQL queries into a knowledge graph → `data/1-build-kg/landscape.ttl`. More about the modeling choices along the way in [modeling-choices.md](modeling-choices.md) |
+| **1. Fetch dataset** | Fetches [the compiled dataset](https://technologie.deutschland-stack.gov.de/data/full.json) + logos → `data/1-build-kg/upstream/` |
+| **2. Reconstruct source** | Rebuilds the landscape2 source (`landscape.yml` + a minimal `settings.yml`) → `data/1-build-kg/reconstructed/` |
+| **3. Validate roundtrip** | Rebuilds `full.json` via `landscape2 build` and compares it structurally against the authoritative one |
+| **4. Build graph** | Lifts `landscape.yml` to RDF (SPARQL Anything) and transforms it via SPARQL into the graph → `data/1-build-kg/landscape.ttl`. Modeling calls: [modeling-notes.md](modeling-notes.md) |
 
 `npm run kg:build` chains steps 1, 2 and 4. Step 3 (roundtrip validation) is an optional check, run on its own: `node src/1-build-kg/3-validate-roundtrip.js`.
 
 ## Enriching the graph: the administrative layer
 `src/2-enrich-kg`
 
-The Landkarte describes what the Deutschland-Stack *runs on* — 128 standards and technologies — but nothing about what the state *does* with them. The **PVOG** (Portalverbund Online-Gateway), FITKO's federal gateway, has that: administrative services in Germany as XZuFi/FIM data. The enrich phase pulls a handful of Verwaltungsleistungen as proof of concept from the public PVOG Suchdienst and models them with the EU public-service vocabularies (CPSV-AP / CCCEV). Real services from real authorities.
+The Landkarte describes what the Deutschland-Stack *runs on* — 128 standards and technologies — but nothing about what the state *does* with them. The enrich phase adds that floor: a handful of **Verwaltungsleistungen** pulled from the public PVOG Suchdienst as proof of concept, modelled with the EU public-service vocabularies (CPSV-AP / CCCEV). Real services from real authorities.
 
-**The gap.** Nothing records which technologies a given service runs on. A single predicate, `dstack:realisiertDurch`, links a real Onlinedienst to the **real Landkarte elements** it is built on; since no source records this, those links are **informed assumptions** (`pvog-dstack-bridge.assumed.ttl`), not derived data.
-
-**The depth layer (FIM + FIT-Connect).** A second enrichment goes deeper on the same Leistungen, joined by the real **LeiKa-ID** rather than an assumed bridge: the **FIM Portal** adds each service's Steckbrief (legal basis, OZG-Themenfeld), and **FIT-Connect** adds the **Zustellpunkt** a Behörde registers to receive submissions plus the **Fachdatenschema** they must conform to, down to the individual FIM data fields and the Landkarte format tile they ride in. This is the *Vom Gesetz zur Einreichung* use case, explored on the [FIM & FIT-Connect page](webapp/use-case/fachdaten.html).
-
-The graph is kept as **separate layer files** with distinct provenance, composed into one store by whatever needs the join (the Landkarte roundtrip loads only the technical layer). More in [modeling-choices.md](modeling-choices.md).
+Two links reach down into the technical layer. One is **assumed**: `dstack:realisiertDurch` ties an Onlinedienst to the Landkarte elements it runs on, since no source records this (`pvog-dstack-bridge.assumed.ttl`). The other is **real**, joined by the **LeiKa-ID**: the **FIM Portal** adds each service's Steckbrief (legal basis, OZG-Themenfeld) and **FIT-Connect** the Zustellpunkt and Fachdatenschema, down to the individual data fields and their format. That chain is the *Vom Gesetz zur Einreichung* use case ([FIM & FIT-Connect page](webapp/use-case/fachdaten.html)); the modeling rationale (assumed vs. observed, the separate-layer design) is in [modeling-notes.md](modeling-notes.md).
 
 | Layer | File | Built by |
 |---|---|---|
@@ -94,7 +104,7 @@ npm run landkarte:render   # render it into the webapp (webapp/public/use-case/l
 The [deploy](.forgejo/workflows/deploy.yml) runs `landkarte:prepare` and `landkarte:render` to publish the Landkarte embedded in the [Tech-Stack Landkarte page](webapp/use-case/landkarte.html).
 
 ### Query builder
-Profiles the graph (one class per `rdf:type`, one facet per predicate actually used on it, widgets inferred from the value types) into the SHACL config that drives the in-browser [Sparnatural](https://github.com/sparna-git/Sparnatural) visual query builder on the Query page. Labels come from the [vocabulary](authored/vocabulary.ttl); a blocklist in the script drops build-support predicates.
+Profiles the graph into the SHACL config that drives the in-browser [Sparnatural](https://github.com/sparna-git/Sparnatural) visual query builder on the Query page (one class per `rdf:type`, one facet per predicate used, widgets inferred from value types). Labels come from the [vocabulary](authored/vocabulary.ttl); a blocklist drops build-support predicates.
 
 ```bash
 npm run query-builder:prepare # the three graph layers + vocabulary + blocklist → webapp/public/dstack.sparnatural.ttl
@@ -108,25 +118,18 @@ npm run webapp:serve  # dev server
 npm run webapp:build  # bundle to webapp/dist/
 ```
 
-## Data
+## Artifacts
+`data/` (generated/fetched) and `authored/` (hand-written), kept apart on purpose.
 
-`data/` mirrors the `src/` folder. The committed artifacts are:
+Committed:
 
 - `data/1-build-kg/upstream/`: the fetched Landkarte artifacts plus provenance
 - `data/2-enrich-kg/d-stack-kg.ttl`: the technical knowledge graph
-- `data/2-enrich-kg/pvog-leistungen.ttl`: the administrative services layer (ingested from PVOG)
-- `data/2-enrich-kg/fim-leistungen.ttl`: FIM Steckbriefe + a central FIM Datenschema (FIM Portal)
-- `data/2-enrich-kg/fit-connect.ttl`: FIT-Connect Zustellpunkte + the Fachdatenschemata they collect
+- `data/2-enrich-kg/pvog-leistungen.ttl`, `fim-leistungen.ttl`, `fit-connect.ttl`: the administrative layers (PVOG services / FIM Steckbriefe + a central FIM Datenschema / FIT-Connect Zustellpunkte + Fachdatenschemata)
+- `authored/vocabulary.ttl`: the work-in-progress vocabulary (rendered on the webapp's vocabulary page)
+- `authored/pvog-dstack-bridge.assumed.ttl`: the assumed `realisiertDurch` bridge, the one hand-authored graph layer
 
-The intermediates (incl. `data/1-build-kg/landscape.ttl`), the fetched PVOG/FIM/FIT-Connect responses + lift intermediates (`data/2-enrich-kg/{pvog,fim,fit-connect}/`), the use-case projections and `data/scratch/` are gitignored.
-
-## Authored RDF
-`authored/`
-
-The project's hand-written RDF, kept apart from the generated/fetched `data/`:
-
-- `authored/vocabulary.ttl`: the work-in-progress vocabulary used in the knowledge graph (rendered on the webapp's vocabulary page)
-- `authored/pvog-dstack-bridge.assumed.ttl`: the assumed `realisiertDurch` bridge — the one hand-authored graph layer
+Gitignored: the intermediates (incl. `data/1-build-kg/landscape.ttl`), the fetched PVOG/FIM/FIT-Connect responses + lift intermediates (`data/2-enrich-kg/{pvog,fim,fit-connect}/`), the use-case projections, and `data/scratch/`.
 
 ## Possible future work
 
@@ -146,18 +149,10 @@ Potential reuse targets and enrichment tasks: which existing vocabularies to reu
 - relation edges between the items (`dependsOn`, `implements`, `competesWith`) → connect the 128 currently-isolated items into one graph
 - the legal-term layer (Rechtsbegriff, data field, evidence, register) on top of the services already ingested
 
-## Observations
-
-A few things surfaced while working with the Landkarte's published artifacts:
-
-- The two CSV files under Download (top right corner) are lossy exports of the build output (default landscape2 behaviour, not a BMDS addition), missing content compared to the `landscape.yml` and `settings.yml` they were built from. Those probably live in the repository the footer links to, which seems to have been public once but now returns a 404.
-- The data model is inherited from the CNCF landscape and fits its new purpose imperfectly. Some fields are repurposed: license information appears under `summary.release_rate` and operating systems under `summary.personas`.
-- Category and subcategory labels carry inconsistent leading whitespace — a mix of a normal space (U+0020) and an en-quad (U+2000) — so one category is split across several distinct strings. The reconstruction normalizes them to recover the four intended categories.
-
 ## Disclaimer
 
 - Not an authoritative source. This is an unofficial reconstruction of official artifacts.
 - The Landkarte data (`data/1-build-kg/upstream/full.json`) is content of the BMDS / Datenlabor BMI. No license is stated upstream; `data/1-build-kg/upstream/full.meta.json` is kept as provenance documentation.
 - The item logos are kept verbatim in `data/1-build-kg/upstream/logos.zip` only to rebuild the site; no rights to them are claimed.
-- The administrative data (`data/2-enrich-kg/pvog-leistungen.ttl`, `fim-leistungen.ttl`, `fit-connect.ttl`) is public-sector content derived from the FITKO PVOG Suchdienst, the FIM Portal and FIT-Connect; each fact carries its exact `dct:source` and retrieval date as provenance. The raw API responses are gitignored working files, not committed.
+- The administrative data (`data/2-enrich-kg/pvog-leistungen.ttl`, `fim-leistungen.ttl`, `fit-connect.ttl`) is public-sector content derived from the FITKO PVOG Suchdienst, the FIM Portal and FIT-Connect; each ingested record (Leistung, Zustellpunkt, Schema) carries its exact `dct:source` and retrieval date as provenance. The raw API responses are gitignored working files, not committed.
 - Built with the help of AI coding tools; design decisions stay with the author, who reviews, understands and takes responsibility for every change. Although, in all honesty, compartmentalized code blocks (a fetch script, say, or code that merely executes a declarative instruction such as a SPARQL transform) are sometimes reviewed only loosely.

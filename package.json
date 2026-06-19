@@ -7,6 +7,7 @@
   "license": "Apache-2.0",
   "type": "module",
   "scripts": {
+    "demo": "npm run landkarte:prepare && (npm run landkarte:render || echo 'skipped landkarte:render: install the landscape2 CLI for the embedded Tech-Stack Landkarte') && npm run query-builder:prepare && npm run webapp:serve",
     "kg:build": "node src/1-build-kg/1-fetch-dataset.js && node src/1-build-kg/2-reconstruct-source.js && node src/1-build-kg/4-build-graph.js",
     "pvog:fetch": "node src/2-enrich-kg/pvog/fetch.js",
     "fit-connect:fetch": "node src/2-enrich-kg/fit-connect/fetch.js",
