@@ -83,6 +83,26 @@ site-nav {
 
 .bar a, .bar button { text-decoration: none; white-space: nowrap; }
 
+.navitems { display: flex; align-items: center; gap: 0.35rem; flex: 1; }
+
+/* hamburger toggle — hidden on desktop, shown below the mobile breakpoint */
+.burger {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+    width: 40px;
+    height: 34px;
+    margin-left: auto;
+    padding: 7px 9px;
+    background: none;
+    border: 0;
+    border-radius: 6px;
+    cursor: pointer;
+}
+.burger span { display: block; height: 2px; border-radius: 2px; background: var(--page-fg); }
+.burger:hover { background: var(--hover); }
+
 .brand {
     font-weight: 700;
     font-size: 1.05rem;
@@ -142,6 +162,39 @@ site-nav {
     color: var(--muted);
     padding: 0.45rem 0.6rem;
     border-radius: 6px;
+}
+
+/* mobile: collapse the nav row into a burger-toggled panel */
+@media (max-width: 640px) {
+    .bar { flex-wrap: wrap; }
+    .burger { display: flex; }
+
+    .navitems {
+        display: none;          /* hidden until the burger opens it */
+        flex-basis: 100%;       /* wrap onto its own full-width row */
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.1rem;
+        padding-top: 0.4rem;
+    }
+    .bar.open .navitems { display: flex; }
+
+    .navitems .navlink,
+    .navitems .menuitem,
+    .navitems .repo { padding: 0.6rem 0.65rem; border-radius: 6px; }
+    .navitems .repo { margin-left: 0; }   /* no auto-push in a column */
+
+    .navitems .dropdown { width: 100%; }
+    .navitems .dropdown > button { width: 100%; justify-content: space-between; }
+
+    /* the nested menu flows inline (accordion) instead of an absolute overlay */
+    .navitems .menu {
+        position: static;
+        min-width: 0;
+        border: 0;
+        box-shadow: none;
+        padding: 0 0 0.2rem 1rem;
+    }
 }
 
 /* full-bleed pages (e.g. an embedded landscape fills the viewport below the nav) */

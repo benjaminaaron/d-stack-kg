@@ -56,24 +56,46 @@ class SiteNav extends HTMLElement {
         this.innerHTML = `
             <nav class="bar">
                 <a class="brand" href="${link("index.html")}">d-stack-kg</a>
-                ${ITEMS.map(i => i.children ? renderDropdown(i) : renderLink(i)).join("")}
-                <a class="repo" href="${REPO}" target="_blank" rel="noopener noreferrer">Code</a>
+                <button type="button" class="burger" aria-label="Menü" aria-expanded="false" aria-controls="navitems">
+                    <span></span><span></span><span></span>
+                </button>
+                <div class="navitems" id="navitems">
+                    ${ITEMS.map(i => i.children ? renderDropdown(i) : renderLink(i)).join("")}
+                    <a class="repo" href="${REPO}" target="_blank" rel="noopener noreferrer">Code</a>
+                </div>
             </nav>`
         this.wire()
     }
 
     wire() {
+        const bar = this.querySelector(".bar")
+        const burger = this.querySelector(".burger")
         const dropdowns = [...this.querySelectorAll(".dropdown")]
-        const close = () => dropdowns.forEach(d => {
+
+        const closeDropdowns = () => dropdowns.forEach(d => {
             d.classList.remove("open")
             d.querySelector("button").setAttribute("aria-expanded", "false")
         })
+        // close everything: the nested dropdowns and the mobile burger panel
+        const closeAll = () => {
+            closeDropdowns()
+            bar.classList.remove("open")
+            burger.setAttribute("aria-expanded", "false")
+        }
+
+        burger.addEventListener("click", event => {
+            event.stopPropagation()
+            const open = !bar.classList.contains("open")
+            bar.classList.toggle("open", open)
+            burger.setAttribute("aria-expanded", String(open))
+        })
+
         dropdowns.forEach(d => {
             const btn = d.querySelector("button")
             btn.addEventListener("click", event => {
                 event.stopPropagation()
                 const open = !d.classList.contains("open")
-                close()
+                closeDropdowns()  // toggle this dropdown without collapsing the mobile panel
                 if (open) {
                     d.classList.add("open")
                     btn.setAttribute("aria-expanded", "true")
@@ -81,10 +103,10 @@ class SiteNav extends HTMLElement {
             })
         })
         document.addEventListener("click", event => {
-            if (!this.contains(event.target)) close()
+            if (!this.contains(event.target)) closeAll()
         })
         document.addEventListener("keydown", event => {
-            if (event.key === "Escape") close()
+            if (event.key === "Escape") closeAll()
         })
     }
 }
