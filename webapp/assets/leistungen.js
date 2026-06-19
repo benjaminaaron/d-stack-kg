@@ -5,10 +5,7 @@
 // assumed bridge) load into one in-browser Comunica store; every query runs live, and the
 // answers hand you the exact SPARQL to run yourself on the Query page.
 
-import { graphStore } from "./graph.js"
-import { queryEngine } from "@foerderfunke/sem-ops-utils/sparql"
-
-const store = graphStore()
+import { useCase, esc, $ } from "./use-case.js"
 
 const PRE = `PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 PREFIX dct: <http://purl.org/dc/terms/>
@@ -18,20 +15,8 @@ PREFIX m8g: <http://data.europa.eu/m8g/>
 PREFIX ds: <https://deutschland-stack.gov.de/id/>
 PREFIX dstack: <https://deutschland-stack.gov.de/vocab#>`
 
-const select = async (query) => {
-    const result = await queryEngine.query(PRE + query, { sources: [store] })
-    const rows = []
-    for await (const b of await result.execute()) {
-        const row = {}
-        for (const [k, v] of b) row[k.value] = v.value
-        rows.push(row)
-    }
-    return rows
-}
-const esc = (s) => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]))
+const { select, queryLink, renderGallery } = useCase(PRE)
 const short = (label) => (label.match(/\(([^)]+)\)\s*$/) || [, label])[1]   // "… (TLS)" -> "TLS"
-const $ = (id) => document.getElementById(id)
-const queryLink = (q) => "../query.html?query=" + encodeURIComponent(PRE + "\n\n" + q)
 
 let CRITERIA = []   // the six Konformität criteria, loaded from the graph (dstack:Kriterium)
 const GESAMT = "Gesamt (Ø aller sechs)"
@@ -192,17 +177,12 @@ WHERE {
     },
 ]
 
-const renderGallery = () => {
-    $("gallery").innerHTML = `<ul>${GALLERY.map(g => `<li>${esc(g.q)}
-        <a class="run-link" href="${queryLink(g.sparql)}" target="_blank" rel="noopener">Ausführen ↗</a></li>`).join("")}</ul>`
-}
-
 // --- boot -------------------------------------------------------------------
 const init = async () => {
     await Promise.all([loadElements(), loadCriteria()])
     renderButtons()
     renderFilterControls()
-    renderGallery()
+    renderGallery("gallery", GALLERY)
     if (elements[0]) selectElement(elements[0].iri)
     await runFilter()
 }

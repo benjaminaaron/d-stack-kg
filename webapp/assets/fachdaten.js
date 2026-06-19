@@ -6,10 +6,7 @@
 // Landkarte tile, even where the domain standard (XSozial) is not. Every answer runs live and
 // hands you the exact SPARQL to run on the Query page.
 
-import { graphStore } from "./graph.js"
-import { queryEngine } from "@foerderfunke/sem-ops-utils/sparql"
-
-const store = graphStore()
+import { useCase, esc, $ } from "./use-case.js"
 
 const PRE = `PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -20,20 +17,7 @@ PREFIX dstack: <https://deutschland-stack.gov.de/vocab#>
 PREFIX fim: <https://deutschland-stack.gov.de/fim#>
 PREFIX fitconnect: <https://deutschland-stack.gov.de/fit-connect#>`
 
-const select = async (query) => {
-    const result = await queryEngine.query(PRE + query, { sources: [store] })
-    const rows = []
-    for await (const b of await result.execute()) {
-        const row = {}
-        for (const [k, v] of b) row[k.value] = v.value
-        rows.push(row)
-    }
-    return rows
-}
-const esc = (s) => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]))
-const $ = (id) => document.getElementById(id)
-const queryLink = (q) => "../query.html?query=" + encodeURIComponent(PRE + "\n\n" + q)
-const runLink = (q, label = "Diese Abfrage ausführen") => `<p><a class="run-link" href="${queryLink(q)}" target="_blank" rel="noopener">${label} ↗</a></p>`
+const { select, queryLink, runLink, renderGallery } = useCase(PRE)
 
 // --- 1) Leistung picker -> profile assembled from FIM + FIT-Connect (+ XRepository) ----
 let leistungen = []
@@ -269,17 +253,12 @@ const GALLERY = [
     },
 ]
 
-const renderGallery = () => {
-    $("gallery").innerHTML = `<ul>${GALLERY.map(g => `<li>${esc(g.q)}
-        <a class="run-link" href="${queryLink(g.sparql)}" target="_blank" rel="noopener">Ausführen ↗</a></li>`).join("")}</ul>`
-}
-
 // --- boot -------------------------------------------------------------------
 const init = async () => {
     await loadLeistungen()
     renderPicker()
     if (leistungen[0]) await renderProfile(leistungen[0].l, leistungen[0].title)
     await renderPhilosophies()
-    renderGallery()
+    renderGallery("gallery", GALLERY)
 }
 init().catch(e => { $("profile").innerHTML = `<p class="muted">Der Graph konnte nicht geladen werden: ${esc(e.message || e)}</p>` })
