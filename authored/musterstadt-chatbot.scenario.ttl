@@ -1,0 +1,57 @@
+# =============================================================================
+# musterstadt-chatbot.scenario.ttl — a hypothetical NEW project for the fictional
+# Stadt Musterstadt (see musterstadt-it-landschaft.fictional.ttl): a Bürger-Chatbot
+# for the Serviceportal.
+#
+# The project (archimate:WorkPackage) needs a handful of capabilities (archimate:Capability).
+# Per capability the city evaluated several options (dstack:kandidat): Landkarte elements (ds:)
+# AND proprietary alternatives (mus:opt-*, with no Stack/Landkarte bond) — modelled so the
+# trade-off is queryable.
+#
+# Hand-authored.
+# =============================================================================
+
+@prefix mus:       <https://example.org/musterstadt#> .
+@prefix archimate: <https://purl.org/archimate#> .
+@prefix ds:        <https://deutschland-stack.gov.de/id/> .
+@prefix dstack:    <https://deutschland-stack.gov.de/vocab#> .
+@prefix dct:       <http://purl.org/dc/terms/> .
+@prefix rdfs:      <http://www.w3.org/2000/01/rdf-schema#> .
+
+mus:projekt-buergerchatbot a archimate:WorkPackage ;
+    dct:title "Buerger-Chatbot fuer das Serviceportal"@de ;
+    dct:description "Geplantes Vorhaben (hypothetisch). Die Stadt-IT hat je Faehigkeit mehrere Optionen bewertet, Deutschland-Stack-Elemente ebenso wie proprietaere Alternativen, und so modelliert."@de ;
+    dstack:benoetigt
+        mus:faehigkeit-hosting , mus:faehigkeit-auth , mus:faehigkeit-modell ,
+        mus:faehigkeit-retrieval , mus:faehigkeit-orchestrierung .
+
+# --- die Fähigkeiten, je mit ihren bewerteten Optionen (dstack:kandidat) ------
+mus:faehigkeit-hosting a archimate:Capability ;
+    rdfs:label "Hosting / Laufzeitumgebung"@de ;
+    dstack:kandidat ds:kubernetes , mus:opt-hosting-cloud .
+
+mus:faehigkeit-auth a archimate:Capability ;
+    rdfs:label "Authentifizierung"@de ;
+    dstack:kandidat ds:open-id-connect .
+
+mus:faehigkeit-modell a archimate:Capability ;
+    rdfs:label "Sprachmodell / Modell-Laufzeit"@de ;
+    dstack:kandidat ds:huggingface-transformers , mus:opt-llm-api .
+
+mus:faehigkeit-retrieval a archimate:Capability ;
+    rdfs:label "Wissensabruf (RAG)"@de ;
+    dstack:kandidat ds:ragflow , mus:opt-rag-saas .
+
+mus:faehigkeit-orchestrierung a archimate:Capability ;
+    rdfs:label "Orchestrierung / Agentenlogik"@de ;
+    dstack:kandidat ds:langgraph , mus:opt-orch-saas .
+
+# --- bewertete proprietäre Alternativen (kein Deutschland-Stack-Element) ------
+mus:opt-hosting-cloud rdfs:label "Kommerzielle Cloud-Plattform"@de ;
+    dct:description "proprietaer, nicht im Deutschland-Stack"@de .
+mus:opt-llm-api rdfs:label "Kommerzielle LLM-API"@de ;
+    dct:description "proprietaer, nicht im Deutschland-Stack"@de .
+mus:opt-rag-saas rdfs:label "Proprietaere Such-/RAG-Cloud"@de ;
+    dct:description "proprietaer, nicht im Deutschland-Stack"@de .
+mus:opt-orch-saas rdfs:label "Kommerzielle Agent-Plattform"@de ;
+    dct:description "proprietaer, nicht im Deutschland-Stack"@de .

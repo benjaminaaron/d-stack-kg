@@ -247,10 +247,7 @@ body.full { display: flex; flex-direction: column; min-height: 100dvh; }
 /* the Leistung picker: a normal select on its own line, a touch more present than the native
    default (long option labels are middle-ellipsised in JS so the closed display still fits) */
 .picker-row { margin: 0.6rem 0 0; }
-#leistung-picker {
-    display: block;
-    max-width: min(100%, 36rem);
-    margin-top: 0.25rem;
+.picker-row select {
     font: inherit;
     padding: 0.3rem 0.5rem;
     color: var(--page-fg);
@@ -258,6 +255,14 @@ body.full { display: flex; flex-direction: column; min-height: 100dvh; }
     border: 1px solid var(--border);
     border-radius: 6px;
     cursor: pointer;
+    vertical-align: middle;
+}
+/* the Leistung picker (fachdaten) has long, middle-ellipsised labels: own line + width cap.
+   the Kriterium picker (kommune) has short labels and stays inline with its label. */
+#leistung-picker {
+    display: block;
+    max-width: min(100%, 36rem);
+    margin-top: 0.25rem;
 }
 
 /* Abfragebeispiel 1 profile: each Fachdatenschema as its own bordered card, so its
@@ -270,6 +275,13 @@ body.full { display: flex; flex-direction: column; min-height: 100dvh; }
 .phil-card .muted { margin-top: 0.1rem; }
 
 .filter-controls select { font: inherit; margin: 0 0.2rem; }
+
+/* Chatbot scenario: the option-comparison table (capability × D-Stack recommendation vs alternative) */
+.uc-table-wrap { overflow-x: auto; margin-top: 0.6rem; }
+.uc-table { border-collapse: collapse; width: 100%; font-size: 0.9rem; }
+.uc-table th, .uc-table td { text-align: left; padding: 0.4rem 0.6rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+.uc-table th { font-weight: 600; }
+.uc-table td.alt { color: var(--muted); }
 
 @media (prefers-color-scheme: dark) {
     .answer:not(:empty) { background: #221f12; }

@@ -8,17 +8,21 @@ import leistungenTtl from "../../data/2-enrich-kg/pvog-leistungen.ttl?raw"
 import fimTtl from "../../data/2-enrich-kg/fim-leistungen.ttl?raw"
 import fitConnectTtl from "../../data/2-enrich-kg/fit-connect.ttl?raw"
 import bridgeTtl from "../../authored/pvog-dstack-bridge.assumed.ttl?raw"
+import musterstadtTtl from "../../authored/musterstadt-it-landschaft.fictional.ttl?raw"
+import chatbotTtl from "../../authored/musterstadt-chatbot.scenario.ttl?raw"
 import vocabTtl from "../../authored/vocabulary.ttl?raw"
 import { turtleToJsonLdObj } from "@foerderfunke/sem-ops-utils/jsonld"
 
 // the downloadable artefacts, in composition order — all checked by default
 const ARTEFACTS = [
-    { file: "d-stack-kg.ttl",                 label: "Technische Ebene (Tech-Stack Landkarte)", ttl: dstackTtl },
-    { file: "pvog-leistungen.ttl",            label: "Verwaltungsleistungen (PVOG)",            ttl: leistungenTtl },
-    { file: "fim-leistungen.ttl",             label: "FIM-Steckbriefe & Datenfelder",           ttl: fimTtl },
-    { file: "fit-connect.ttl",                label: "FIT-Connect",                             ttl: fitConnectTtl },
-    { file: "pvog-dstack-bridge.assumed.ttl", label: "Angenommene Brücke",                      ttl: bridgeTtl },
-    { file: "vocabulary.ttl",                 label: "Vokabular",                               ttl: vocabTtl },
+    { file: "d-stack-kg.ttl",                       label: "Technische Ebene (Tech-Stack Landkarte)", ttl: dstackTtl },
+    { file: "pvog-leistungen.ttl",                  label: "Verwaltungsleistungen (PVOG)",            ttl: leistungenTtl },
+    { file: "fim-leistungen.ttl",                   label: "FIM-Steckbriefe & Datenfelder",           ttl: fimTtl },
+    { file: "fit-connect.ttl",                      label: "FIT-Connect",                             ttl: fitConnectTtl },
+    { file: "pvog-dstack-bridge.assumed.ttl",       label: "Angenommene Brücke",                      ttl: bridgeTtl },
+    { file: "musterstadt-it-landschaft.fictional.ttl", label: "Kommunale IT-Landschaft (fiktiv)",     ttl: musterstadtTtl },
+    { file: "musterstadt-chatbot.scenario.ttl",     label: "Chatbot-Szenario (fiktiv)",               ttl: chatbotTtl },
+    { file: "vocabulary.ttl",                       label: "Vokabular",                               ttl: vocabTtl },
 ]
 
 const FORMATS = {

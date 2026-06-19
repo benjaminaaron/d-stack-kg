@@ -32,12 +32,13 @@
 @prefix voaf:   <http://purl.org/vocommons/voaf#> .
 # the EU public-service vocabularies the administrative layer reuses directly, the
 # FIM-identifier namespace (ours; unofficial), and GerPS (for the LeiKa-ID alignment)
-@prefix cpsv:   <http://purl.org/vocab/cpsv#> .                # Core Public Service Vocabulary
-@prefix m8g:    <http://data.europa.eu/m8g/> .                 # CPSV-AP / CCCEV cluster (CPSV-AP binds this as cv:)
-@prefix fim:    <https://deutschland-stack.gov.de/fim#> .      # local, unofficial RDF rendering of FIM keys
+@prefix cpsv:   <http://purl.org/vocab/cpsv#> .                 # Core Public Service Vocabulary
+@prefix m8g:    <http://data.europa.eu/m8g/> .                  # CPSV-AP / CCCEV cluster (CPSV-AP binds this as cv:)
+@prefix fim:    <https://deutschland-stack.gov.de/fim#> .       # local, unofficial RDF rendering of FIM keys
 @prefix gerps:   <https://w3id.org/gerps/ontology/process/> .   # GerPS-Process (openDVA / Uni Jena)
 @prefix gerpsdf: <https://w3id.org/gerps/ontology/datafield/> . # GerPS-Datafield (openDVA's RDF rendering of XDatenfelder)
 @prefix fitconnect: <https://deutschland-stack.gov.de/fit-connect#> . # local, unofficial RDF rendering of FIT-Connect concepts (no official RDF / GerPS term exists)
+@prefix archimate: <https://purl.org/archimate#> .              # ArchiMate ontology (Mendoza, Apache-2.0), reused by IRI for the IT-landscape layer
 
 
 # --- Vocabulary description ---------------------------------------------------
@@ -52,7 +53,11 @@
         <http://purl.org/dc/terms/> ,
         <http://schema.org/> ,
         <http://purl.org/vocab/cpsv#> ,
-        <http://data.europa.eu/m8g/> ;
+        <http://data.europa.eu/m8g/> ,
+        <https://w3id.org/gerps/ontology/process/> ,
+        <https://w3id.org/gerps/ontology/datafield/> ,
+        <https://purl.org/archimate#> ,
+        <http://www.w3.org/ns/dcat#> ;
     rdfs:seeAlso <https://codeberg.org/benjaminaaron/d-stack-kg> .
 
 
@@ -297,6 +302,29 @@ dstack:landkarteAnnotationKey a rdf:Property ;
     rdfs:domain dstack:Kriterium ;
     rdfs:range rdfs:Literal ;
     rdfs:comment "The landscape2 cf_* annotation stem (e.g. 'cf_sovereignty') for the roundtrip; a projection fact."@en .
+
+
+# =============================================================================
+# The planning layer — checking and extending a landscape against the Stack
+# -----------------------------------------------------------------------------
+# A municipal IT landscape (authored/musterstadt-it-landschaft.fictional.ttl) is modelled in
+# ArchiMate (purl.org/archimate, reused by IRI) and joined to the technical layer by
+# dct:conformsTo: a component conforms to the Landkarte StackElement it follows (or to a
+# dstack:ReferenzierterStandard the Landkarte lacks). On top of that, a planned project
+# (musterstadt-chatbot.scenario.ttl) is an archimate:WorkPackage that dstack:benoetigt a set of
+# archimate:Capability, each naming a dstack:kandidat Stack element. Reuse-vs-new and the
+# before/after coverage are not stored; they follow from the landscape via SPARQL.
+# =============================================================================
+
+dstack:benoetigt a rdf:Property ;
+    rdfs:label "benötigt"@de , "requires"@en ;
+    rdfs:domain archimate:WorkPackage ; rdfs:range archimate:Capability ;
+    rdfs:comment "A planned project (archimate:WorkPackage) requires this capability (archimate:Capability), to check or extend a landscape against the Stack."@en .
+
+dstack:kandidat a rdf:Property ;
+    rdfs:label "Kandidat"@de , "candidate"@en ;
+    rdfs:domain archimate:Capability ;
+    rdfs:comment "An option evaluated for this capability: either a Landkarte StackElement (then Stack-aligned, and reuse-vs-new follows from dct:conformsTo in the landscape) or a non-Stack alternative (a labelled node with no Landkarte bond). A proposal, not an existing realisation."@en .
 
 
 # =============================================================================

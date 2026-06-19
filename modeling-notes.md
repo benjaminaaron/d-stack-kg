@@ -80,3 +80,17 @@ PVOG and FIT-Connect describe the *same* LeiKa-joined service from opposite ends
 ### GerPS alignment, deliberate but not load-bearing
 
 The local FIM terms (`fim:leikaId`, `fim:Datenfeld`, `fim:Datenfeldgruppe`; FIM publishes no official RDF) are aligned upward to openDVA's **GerPS**, the one published RDF rendering of these concepts. The alignment is **not load-bearing**; we add it to anchor the local terms to an existing standard and let a GerPS-aware consumer reach our instances.
+
+## The kommunale-IT use case
+
+No municipality publishes its IT landscape openly and machine-readably, so this use case invents one (`authored/musterstadt-it-landschaft.fictional.ttl`, "Stadt Musterstadt"). The fiction is the *landscape*; everything it leans on is real: it is modelled in **ArchiMate** (reusing the [ArchiMate Ontology](https://github.com/AlbertoDMendoza/archimate_ontology) by IRI, like cpsv/m8g/GerPS) and joins the technical layer by pointing at **real `ds:` Landkarte elements** via `dct:conformsTo`:
+
+| Situation | Modelling | Reading |
+|---|---|---|
+| Covered | `dct:conformsTo` a `dstack:StackElement` | follows a real Landkarte element |
+| Gap | `dct:conformsTo` a `dstack:ReferenzierterStandard` (`dstack:inLandkarte false`) | follows a real, governed standard the Landkarte does not list (e.g. XMeld, WMS) |
+| Island | no `dct:conformsTo` | a proprietary component with no open standard |
+
+The third column is the point the format makes: machine-computable conformance only works if a landscape references standards by **stable IRI**. `mus:it-landschaft` (a `dcat:Dataset`) `dct:hasPart` its components, so queries anchor on the named landscape.
+
+On top sits a **planning layer** (`musterstadt-chatbot.scenario.ttl`): a project (`archimate:WorkPackage`) `dstack:benoetigt` capabilities (`archimate:Capability`), each with `dstack:kandidat` options, a `ds:` StackElement or a non-Stack alternative. Reuse-vs-new and the before/after coverage are not stored; they follow from the landscape via SPARQL.

@@ -1,0 +1,98 @@
+# =============================================================================
+# musterstadt-it-landschaft.fictional.ttl — a fictional municipal IT landscape.
+#
+# No German municipality publishes its IT/application landscape machine-readable.
+# This file is a best guess of what such an artifact could look like, so the
+# "kommunale IT-Landschaft prüfen" use case has something real-shaped to run against.
+#
+# Its form follows published precedents: modelled in the ArchiMate ontology
+# (purl.org/archimate), laid out along the layers of the Saxon IT-Referenzarchitekturmodell
+# für Kommunen, and mirroring how the Dutch GEMMA and the EU EIRA publish such architectures
+# as machine-readable ArchiMate.
+#
+# The join into the Deutschland-Stack is dct:conformsTo. An element either
+#   (1) conforms to a real Landkarte StackElement (ds:)        = covered;
+#   (2) conforms to a real but un-listed standard, marked
+#       dstack:inLandkarte false, or                           = a Stack blind spot
+#   (3) carries no conformsTo at all                           = a proprietary island
+#
+# Hand-authored.
+# =============================================================================
+
+@prefix mus:       <https://example.org/musterstadt#> .
+@prefix archimate: <https://purl.org/archimate#> .
+@prefix ds:        <https://deutschland-stack.gov.de/id/> .
+@prefix dstack:    <https://deutschland-stack.gov.de/vocab#> .
+@prefix dcat:      <http://www.w3.org/ns/dcat#> .
+@prefix dct:       <http://purl.org/dc/terms/> .
+@prefix rdfs:      <http://www.w3.org/2000/01/rdf-schema#> .
+
+# --- the artefact, and what it is grounded in --------------------------------
+mus:it-landschaft a dcat:Dataset ;
+    dct:title "IT-Landschaft der Stadt Musterstadt (fiktiv)"@de ;
+    dct:description "Erfundenes Beispiel einer maschinenlesbaren kommunalen IT-Landschaft. Keine reale Kommune."@de ;
+    dct:conformsTo <https://purl.org/archimate#> ;       # modelled with the ArchiMate ontology (Apache-2.0)
+    dct:references <https://deutschland-stack.gov.de/> ;  # the Stack it is checked against
+    dct:hasPart mus:meldewesen , mus:antragsportal , mus:geo-fachverfahren , mus:dms ,   # ihre Komponenten
+        mus:servicekonto , mus:api-gateway , mus:xoev-gateway , mus:datenbank , mus:container-plattform ;
+    rdfs:seeAlso
+        <https://www.ssg-sachsen.de/de/projekte/digital-lotsen-sachsen/dlsn-aktuelles/2026/was-ist-ein-referenzarchitekturmodell-fuer-kommunen/> , # layer structure: Saxon municipal reference
+        <https://github.com/VNG-Realisatie/GEMMA-Archi-repository> , # GEMMA (NL): real municipal ArchiMate, machine-readable
+        <https://joinup.ec.europa.eu/collection/european-interoperability-reference-architecture-eira> . # EIRA (EU)
+
+# --- Anwendungen (application layer) -----------------------------------------
+mus:meldewesen a archimate:ApplicationComponent ;
+    archimate:name "Meldewesen-Fachverfahren (VOIS|MESO)"@de ;
+    dct:conformsTo ds:extensible-markup-language ,       # generic format XML: a Landkarte tile
+                   mus:std-xmeld .                       # concrete XOEV standard XMeld: no tile
+
+mus:antragsportal a archimate:ApplicationComponent ;
+    archimate:name "Online-Antragsmanagement (civento)"@de ;
+    dct:conformsTo ds:hypertext-transfer-protocol , ds:transport-layer-security .
+
+mus:geo-fachverfahren a archimate:ApplicationComponent ;
+    archimate:name "Geodaten-Fachverfahren (GIS)"@de ;
+    dct:conformsTo mus:std-wms .                         # OGC WMS: no Landkarte tile
+
+mus:dms a archimate:ApplicationComponent ;
+    archimate:name "Dokumentenmanagement (regisafe)"@de ;
+    dct:description "Proprietaeres Format, nicht am Deutschland-Stack ausgerichtet (Inselloesung)."@de .
+
+# --- Technik (technology layer) ----------------------------------------------
+mus:servicekonto a archimate:ApplicationService ;
+    archimate:name "Servicekonto-Anmeldung"@de ;
+    archimate:serving mus:antragsportal ;
+    dct:conformsTo ds:open-id-connect , ds:open-authorization , ds:transport-layer-security .
+
+mus:api-gateway a archimate:TechnologyService ;
+    archimate:name "API-Gateway"@de ;
+    archimate:serving mus:antragsportal ;
+    dct:conformsTo ds:openapi , ds:hypertext-transfer-protocol , ds:javascript-object-notation , ds:transport-layer-security .
+
+mus:xoev-gateway a archimate:TechnologyService ;
+    archimate:name "XOEV-Datenaustausch / FIT-Connect-Zustellpunkt"@de ;
+    archimate:serving mus:meldewesen ;
+    dct:conformsTo ds:extensible-markup-language , ds:transport-layer-security .
+
+# --- Infrastruktur (infrastructure layer) ------------------------------------
+mus:datenbank a archimate:SystemSoftware ;
+    archimate:name "Datenbank (PostgreSQL)"@de ;
+    archimate:serving mus:meldewesen ;
+    dct:conformsTo ds:postgresql .
+
+mus:container-plattform a archimate:Node ;
+    archimate:name "Container-Plattform"@de ;
+    dct:conformsTo ds:kubernetes .
+
+# --- referenzierte Standards ohne Landkarte-Kachel ---------------------------
+# Real, governed standards this landscape uses that the Landkarte does not (yet)
+# list. ReferenzierterStandard + inLandkarte false = a Stack blind spot
+mus:std-xmeld a dstack:ReferenzierterStandard ;
+    rdfs:label "XMeld (XOEV-Standard im Meldewesen)"@de ;
+    dstack:inLandkarte false ;
+    dct:source <https://www.xrepository.de/details/urn:xoev-de:kosit:standard:xinneres.xmeld> .
+
+mus:std-wms a dstack:ReferenzierterStandard ;
+    rdfs:label "OGC Web Map Service (WMS)"@de ;
+    dstack:inLandkarte false ;
+    dct:source <https://www.ogc.org/standard/wms/> .

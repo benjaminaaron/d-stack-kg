@@ -33,7 +33,7 @@ Everything below documents the full pipeline (re-generating the data from the li
         dstack --> roundtrip["Reconstructed:</br>Tech-Stack Landkarte"]
         dstack --> leistungen["PVOG-Leistungen"]
         dstack --> fachdaten["FIM &amp; FIT-Connect"]
-        dstack --> more["<i>more use cases...</i>"]
+        dstack --> kommune["Kommunale IT"]
     end
     sq -- "full.json" --> kg
 
@@ -127,7 +127,9 @@ Committed:
 - `data/2-enrich-kg/d-stack-kg.ttl`: the technical knowledge graph
 - `data/2-enrich-kg/pvog-leistungen.ttl`, `fim-leistungen.ttl`, `fit-connect.ttl`: the administrative layers (PVOG services / FIM Steckbriefe + a central FIM Datenschema / FIT-Connect Zustellpunkte + Fachdatenschemata)
 - `authored/vocabulary.ttl`: the work-in-progress vocabulary (rendered on the webapp's vocabulary page)
-- `authored/pvog-dstack-bridge.assumed.ttl`: the assumed `realisiertDurch` bridge, the one hand-authored graph layer
+- `authored/pvog-dstack-bridge.assumed.ttl`: the assumed `realisiertDurch` bridge from services to D-Stack elements
+- `authored/musterstadt-it-landschaft.fictional.ttl`: a fictional municipal IT landscape (ArchiMate, checked against the D-Stack)
+- `authored/musterstadt-chatbot.scenario.ttl`: a hypothetical new project (Bürger-Chatbot) for that landscape, modelled as capabilities with candidate Stack elements
 
 Gitignored: the intermediates (incl. `data/1-build-kg/landscape.ttl`), the fetched PVOG/FIM/FIT-Connect responses + lift intermediates (`data/2-enrich-kg/{pvog,fim,fit-connect}/`), the use-case projections, and `data/scratch/`.
 

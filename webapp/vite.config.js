@@ -33,6 +33,7 @@ export default defineConfig({
                 landkarte: resolve(root, "use-case/landkarte.html"),
                 leistungen: resolve(root, "use-case/leistungen.html"),
                 fachdaten: resolve(root, "use-case/fachdaten.html"),
+                kommune: resolve(root, "use-case/kommune.html"),
                 ideen: resolve(root, "ideen.html"),
                 export: resolve(root, "export.html"),
             },
