@@ -63,7 +63,6 @@ const RAW = path.join(WORK, "raw.ttl")
 
 const today = new Date().toISOString().slice(0, 10)
 const leikaOf = identifier => (identifier.match(/\d{14}/) || [])[0]
-const regionKey = region => (region || "").replace(/^DE/, "").padEnd(12, "0")
 
 // the Landkarte data-format tile each Fachdatenschema is encoded in — the small "bridge"
 // that ties the data layer positively into the Tech-Stack-Landkarte (XML / JSON ARE tiles,
@@ -73,10 +72,65 @@ const FORMAT_TILE = {
     "application/json": "javascript-object-notation",
 }
 
+// the deploying platform/standard behind a Zustellpunkt, read straight from its Fachdatenschema
+// URI (a FIT-Connect destination read carries no human name, only a destinationId UUID). A fact
+// derived from the URI, not a guess — lets the Zustellpunkt show "govOS/THAVEL" instead of a UUID.
+const platformOf = uri =>
+    /thavelp\.thueringen\.de/i.test(uri) ? "govOS/THAVEL"
+    : /gitlab\.opencode\.de\/digitalfirst\/kam\b/i.test(uri) ? "KAM (Digital-First)"
+    : /:standard:xsozialbasis/i.test(uri) ? "XSozial-Basis"
+    : null
+
 const fetchText = async url => {
     const res = await fetch(url, { headers: { "user-agent": UA } })
     if (!res.ok) throw new Error(`HTTP ${res.status} for ${url}`)
     return res.text()
+}
+
+// --- region Klarnamen ------------------------------------------------------------------------
+// A Zustellpunkt's region is an Amtlicher Regionalschlüssel (ARS). dcat-ap.de's "Politische
+// Geocodierung" publishes a SEPARATE code list per granularity, each keyed by the ARS prefix for
+// that level. The FIT-Connect read gives the region at its native level, so the digit COUNT tells
+// us the level — hence which list to mint the IRI in and read the Klarname from:
+//   DE16           (2)  -> stateKey/16            -> "Thüringen"
+//   DE09189        (5)  -> districtKey/09189      -> "Traunstein"
+//   DE032560022022 (12) -> regionalKey/032560022022 -> a Gemeinde
+// (The earlier version padded every key to 12 and always used regionalKey — the Gemeinde list —
+// so Land/Kreis keys minted IRIs absent from that list and got no name.)
+const GEOCODING = "http://dcat-ap.de/def/politicalGeocoding/"           // the code-list IRIs (dct:spatial targets)
+const GEOCODING_HTML = "https://www.dcat-ap.de/def/politicalGeocoding/" // their HTML rendering, where the Bezeichnungen live
+const ARS_LEVELS = {
+    2:  "stateKey",                 // Bundesland
+    3:  "governmentDistrictKey",    // Regierungsbezirk
+    5:  "districtKey",              // (Land)Kreis
+    9:  "municipalAssociationKey",  // Gemeindeverband
+    12: "regionalKey",              // Gemeinde (the full 12-digit ARS)
+}
+
+// fetch + parse one level's list ONCE. dcat-ap.de renders it as an HTML table of rows shaped
+// <tr id="KEY"><td><a>…</a></td><td>KEY</td><td>Bezeichnung</td>…</tr>. Memoised per scheme.
+const geoLists = new Map()
+const geoList = async scheme => {
+    if (!geoLists.has(scheme)) {
+        const names = new Map()
+        try {
+            const html = await fetchText(GEOCODING_HTML + scheme + "/")
+            const row = /<tr id="(\d+)">\s*<td>[\s\S]*?<\/td>\s*<td>\d*<\/td>\s*<td>([^<]*)<\/td>/g
+            for (let m; (m = row.exec(html));) names.set(m[1], m[2].trim())
+        } catch { /* list unreachable → no names this run; the IRI is still minted */ }
+        geoLists.set(scheme, names)
+    }
+    return geoLists.get(scheme)
+}
+
+// resolve a raw FIT-Connect region (e.g. "DE09189") to its correctly-levelled dcat-ap.de IRI plus
+// the official Klarname. Returns { iri, label } (label null if the code isn't in the list).
+const resolveRegion = async raw => {
+    const code = (raw || "").replace(/^DE/, "")
+    if (!code) return null
+    const scheme = ARS_LEVELS[code.length] || "regionalKey"   // unknown length → best-effort Gemeinde list
+    const label = (await geoList(scheme)).get(code) || null
+    return { iri: `${GEOCODING}${scheme}/${code}`, label }
 }
 
 // the proper display name of an XÖV standard lives in its XRepository VersionStandard
@@ -102,14 +156,17 @@ const fimResolved = new Map()
 const resolveFimBaustein = async baustein => {
     if (!fimResolved.has(baustein)) {
         const kind = baustein.startsWith("G") ? "groups" : "fields"
-        let url = null
+        let resolved = { url: null, name: null }   // not central / network → no link, no name
         try {
             const body = await getJson(`${FIM_API}/${kind}/baukasten/${baustein}`)
             const items = Array.isArray(body) ? body : (body.items || [])
-            const version = (items.find(i => i.is_latest) || items[items.length - 1])?.fim_version
-            if (version) url = `${FIM_PORTAL}/${kind}/baukasten/${baustein}/${version}`
-        } catch { /* not central / network → no link */ }
-        fimResolved.set(baustein, url)
+            const item = items.find(i => i.is_latest) || items[items.length - 1]
+            if (item?.fim_version) resolved = {
+                url: `${FIM_PORTAL}/${kind}/baukasten/${baustein}/${item.fim_version}`,
+                name: item.name || null,
+            }
+        } catch { /* not central / network → no link, no name */ }
+        fimResolved.set(baustein, resolved)
     }
     return fimResolved.get(baustein)
 }
@@ -132,10 +189,15 @@ const walkSchema = async (key, node, defs, parentSlug, pathSlug, seen, out) => {
     const baustein = (/^[FG]\d{7,8}$/.test(key) ? key : null)
         || ([node.title, node.description, def.title, def.description].filter(Boolean)
             .join(" ").match(/\b[FG]\d{7,8}\b/) || [])[0]
-    // some source titles lead with the Baustein reference ("Basierend auf G17007420. …"); drop that
-    // metadata prefix (the id is captured in fim:baustein) for a clean label
-    const label = (node.title || def.title || key)
-        .replace(/^Basier(?:t|end) auf (?:dem )?(?:FIM-Baustein )?[FG]\d{7,8}\.?\s*/i, "").trim() || key
+    // resolve the cited Baustein once — its FIM Portal link and its official name
+    const resolved = baustein ? await resolveFimBaustein(baustein) : null
+    // a clean human label: the schema's own title, minus any "Basierend auf G… " metadata prefix
+    // (the id is captured in fim:baustein). Where the schema gives the node no title and it IS a
+    // central FIM Baustein, fall back to the Baustein's official FIM-Portal name (e.g. "Nachweis")
+    // rather than leaving the bare id (F60000296).
+    const stripRef = s => s.replace(/^Basier(?:t|end) auf (?:dem )?(?:FIM-Baustein )?[FG]\d{7,8}\.?\s*/i, "").trim()
+    const titled = node.title || def.title
+    const label = (titled && stripRef(titled)) || resolved?.name || key
     out.push({
         nodeSlug: pathSlug,
         parentSlug: parentSlug,
@@ -143,7 +205,7 @@ const walkSchema = async (key, node, defs, parentSlug, pathSlug, seen, out) => {
         label,
         kind: childProps ? "group" : "field",
         ...(baustein ? { baustein } : {}),
-        ...(baustein ? { fimportal: await resolveFimBaustein(baustein) } : {}),
+        ...(resolved?.url ? { fimportal: resolved.url } : {}),
     })
     if (childProps) {
         const nextSeen = refName ? new Set([...seen, refName]) : seen
@@ -242,15 +304,19 @@ const fetchDestination = async ({ id, note }) => {
         const schema = await pickSchema(service.submissionSchemas ?? [])
         if (!schema) continue
         const parsed = await parseSchema(schema.schemaUri, slugBase)
+        const platform = platformOf(schema.schemaUri)
+        const region = await resolveRegion((service.regions ?? [])[0])
         records.push({
             destinationId: id,
+            ...(platform ? { platform } : {}),
             status: dest.status,
             leistungSlug: leika ? `leika-${leika}` : `govos-${govosKey}`,
             ...(leika ? { leika } : { govosIdentifier: service.identifier }),
             // a LeiKa hub gets its name from the FIM Steckbrief layer; a govOS service has no LeiKa,
             // so it takes its name from the schema title here
             ...(!leika && parsed.schemaLabel ? { leistungTitle: parsed.schemaLabel } : {}),
-            regionKey: regionKey((service.regions ?? [])[0]),
+            ...(region ? { regionIri: region.iri } : {}),
+            ...(region?.label ? { regionLabel: region.label } : {}),
             schemaUri: schema.schemaUri,
             mimeType: schema.mimeType,
             sourceUrl,

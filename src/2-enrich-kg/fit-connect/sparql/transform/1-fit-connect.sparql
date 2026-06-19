@@ -10,6 +10,7 @@ PREFIX ds:     <https://deutschland-stack.gov.de/id/>
 PREFIX dstack: <https://deutschland-stack.gov.de/vocab#>
 PREFIX fim:    <https://deutschland-stack.gov.de/fim#>
 PREFIX fitconnect: <https://deutschland-stack.gov.de/fit-connect#>
+PREFIX skos:   <http://www.w3.org/2004/02/skos/core#>
 
 # Transform the raw Facade-X of the FIT-Connect destination reads (one flat record per
 # Leistung × Fachdatenschema, prepared by fetch.js) into the graph's third layer:
@@ -29,9 +30,11 @@ CONSTRUCT {
         dct:conformsTo ?schema .
     ?zp a fitconnect:Zustellpunkt ;
         fitconnect:status ?status ;
+        fitconnect:plattform ?platform ;
         dct:spatial ?regionIri ;
         dct:source ?src ;
         dct:date ?date .
+    ?regionIri skos:prefLabel ?regionLabel .
     ?schema a dstack:Fachdatenschema ;
         dct:source ?schemaIri ;
         dct:format ?mime ;
@@ -54,7 +57,6 @@ CONSTRUCT {
     ?rec xyz:leistungSlug ?lslug ;
         xyz:destinationId ?did ;
         xyz:status ?status ;
-        xyz:regionKey ?regionKey ;
         xyz:schemaUri ?schemaUriStr ;
         xyz:mimeType ?mime ;
         xyz:schemaSlug ?slug ;
@@ -65,9 +67,13 @@ CONSTRUCT {
     OPTIONAL { ?rec xyz:leika ?leika }
     OPTIONAL { ?rec xyz:govosIdentifier ?govosId }
     OPTIONAL { ?rec xyz:leistungTitle ?ltitle }
+    OPTIONAL { ?rec xyz:platform ?platform }   # the deploying platform/standard, derived from the schema URI
     BIND(IRI(CONCAT(STR(ds:), "zustellpunkt-", ?did)) AS ?zp)
     BIND(IRI(CONCAT(STR(ds:), "fachdatenschema-", ?slug)) AS ?schema)
-    BIND(IRI(CONCAT("http://dcat-ap.de/def/politicalGeocoding/regionalKey/", ?regionKey)) AS ?regionIri)
+    # region: fetch.js already resolved the ARS to its correctly-levelled dcat-ap.de IRI (state /
+    # district / regional) and, where the list had it, the official Klarname. Both optional.
+    OPTIONAL { ?rec xyz:regionIri ?regionIriStr . BIND(IRI(?regionIriStr) AS ?regionIri) }
+    OPTIONAL { ?rec xyz:regionLabel ?regionLabel }
     BIND(IRI(?srcStr) AS ?src)
     BIND(IRI(?schemaUriStr) AS ?schemaIri)
     BIND(STRDT(?retr, xsd:date) AS ?date)

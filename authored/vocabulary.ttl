@@ -214,6 +214,11 @@ fitconnect:status a rdf:Property ;
     rdfs:domain fitconnect:Zustellpunkt ; rdfs:range rdfs:Literal ;
     rdfs:comment "The FIT-Connect Zustellpunkt status (e.g. 'active'), as returned by the Submission API."@en .
 
+fitconnect:plattform a rdf:Property ;
+    rdfs:label "Plattform"@de , "platform"@en ;
+    rdfs:domain fitconnect:Zustellpunkt ; rdfs:range rdfs:Literal ;
+    rdfs:comment "The deploying platform or standard behind a Zustellpunkt (e.g. 'govOS/THAVEL', 'KAM (Digital-First)', 'XSozial-Basis'), derived from its Fachdatenschema URI. A human-readable identity where the FIT-Connect read gives only a destinationId UUID."@en .
+
 dstack:Fachdatenschema a rdfs:Class ;
     rdfs:label "Fachdatenschema"@de , "subject data schema"@en ;
     rdfs:comment "The data schema a Leistung's submission must conform to, declared by a Zustellpunkt: a governed standard or a bespoke per-service schema (dct:source is its authoritative URN or URL)."@en .

@@ -44,12 +44,15 @@ const loadLeistungen = async () => {
     } ORDER BY ?title`)
 }
 
-const baseQuery = (iri) => `# Die Leistung selbst: FIM-Stamminformation und empfangende Region (FIT-Connect)
-SELECT ?rechtsgrundlage ?themenfeld ?region WHERE {
+const baseQuery = (iri) => `# Die Leistung selbst: FIM-Stamminformation, Zustellpunkt-Plattform und empfangende Region (FIT-Connect)
+SELECT ?rechtsgrundlage ?themenfeld ?plattform ?region ?regionName WHERE {
     BIND(<${iri}> AS ?l)
     OPTIONAL { ?l cpsv:follows/dct:description ?rechtsgrundlage }
     OPTIONAL { ?l dct:subject/skos:prefLabel ?themenfeld }
-    OPTIONAL { ?l fitconnect:zustellpunkt ?zp . ?zp dct:spatial ?region }
+    OPTIONAL { ?l fitconnect:zustellpunkt ?zp .
+        OPTIONAL { ?zp fitconnect:plattform ?plattform }
+        OPTIONAL { ?zp dct:spatial ?region . OPTIONAL { ?region skos:prefLabel ?regionName } }
+    }
 }`
 
 // a Leistung can carry several Fachdatenschemata — e.g. a bespoke vendor schema via a real
@@ -113,7 +116,9 @@ const renderProfile = async (iri, title) => {
         ["Bezeichnung (FIM)", esc(title)],
         b.rechtsgrundlage && ["Rechtsgrundlage (FIM)", esc(b.rechtsgrundlage)],
         b.themenfeld && ["OZG-Themenfeld (FIM)", esc(b.themenfeld)],
-        b.region && ["Empfangende Region (FIT-Connect)", `ARS ${esc(ars)}`],
+        b.plattform && ["Zustellpunkt (FIT-Connect)", esc(b.plattform)],
+        b.region && ["Empfangende Region (FIT-Connect)",
+            b.regionName ? `${esc(b.regionName)} <span class="muted">(ARS ${esc(ars)})</span>` : `ARS ${esc(ars)}`],
     ].filter(Boolean)
     // one self-contained card per Fachdatenschema. The same Leistung can carry a vendor schema (via a
     // Zustellpunkt) next to the central FIM-library schema: granular both, central-vs-local Bausteine.
@@ -169,15 +174,16 @@ const renderPicker = () => {
 // --- 2) Zustellpunkte, two data philosophies, joined with the FIM OZG-Themenfeld -----
 const PHILOSOPHY_Q = `# Je Zustellpunkt: wie viele Leistungen teilen sich wie viele Fachdatenschemata,
 # und in welchem OZG-Themenfeld (aus dem FIM-Steckbrief) liegen sie? (FIM × FIT-Connect)
-SELECT ?zustellpunkt ?region (COUNT(DISTINCT ?l) AS ?leistungen) (COUNT(DISTINCT ?fds) AS ?schemata)
+SELECT ?zustellpunkt ?plattform ?region ?regionName (COUNT(DISTINCT ?l) AS ?leistungen) (COUNT(DISTINCT ?fds) AS ?schemata)
        (GROUP_CONCAT(DISTINCT ?label; separator=" · ") AS ?fachdatenschemata)
        (GROUP_CONCAT(DISTINCT ?themenfeld; separator=" · ") AS ?themenfelder) WHERE {
     ?l fitconnect:zustellpunkt ?zustellpunkt ; dct:conformsTo ?fds .
     ?fds rdfs:label ?label .
     FILTER NOT EXISTS { ?fds dct:provenance ?p }   # nur über den Zustellpunkt deklarierte Schemata, nicht die FIM-Vergleichsschemata
     OPTIONAL { ?l dct:subject/skos:prefLabel ?themenfeld }   # OZG-Themenfeld aus dem FIM-Steckbrief (fehlt, wo keine LeiKa)
-    OPTIONAL { ?zustellpunkt dct:spatial ?region }           # die empfangende Region (ARS) des Zustellpunkts
-} GROUP BY ?zustellpunkt ?region ORDER BY DESC(?leistungen)`
+    OPTIONAL { ?zustellpunkt fitconnect:plattform ?plattform } # Plattform/Standard hinter dem Zustellpunkt (aus der Schema-URI)
+    OPTIONAL { ?zustellpunkt dct:spatial ?region . OPTIONAL { ?region skos:prefLabel ?regionName } }  # Region (ARS) + Klarname
+} GROUP BY ?zustellpunkt ?plattform ?region ?regionName ORDER BY DESC(?leistungen)`
 
 const renderPhilosophies = async () => {
     const rows = await select(PHILOSOPHY_Q)
@@ -192,10 +198,13 @@ const renderPhilosophies = async () => {
         const schemata = (list.length === 1 ? "Fachdatenschema: " : "Fachdatenschemata: ") + list.map(esc).join(", ")
         const destId = (r.zustellpunkt || "").split("zustellpunkt-").pop()
         const ars = (r.region || "").split("/").pop()
-        return `<li class="phil-card"><b>Zustellpunkt</b> <code>${esc(destId)}</code>${ars ? ` <span class="muted">· Region ARS ${esc(ars)}</span>` : ""}
+        const region = r.regionName ? `${esc(r.regionName)} (ARS ${esc(ars)})` : (ars ? `Region ARS ${esc(ars)}` : "")
+        const head = r.plattform ? esc(r.plattform) : "Zustellpunkt"
+        return `<li class="phil-card"><b>${head}</b>${region ? ` <span class="muted">· ${region}</span>` : ""}
             <div><b>${esc(r.leistungen)}</b> Leistung(en), <b>${esc(r.schemata)}</b> Fachdatenschema(ta): ${verdict}</div>
             <div class="muted">${themenfeld}</div>
-            <div class="muted">${schemata}</div></li>`
+            <div class="muted">${schemata}</div>
+            <div class="muted">Zustellpunkt <code>${esc(destId)}</code></div></li>`
     }
     $("philosophies").innerHTML = runLink(PHILOSOPHY_Q) +
         `<p class="answer-head">Reale Zustellpunkte, ihre zwei gegensätzlichen Modellierungs-Philosophien und ihr OZG-Themenfeld:</p>
@@ -248,13 +257,14 @@ const GALLERY = [
         q: "Welche Leistungen und welche Regionen hingen an einem Fachdatenschema, wenn es geändert werden müsste?",
         sparql: `SELECT ?fachdatenschema
     (COUNT(DISTINCT ?l) AS ?betroffene_leistungen)
-    (GROUP_CONCAT(DISTINCT ?ars; separator=", ") AS ?regionen) WHERE {
+    (GROUP_CONCAT(DISTINCT ?regionLabel; separator=", ") AS ?regionen) WHERE {
     ?l dct:conformsTo ?fds ;
         fitconnect:zustellpunkt ?zp .
     ?fds rdfs:label ?fachdatenschema .
     FILTER NOT EXISTS { ?fds dct:provenance ?p }   # nur über den Zustellpunkt deklarierte Schemata
     ?zp dct:spatial ?region .
-    BIND(REPLACE(STR(?region), "^.*/", "") AS ?ars)
+    OPTIONAL { ?region skos:prefLabel ?regionName }   # Klarname der Region (Land/Kreis/Gemeinde), Fallback: ARS
+    BIND(COALESCE(?regionName, REPLACE(STR(?region), "^.*/", "")) AS ?regionLabel)
 } GROUP BY ?fachdatenschema ORDER BY DESC(?betroffene_leistungen)`,
     },
 ]
