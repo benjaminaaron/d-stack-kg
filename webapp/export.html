@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Export</title>
+    <link rel="stylesheet" href="assets/styles.css">
+    <script type="module" src="assets/nav-bar.js"></script>
+    <script type="module" src="assets/export.js"></script>
+</head>
+<body>
+    <site-nav></site-nav>
+
+    <main class="container export-page">
+        <h1>Export</h1>
+        <p class="lead">Der gesamte Wissensgraph ist offen und portabel: hier als Datei zum Herunterladen; sinnvoll wären auch Schnittstellen aller Art.</p>
+
+        <p>Die Daten kommen in standardisierten Formaten (Turtle, JSON-LD), die jedes RDF-Werkzeug liest. Die Herkunft bleibt nachvollziehbar: Der Graph ist nach Quellen in getrennte Schichten gegliedert, und die eingebundenen Datensätze (Leistungen, Zustellpunkte, Schemata) tragen <code>dct:source</code> mit Abrufdatum.</p>
+
+        <h2>Graph herunterladen</h2>
+        <p>Der Graph setzt sich aus mehreren Schichten zusammen; sie können zusammengeführt oder einzeln heruntergeladen werden.</p>
+        <p><b>Hinweis:</b> Vollständig ist bislang nur die technische Ebene (die Tech-Stack Landkarte). Die übrigen Schichten enthalten nur wenige, von Hand ausgewählte Beispiele, kein vollständiges Abbild.</p>
+        <div id="export-app">Lädt...</div>
+        <p>Turtle und JSON-LD sind native Linked-Data-Formate. Jedes andere Format ist ebenso möglich, es muss nur ein Mapping definiert werden. Linked Data ist die reichhaltigste und dichteste Darstellung, jedes andere Format ist daher ein einfacher "Downgrade".</p>
+
+        <h2>Programmatischer Zugriff</h2>
+        <p>Der Graph lässt sich auf der <a href="query.html" target="_blank" rel="noopener">Query</a>-Seite per SPARQL im Browser clientseitig (ohne Server) abfragen.</p>
+        <p>Darüber hinaus wäre denkbar:</p>
+        <ul>
+            <li><b>SPARQL-Endpoint</b></li>
+            <li><b>REST-API</b></li>
+            <li><b>Auflösbare IRIs</b>: Entitäten sind unter ihren IRIs abrufbar</li>
+            <li><b>Versionierte Dumps</b>: Stabile URLs für die Artefakte mit Stand und Datum</li>
+        </ul>
+    </main>
+</body>
+</html>

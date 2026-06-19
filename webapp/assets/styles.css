@@ -53,6 +53,16 @@ details.disclosure > summary { cursor: pointer; font-weight: 600; padding: 0.7re
 details.disclosure[open] > summary { border-bottom: 1px solid var(--border); margin-bottom: 0.7rem; }
 details.disclosure[open] { padding-bottom: 0.4rem; }
 
+/* Export page — artefact picker + download controls */
+.export-page .muted { color: var(--muted); }
+.export-list { list-style: none; padding: 0; margin: 1.2rem 0; }
+.export-list > li { padding: 0.6rem 0; border-bottom: 1px solid var(--border); }
+.export-list label { display: inline-flex; align-items: center; gap: 0.5rem; cursor: pointer; }
+.export-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; margin-top: 0.4rem; }
+.export-controls select, .export-controls button { font: inherit; color: var(--page-fg); background: var(--page-bg); border: 1px solid var(--border); border-radius: 6px; padding: 0.4rem 0.6rem; cursor: pointer; }
+.export-controls button { border-color: var(--accent); font-weight: 600; }
+.export-controls button:disabled { opacity: 0.5; cursor: default; }
+
 /* top navigation (<site-nav>) */
 
 site-nav {
