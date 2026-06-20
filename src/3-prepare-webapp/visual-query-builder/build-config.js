@@ -3,7 +3,8 @@
  *
  * Profiles the full composed knowledge graph (the same layers graph.js loads: technical,
  * PVOG/FIM/FIT-Connect, the assumed bridge, the fictional Musterstadt landscape + chatbot
- * scenario) and emits the SHACL config that drives the in-browser visual query builder:
+ * scenario, and the comms layer — Textbausteine that carry their own query) and emits the
+ * SHACL config that drives the in-browser visual query builder:
  * one NodeShape per class,
  * one property shape per predicate actually used on that class's instances, with the
  * widget chosen from the value type (string -> Search, number -> Number, IRI -> List).
@@ -15,7 +16,7 @@
  */
 
 import { ROOT, DSTACK_TTL, PVOG_LEISTUNGEN_TTL, FIM_LEISTUNGEN_TTL, FIT_CONNECT_TTL,
-    PVOG_DSTACK_BRIDGE_TTL, MUSTERSTADT_LANDSCHAFT_TTL, MUSTERSTADT_CHATBOT_TTL, VOCABULARY_TTL } from "../../common/utils.js"
+    PVOG_DSTACK_BRIDGE_TTL, MUSTERSTADT_LANDSCHAFT_TTL, MUSTERSTADT_CHATBOT_TTL, COMMS_TTL, VOCABULARY_TTL } from "../../common/utils.js"
 import { storeFromTurtles } from "@foerderfunke/sem-ops-utils/core"
 import { queryEngine } from "@foerderfunke/sem-ops-utils/sparql"
 import fs from "fs"
@@ -34,6 +35,7 @@ const FIM = "https://deutschland-stack.gov.de/fim#"
 const FITCONNECT = "https://deutschland-stack.gov.de/fit-connect#"
 const ARCHIMATE = "https://purl.org/archimate#"
 const DCAT = "http://www.w3.org/ns/dcat#"
+const SH = "http://www.w3.org/ns/shacl#"
 
 // prefixes for the emitted Turtle; "" is the config's own shape namespace
 const PREFIXES = {
@@ -80,6 +82,14 @@ const EXTERNAL_LABELS = {
     [SCHEMA + "url"]: { en: "homepage", de: "Webseite" },
     [SCHEMA + "validFrom"]: { en: "valid from", de: "gültig ab" },
     [SCHEMA + "validThrough"]: { en: "valid through", de: "gültig bis" },
+    // the communication layer (comms snippets + the per-Leistung report) reuses these
+    [SCHEMA + "Report"]: { en: "Report", de: "Bericht" },
+    [SCHEMA + "about"]: { en: "about (node)", de: "hängt an Knoten" },
+    [SCHEMA + "headline"]: { en: "headline", de: "Schlagzeile" },
+    [SCHEMA + "text"]: { en: "line template", de: "Zeilenvorlage" },
+    [SCHEMA + "description"]: { en: "note", de: "Hinweis" },
+    [SH + "order"]: { en: "order", de: "Reihenfolge" },
+    [SH + "select"]: { en: "query", de: "Abfrage" },
     // the EU public-service layer (CPSV-AP / CCCEV m8g) — German labels for the builder
     [CPSV + "PublicService"]: { en: "Public service", de: "Verwaltungsleistung" },
     [CPSV + "Rule"]: { en: "Legal rule", de: "Rechtsgrundlage" },
@@ -121,10 +131,11 @@ const TEMPORAL = new Set([XSD + "date", XSD + "dateTime"])
 
 // profile the whole graph the Query page exposes (the same layers graph.js composes): the
 // technical layer, the administrative layers (PVOG services, FIM Steckbriefe, FIT-Connect
-// schemas, the assumed bridge) and the fictional municipal IT landscape + its chatbot scenario
+// schemas, the assumed bridge), the fictional municipal IT landscape + its chatbot scenario,
+// and the comms layer (Textbausteine + Blickwinkel + the fachlich register)
 const graph = storeFromTurtles([
     DSTACK_TTL, PVOG_LEISTUNGEN_TTL, FIM_LEISTUNGEN_TTL, FIT_CONNECT_TTL,
-    PVOG_DSTACK_BRIDGE_TTL, MUSTERSTADT_LANDSCHAFT_TTL, MUSTERSTADT_CHATBOT_TTL,
+    PVOG_DSTACK_BRIDGE_TTL, MUSTERSTADT_LANDSCHAFT_TTL, MUSTERSTADT_CHATBOT_TTL, COMMS_TTL,
 ].map(f => fs.readFileSync(f, "utf8")))
 const vocab = storeFromTurtles([fs.readFileSync(VOCABULARY_TTL, "utf8")])
 

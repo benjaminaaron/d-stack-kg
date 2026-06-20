@@ -34,6 +34,7 @@ Everything below documents the full pipeline (re-generating the data from the li
         dstack --> leistungen["PVOG-Leistungen"]
         dstack --> fachdaten["FIM &amp; FIT-Connect"]
         dstack --> kommune["Kommunale IT"]
+        dstack --> komm["Kommunikation"]
     end
     sq -- "full.json" --> kg
 
@@ -130,6 +131,7 @@ Committed:
 - `authored/pvog-dstack-bridge.assumed.ttl`: the assumed `realisiertDurch` bridge from services to D-Stack elements
 - `authored/musterstadt-it-landschaft.fictional.ttl`: a fictional municipal IT landscape (ArchiMate, checked against the D-Stack)
 - `authored/musterstadt-chatbot.scenario.ttl`: a hypothetical new project (Bürger-Chatbot) for that landscape, modelled as capabilities with candidate Stack elements
+- `authored/comms.authored.ttl`: comms snippets rendered straight from the graph — `dstack:Textbaustein` is the only local term, each snippet carrying its own SPARQL query (`sh:select`); plus a per-Leistung Steckbrief and a cross-layer footprint (both `schema:Report`), on the [Kommunikation page](webapp/use-case/kommunikation.html)
 
 Gitignored: the intermediates (incl. `data/1-build-kg/landscape.ttl`), the fetched PVOG/FIM/FIT-Connect responses + lift intermediates (`data/2-enrich-kg/{pvog,fim,fit-connect}/`), the use-case projections, and `data/scratch/`.
 

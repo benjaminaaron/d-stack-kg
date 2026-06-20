@@ -34,6 +34,7 @@ export default defineConfig({
                 leistungen: resolve(root, "use-case/leistungen.html"),
                 fachdaten: resolve(root, "use-case/fachdaten.html"),
                 kommune: resolve(root, "use-case/kommune.html"),
+                kommunikation: resolve(root, "use-case/kommunikation.html"),
                 ideen: resolve(root, "ideen.html"),
                 export: resolve(root, "export.html"),
             },

@@ -10,6 +10,7 @@ import fitConnectTtl from "../../data/2-enrich-kg/fit-connect.ttl?raw"
 import bridgeTtl from "../../authored/pvog-dstack-bridge.assumed.ttl?raw"
 import musterstadtTtl from "../../authored/musterstadt-it-landschaft.fictional.ttl?raw"
 import chatbotTtl from "../../authored/musterstadt-chatbot.scenario.ttl?raw"
+import commsTtl from "../../authored/comms.authored.ttl?raw"
 import vocabTtl from "../../authored/vocabulary.ttl?raw"
 import { turtleToJsonLdObj } from "@foerderfunke/sem-ops-utils/jsonld"
 
@@ -22,6 +23,7 @@ const ARTEFACTS = [
     { file: "pvog-dstack-bridge.assumed.ttl",       label: "Angenommene Brücke",                      ttl: bridgeTtl },
     { file: "musterstadt-it-landschaft.fictional.ttl", label: "Kommunale IT-Landschaft (fiktiv)",     ttl: musterstadtTtl },
     { file: "musterstadt-chatbot.scenario.ttl",     label: "Chatbot-Szenario (fiktiv)",               ttl: chatbotTtl },
+    { file: "comms.authored.ttl",                   label: "Kommunikation (Textbausteine & fachliche Erklärungen)", ttl: commsTtl },
     { file: "vocabulary.ttl",                       label: "Vokabular",                               ttl: vocabTtl },
 ]
 

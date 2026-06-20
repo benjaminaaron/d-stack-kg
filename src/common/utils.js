@@ -29,6 +29,7 @@ export const VOCABULARY_TTL = path.join(AUTHORED, "vocabulary.ttl")
 export const PVOG_DSTACK_BRIDGE_TTL = path.join(AUTHORED, "pvog-dstack-bridge.assumed.ttl") // the assumed bridge layer
 export const MUSTERSTADT_LANDSCHAFT_TTL = path.join(AUTHORED, "musterstadt-it-landschaft.fictional.ttl") // fictional municipal IT landscape
 export const MUSTERSTADT_CHATBOT_TTL = path.join(AUTHORED, "musterstadt-chatbot.scenario.ttl")           // its hypothetical chatbot project
+export const COMMS_TTL = path.join(AUTHORED, "comms.authored.ttl")                                       // comms snippets (each carries its own query) + fachliche Erklärungen
 
 // RDF prefixes for serializing the graph. Merged with the sem-ops-utils
 // defaults on output, which already cover rdf/rdfs/xsd/schema.

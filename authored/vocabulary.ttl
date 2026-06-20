@@ -57,7 +57,8 @@
         <https://w3id.org/gerps/ontology/process/> ,
         <https://w3id.org/gerps/ontology/datafield/> ,
         <https://purl.org/archimate#> ,
-        <http://www.w3.org/ns/dcat#> ;
+        <http://www.w3.org/ns/dcat#> ,
+        <http://www.w3.org/ns/shacl#> ;
     rdfs:seeAlso <https://codeberg.org/benjaminaaron/d-stack-kg> .
 
 
@@ -328,6 +329,25 @@ dstack:kandidat a rdf:Property ;
 
 
 # =============================================================================
+# The communication layer — comms snippets rendered straight from the graph
+# -----------------------------------------------------------------------------
+# Explanations about the Stack are hung onto the graph (authored/comms.authored.ttl) instead of
+# kept in separate documents that go stale. dstack:Textbaustein is the one local class; everything a
+# snippet carries reuses existing terms (listed in the communication block under "Reused
+# vocabularies" below): schema:headline / schema:text are the authored framing (with {{placeholders}}),
+# sh:select is the snippet's OWN SPARQL query the webapp runs live to fill them, rdfs:label is the
+# tag, sh:order the order, schema:about the node it is anchored on. The fachlich register reuses
+# dct:description with a private-use language tag (@de-x-fachlich) — a second register of the same
+# description alongside the upstream @de text, so no new term at all.
+# =============================================================================
+
+dstack:Textbaustein a rdfs:Class ;
+    rdfs:subClassOf schema:CreativeWork ;
+    rdfs:label "Textbaustein"@de , "Comms snippet"@en ;
+    rdfs:comment "A self-describing communication snippet: it carries its OWN SPARQL SELECT (sh:select), which the webapp runs live to fill the {{placeholders}} in its authored framing (schema:headline + schema:text), so the rendered comms piece is a current, traceable projection of the graph. The tag label is its rdfs:label, the order sh:order, and schema:about the graph node it is anchored on. The only local term in this layer; everything else is reused."@en .
+
+
+# =============================================================================
 # Reused vocabularies (documented here, defined elsewhere)
 # -----------------------------------------------------------------------------
 # The vocabularies are declared machine-readably via voaf:reliesOn on the node at
@@ -366,4 +386,16 @@ dstack:kandidat a rdf:Property ;
 #   schema:url                      Channel (Onlinedienst) URL
 #   schema:validFrom / validThrough service validity period
 #   rdfs:seeAlso / rdfs:comment     links, and the unofficial-reconstruction disclaimer on ds:landkarte
+#
+# Communication layer (the comms snippets, authored/comms.authored.ttl) — only dstack:Textbaustein
+# is local; each snippet reuses:
+#   rdfs:label                      the snippet's tag label (e.g. "Souveränität")
+#   sh:order                        the tag's display order
+#   schema:about                    the graph node the snippet is anchored on
+#   schema:headline                 the headline template ({{placeholders}})
+#   schema:text                     the per-result-row template ({{placeholders}})
+#   schema:description              a short caption shown with the rendered snippet
+#   sh:select                       the snippet's OWN SPARQL SELECT, carried as a literal, run live
+#   dct:description @de-x-fachlich   a fachliche (subject-matter) register of a StackElement's description
+#   schema:Report                   a per-Leistung report definition, likewise carrying its sh:select
 # =============================================================================

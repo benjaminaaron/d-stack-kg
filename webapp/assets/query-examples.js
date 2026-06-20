@@ -149,7 +149,10 @@ SELECT ?element ?category ?type ?percent WHERE {
     FILTER(STR(?crit) = "Souveränität")  # try "Interoperabilität", "Nachhaltigkeit", ...
     FILTER(?percent >= 80)                        # lower this to see more
 }
-ORDER BY DESC(?percent) ?element`,
+ORDER BY DESC(?percent) ?element
+# Tip: filtering by the criterion's name (above) reads well and is easy to swap. But on a scan over
+# all elements like this, matching the criterion IRI directly is far faster:
+#   ?a dstack:kriterium ds:kriterium-digitale-souveraenitaet .`,
     },
     {
         name: "Konformitäts-Steckbrief für OAuth",

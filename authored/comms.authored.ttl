@@ -1,0 +1,176 @@
+# =============================================================================
+# comms.authored.ttl — "Kommunikation direkt aus dem Graphen".
+#
+# Explanations about the Deutschland-Stack are written and maintained apart from the model today, so
+# they go stale. Here they are hung onto the graph instead: each dstack:Textbaustein is a comms
+# snippet attached to a node (schema:about), carrying an authored framing (schema:headline +
+# schema:text, with {{placeholder}}s) AND — the self-describing part — its OWN SPARQL query
+# (sh:select). The webapp runs that query live against the composed graph and fills the placeholders,
+# so a finished comms piece is a projection of the graph — every number current, every claim traceable.
+# The literal carries the query logic (SELECT/WHERE), not the PREFIX boilerplate: it is evaluated with
+# the project's standard prefixes — the same ones the webapp and the Query-page link prepend — so it
+# is not meant to run as a standalone file out of context.
+#
+# dstack:Textbaustein is the only local term (declared in authored/vocabulary.ttl). Everything a
+# snippet carries reuses standard vocabularies: rdfs:label (the tag), sh:order (tag order),
+# schema:about (anchor node), schema:headline / schema:text (the templates), schema:description (note)
+# and sh:select (the carried query). The per-Leistung report renders for two audiences: the technisch
+# register is the upstream dct:description@de (the real Landkarte text), the fachlich register a second
+# dct:description tagged @de-x-fachlich, no new term. This file stays pure instances; the four
+# Blickwinkel are the four snippets (one tag each), the honest "Lücken" included; the fachlich texts
+# are authored only for the bausteine that appear behind a Leistung.
+#
+# Hand-authored.
+# =============================================================================
+
+@prefix rdfs:   <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix schema: <http://schema.org/> .
+@prefix sh:     <http://www.w3.org/ns/shacl#> .
+@prefix dct:    <http://purl.org/dc/terms/> .
+@prefix cpsv:   <http://purl.org/vocab/cpsv#> .
+@prefix ds:     <https://deutschland-stack.gov.de/id/> .
+@prefix dstack: <https://deutschland-stack.gov.de/vocab#> .
+@prefix mus:    <https://example.org/musterstadt#> .
+
+# --- the comms snippets (one per Blickwinkel/tag) ----------------------------
+
+# Souveränität: anchored on the digital-sovereignty criterion. Averages that one criterion per
+# D-Stack category; the headline names the strongest category (the first result row).
+dstack:tb-souveraenitaet a dstack:Textbaustein ;
+    rdfs:label "Souveränität"@de ;
+    sh:order 1 ;
+    schema:about ds:kriterium-digitale-souveraenitaet ;
+    schema:headline "Am souveränsten ist die Kategorie »{{kategorie}}« mit im Schnitt {{wert}} %."@de ;
+    schema:description "Jeder Baustein des Deutschland-Stack wird auf sechs Kriterien von 0 bis 100 % bewertet. Hier zählt allein die digitale Souveränität, gemittelt je Kategorie."@de ;
+    schema:text "{{kategorie}}: Ø {{wert}} %"@de ;
+    sh:select """SELECT ?kategorie (ROUND(AVG(?w)) AS ?wert) WHERE {
+    ?el a dstack:StackElement ;
+        dct:subject/skos:prefLabel ?kategorie ;
+        dstack:konformitaet ?a .
+    ?a dstack:kriterium ds:kriterium-digitale-souveraenitaet ;
+        dstack:wertProzent ?w .
+} GROUP BY ?kategorie ORDER BY DESC(?wert)""" .
+
+# Bürgernah: anchored on the public-service class. Picks the service with the most assumed
+# D-Stack bausteine behind its online channel and lists them in plain terms.
+dstack:tb-buergernah a dstack:Textbaustein ;
+    rdfs:label "Bürgernah"@de ;
+    sh:order 2 ;
+    schema:about cpsv:PublicService ;
+    schema:headline "Hinter dem Online-Antrag »{{leistung}}« stehen {{anzahl}} Bausteine des Deutschland-Stack."@de ;
+    schema:description "Was als ein Klick erscheint, stützt sich auf konkrete, offene Bausteine. Gezeigt ist die Leistung mit den meisten hinterlegten Bausteinen (die Zuordnung ist eine Annahme, siehe PVOG-Leistungen)."@de ;
+    schema:text "{{baustein}}"@de ;
+    sh:select """SELECT ?leistung ?baustein WHERE {
+    {
+        SELECT ?l (COUNT(DISTINCT ?e) AS ?n) WHERE {
+            ?l a cpsv:PublicService ;
+                m8g:hasChannel/dstack:realisiertDurch ?e .
+        } GROUP BY ?l ORDER BY DESC(?n) ?l LIMIT 1
+    }
+    ?l dct:title ?leistung ;
+        m8g:hasChannel/dstack:realisiertDurch ?el .
+    ?el skos:prefLabel ?baustein .
+} ORDER BY ?baustein""" .
+
+# Wiederverwendung: anchored on Musterstadt's IT landscape. The D-Stack bausteine its components
+# already build on, by how widely each is used.
+dstack:tb-wiederverwendung a dstack:Textbaustein ;
+    rdfs:label "Wiederverwendung"@de ;
+    sh:order 3 ;
+    schema:about mus:it-landschaft ;
+    schema:headline "Eine Kommune wie Musterstadt setzt schon {{anzahl}} Bausteine des Deutschland-Stack ein. Einmal gebaut, vielfach genutzt."@de ;
+    schema:description "Wer sich am Stack ausrichtet, baut nicht jedes Mal neu. Gezeigt sind die Bausteine, die Musterstadts IT-Landschaft heute schon trägt, mit ihrer Verbreitung."@de ;
+    schema:text "{{element}} ({{n}}× im Einsatz)"@de ;
+    sh:select """SELECT ?element (COUNT(DISTINCT ?c) AS ?n) WHERE {
+    mus:it-landschaft dct:hasPart ?c .
+    ?c dct:conformsTo ?el .
+    ?el a dstack:StackElement ;
+        skos:prefLabel ?element .
+} GROUP BY ?el ?element ORDER BY DESC(?n) ?element""" .
+
+# Lücken: the honest counter-angle, also anchored on Musterstadt's landscape. The real standards
+# its components follow that the Landkarte does not (yet) carry.
+dstack:tb-luecken a dstack:Textbaustein ;
+    rdfs:label "Lücken"@de ;
+    sh:order 4 ;
+    schema:about mus:it-landschaft ;
+    schema:headline "Ehrlich bleibt der Graph auch bei den Lücken: {{anzahl}} real genutzte Standards führt die Landkarte noch nicht."@de ;
+    schema:description "Kommunikation aus dem Graphen heißt nicht Schönfärben. Dieselbe Datenbasis benennt, wo der Deutschland-Stack einen in Musterstadt real genutzten Standard noch nicht abbildet."@de ;
+    schema:text "{{standard}}"@de ;
+    sh:select """SELECT DISTINCT ?standard WHERE {
+    mus:it-landschaft dct:hasPart ?c .
+    ?c dct:conformsTo ?std .
+    ?std a dstack:ReferenzierterStandard ;
+        rdfs:label ?standard ;
+        dstack:inLandkarte false .
+} ORDER BY ?standard""" .
+
+# --- a fuller comms piece: an automatic per-Leistung report ------------------
+# The payoff: pick a Verwaltungsleistung and get a report of the Deutschland-Stack bausteine behind
+# it, drawn from their own descriptions. The audience (technisch vs. fachlich) is a render parameter
+# that picks the description register: the upstream dct:description@de vs. the authored @de-x-fachlich
+# one. Same self-describing pattern — the report carries its own SPARQL query (sh:select), reusing
+# schema:Report so no new term is minted. The query returns, per bridged Leistung, each baustein with
+# both description registers; the webapp renders the element name plus the description for the audience.
+dstack:bericht-leistung a schema:Report ;
+    rdfs:label "Leistungs-Steckbrief"@de ;
+    sh:select """SELECT ?leistung ?element ?technisch ?fachlich WHERE {
+    ?l a cpsv:PublicService ;
+        dct:title ?leistung ;
+        m8g:hasChannel/dstack:realisiertDurch ?el .
+    ?el skos:prefLabel ?element .
+    OPTIONAL { ?el dct:description ?technisch . FILTER(lang(?technisch) = "de") }
+    OPTIONAL { ?el dct:description ?fachlich . FILTER(lang(?fachlich) = "de-x-fachlich") }
+} ORDER BY ?leistung ?element""" .
+
+# --- a cross-layer footprint report: what hangs off a single baustein --------
+# The punchline for keeping everything in one graph: pick a D-Stack baustein and see its reach across
+# every layer — the Verwaltungsleistungen that run on it (PVOG bridge), the Fachdatenschemata
+# serialised in it (FIT-Connect), the kommunale Komponenten that conform to it (Musterstadt) and the
+# geplanten Fähigkeiten that list it as candidate (the Vorhaben). Each ?layer comes from a different
+# source dataset; that they add up to one picture is only possible because it is all one graph.
+dstack:bericht-reichweite a schema:Report ;
+    rdfs:label "Bausteinreichweite"@de ;
+    sh:select """SELECT ?element ?layer ?ziel WHERE {
+    ?el a dstack:StackElement ; skos:prefLabel ?element .
+    {
+        ?l a cpsv:PublicService ;
+            m8g:hasChannel/dstack:realisiertDurch ?el ;
+            dct:title ?ziel .
+        BIND("Verwaltungsleistung" AS ?layer)
+    } UNION {
+        ?s dstack:serialisiertAls ?el ; rdfs:label ?ziel .
+        BIND("Fachdatenschema" AS ?layer)
+    } UNION {
+        mus:it-landschaft dct:hasPart ?c .
+        ?c dct:conformsTo ?el ; archimate:name ?ziel .
+        BIND("Kommunale Komponente" AS ?layer)
+    } UNION {
+        ?cap dstack:kandidat ?el ; rdfs:label ?ziel .
+        BIND("Geplante Fähigkeit" AS ?layer)
+    }
+} ORDER BY ?element ?layer ?ziel""" .
+
+# --- Fachliches Register: a second register of each element's own dct:description --
+# Not a new property: the same dct:description as the upstream technical "@de" text, in a fachliche
+# (subject-matter / administrative) register tagged @de-x-fachlich. The webapp
+# picks the register by language tag. Authored only for the bausteine that appear behind a Leistung
+# (the bridged set in pvog-dstack-bridge.assumed.ttl), so every Steckbrief has a fachliche Fassung.
+
+ds:transport-layer-security dct:description
+    "Sorgt dafür, dass die Angaben aus einem Online-Antrag auf dem Weg zur Behörde vertraulich und unverändert ankommen."@de-x-fachlich .
+
+ds:open-id-connect dct:description
+    "Ermöglicht eine sichere, einmalige Anmeldung, die für mehrere Leistungen gilt und die Identität verlässlich belegt."@de-x-fachlich .
+
+ds:open-authorization dct:description
+    "Lässt ein Fachverfahren im Auftrag der antragstellenden Person auf benötigte Daten zugreifen, ohne deren Zugangsdaten preiszugeben."@de-x-fachlich .
+
+ds:openapi dct:description
+    "Beschreibt verbindlich, wie sich ein Fachverfahren an eine Schnittstelle anbinden lässt, und macht individuelle Absprachen überflüssig."@de-x-fachlich .
+
+ds:simple-object-access-protocol dct:description
+    "Legt eine feste Form fest, in der Fachverfahren Nachrichten austauschen, etwa beim Weiterreichen eines Antrags an ein nachgelagertes Register."@de-x-fachlich .
+
+ds:file-transfer-protocol-uber-tls dct:description
+    "Sorgt für die gesicherte Übertragung ganzer Dateien zwischen Stellen, etwa umfangreicher Nachweise zu einem Antrag."@de-x-fachlich .

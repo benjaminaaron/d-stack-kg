@@ -94,3 +94,11 @@ No municipality publishes its IT landscape openly and machine-readably, so this 
 The third column is the point the format makes: machine-computable conformance only works if a landscape references standards by **stable IRI**. `mus:it-landschaft` (a `dcat:Dataset`) `dct:hasPart` its components, so queries anchor on the named landscape.
 
 On top sits a **planning layer** (`musterstadt-chatbot.scenario.ttl`): a project (`archimate:WorkPackage`) `dstack:benoetigt` capabilities (`archimate:Capability`), each with `dstack:kandidat` options, a `ds:` StackElement or a non-Stack alternative. Reuse-vs-new and the before/after coverage are not stored; they follow from the landscape via SPARQL.
+
+## The communication layer
+
+Explanations about the Stack normally live *apart* from the model and go stale. This use case (`authored/comms.authored.ttl`) hangs them onto the graph instead, so a finished piece is a **projection of the graph**: only the framing prose is authored, every figure is a live query result.
+
+`dstack:Textbaustein` is the one local term (a 9→1 reuse trim from a first cut); everything else is reused. The defining choice is **`sh:select`** (borrowed from SHACL-SPARQL as a carrier property, no validation implied): each snippet carries *its own* query as a literal, run live by the webapp, so the logic sits in the graph rather than hidden in the page. The two fuller artefacts (per-Leistung Steckbrief, cross-layer footprint) reuse `schema:Report` and carry their `sh:select` the same way.
+
+The Steckbrief shows two audiences without a new property: both registers ride the same `dct:description`, told apart by language tag — **technisch** is the upstream Landkarte text (`@de`, kept verbatim for provenance), **fachlich** an authored `@de-x-fachlich` value (authored only for the bridged elements). And one Blickwinkel, »Lücken«, is the deliberate counter-angle (`dstack:inLandkarte false`), so a graph-rendered piece never reads as pure promotion.

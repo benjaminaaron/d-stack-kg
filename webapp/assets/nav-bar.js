@@ -17,7 +17,8 @@ const ITEMS = [
         { label: "Tech-Stack Landkarte", href: link("use-case/landkarte.html") },
         { label: "PVOG-Leistungen", href: link("use-case/leistungen.html") },
         { label: "FIM & FIT-Connect", href: link("use-case/fachdaten.html") },
-        { label: "Kommunale IT", href: link("use-case/kommune.html") }
+        { label: "Kommunale IT", href: link("use-case/kommune.html") },
+        { label: "Kommunikation", href: link("use-case/kommunikation.html") }
     ] },
     { label: "Export", href: link("export.html") },
     { label: "Ideen?", href: link("ideen.html") }
