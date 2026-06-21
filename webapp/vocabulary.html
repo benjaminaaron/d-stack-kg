@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Vokabular</title>
+    <title>Datenmodell</title>
     <link rel="stylesheet" href="assets/styles.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.min.css" media="(prefers-color-scheme: light)">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" media="(prefers-color-scheme: dark)">
@@ -13,22 +13,23 @@
     <site-nav></site-nav>
     <main class="container">
         <h2 id="artefakte">Alle semantischen Artefakte</h2>
-        <p class="lead">Die Artefakte, die in den Graphen fließen (das Vokabular unten beschreibt ihre Struktur):</p>
+        <p class="lead">Die Artefakte, die in den Graphen fließen. Das Vokabular darunter beschreibt ihre Strukturen:</p>
         <ul>
-            <li><a href="https://codeberg.org/benjaminaaron/d-stack-kg/src/branch/main/data/2-enrich-kg/d-stack-kg.ttl" target="_blank" rel="noopener">d-stack-kg.ttl</a> &rarr; der technische Deutschland-Stack, gelifted aus der Tech-Stack Landkarte</li>
+            <li><a href="https://codeberg.org/benjaminaaron/d-stack-kg/src/branch/main/data/2-enrich-kg/d-stack-kg.ttl" target="_blank" rel="noopener">d-stack-kg.ttl</a> &rarr; die Standards und Technologien aus der Tech-Stack Landkarte</li>
             <li><a href="https://codeberg.org/benjaminaaron/d-stack-kg/src/branch/main/data/2-enrich-kg/pvog-leistungen.ttl" target="_blank" rel="noopener">pvog-leistungen.ttl</a> &rarr; eine Handvoll PVOG-Leistungen</li>
             <li><a href="https://codeberg.org/benjaminaaron/d-stack-kg/src/branch/main/data/2-enrich-kg/fim-leistungen.ttl" target="_blank" rel="noopener">fim-leistungen.ttl</a> &rarr; FIM-Steckbriefe je LeiKa plus ein zentrales FIM-Datenschema</li>
             <li><a href="https://codeberg.org/benjaminaaron/d-stack-kg/src/branch/main/data/2-enrich-kg/fit-connect.ttl" target="_blank" rel="noopener">fit-connect.ttl</a> &rarr; FIT-Connect-Zustellpunkte und die Fachdatenschemata, die sie empfangen</li>
             <li><a href="https://codeberg.org/benjaminaaron/d-stack-kg/src/branch/main/authored/pvog-dstack-bridge.assumed.ttl" target="_blank" rel="noopener">pvog-dstack-bridge.assumed.ttl</a> &rarr; die geratene Brücke von Leistung zu D-Stack-Elementen</li>
             <li><a href="https://codeberg.org/benjaminaaron/d-stack-kg/src/branch/main/authored/musterstadt-it-landschaft.fictional.ttl" target="_blank" rel="noopener">musterstadt-it-landschaft.fictional.ttl</a> &rarr; eine fiktive kommunale IT-Landschaft</li>
             <li><a href="https://codeberg.org/benjaminaaron/d-stack-kg/src/branch/main/authored/musterstadt-chatbot.scenario.ttl" target="_blank" rel="noopener">musterstadt-chatbot.scenario.ttl</a> &rarr; ein hypothetisches Vorhaben für diese Landschaft</li>
-            <li><a href="https://codeberg.org/benjaminaaron/d-stack-kg/src/branch/main/authored/comms.authored.ttl" target="_blank" rel="noopener">comms.authored.ttl</a> &rarr; Kommunikations-Textbausteine (jeder trägt seine eigene Abfrage) und fachliche Erklärungen je Baustein</li>
-            <li><a href="https://codeberg.org/benjaminaaron/d-stack-kg/src/branch/main/authored/beschlusslage.authored.ttl" target="_blank" rel="noopener">beschlusslage.authored.ttl</a> &rarr; die Beschlusslage des IT-Planungsrats: Standardbereiche und Basisdienste, jede Aussage auf einen datierten Beschluss bezogen</li>
+            <li><a href="https://codeberg.org/benjaminaaron/d-stack-kg/src/branch/main/authored/comms.authored.ttl" target="_blank" rel="noopener">comms.authored.ttl</a> &rarr; Kommunikations-Textbausteine und fachliche Erklärungen je Baustein</li>
+            <li><a href="https://codeberg.org/benjaminaaron/d-stack-kg/src/branch/main/authored/beschlusslage.authored.ttl" target="_blank" rel="noopener">beschlusslage.authored.ttl</a> &rarr; die Beschlusslage des IT-Planungsrats</li>
         </ul>
 
         <h2>Vokabular</h2>
-        <p class="lead">Das work-in-progress Vokabular des Wissensgraphen
-            (<a href="https://codeberg.org/benjaminaaron/d-stack-kg/src/branch/main/authored/vocabulary.ttl" target="_blank" rel="noopener">authored/vocabulary.ttl</a>):</p>
+        <p class="lead">Hinweis zum Modellierungsgrad: Dies ist bewusst ein leichtgewichtiges <strong>RDFS-Vokabular</strong> ergänzt um SKOS für die Begriffsschemata. Es ist keine formale <strong>OWL-Ontologie</strong>. Eine spätere Anhebung in eine ausdrucksstärkere Ontologie wäre denkbar.</p>
+        <a href="https://codeberg.org/benjaminaaron/d-stack-kg/src/branch/main/authored/vocabulary.ttl" target="_blank" rel="noopener">vocabulary.ttl</a> &rarr; Das work-in-progress Vokabular des Wissensgraphen
+        <br><br>
         <pre class="language-turtle"><code id="vocab" class="language-turtle">Lädt…</code></pre>
     </main>
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>

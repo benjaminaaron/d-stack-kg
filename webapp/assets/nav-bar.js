@@ -11,18 +11,19 @@ const link = path => new URL(path, ROOT).href
 const REPO = "https://codeberg.org/benjaminaaron/d-stack-kg"
 
 const ITEMS = [
-    { label: "Vokabular", href: link("vocabulary.html") },
-    { label: "Query", href: link("query.html") },
+    { label: "Über", href: link("ueber.html") },
     { label: "Anwendungsfälle", selectedPrefix: "Anwendungsfall", children: [
         { label: "Tech-Stack Landkarte", href: link("use-case/landkarte.html") },
-        { label: "PVOG-Leistungen", href: link("use-case/leistungen.html") },
-        { label: "FIM & FIT-Connect", href: link("use-case/fachdaten.html") },
         { label: "Kommunale IT", href: link("use-case/kommune.html") },
         { label: "Kommunikation", href: link("use-case/kommunikation.html") },
-        { label: "Beschlusslage", href: link("use-case/beschlusslage.html") }
+        { label: "PVOG-Leistungen", href: link("use-case/leistungen.html") },
+        { label: "FIM & FIT-Connect", href: link("use-case/fachdaten.html") },
+        { label: "Beschlusslage", href: link("use-case/beschlusslage.html") },
+        { label: "Weitere?", href: link("ideen.html"), separated: true }
     ] },
-    { label: "Export", href: link("export.html") },
-    { label: "Ideen?", href: link("ideen.html") }
+    { label: "Datenmodell", href: link("vocabulary.html") },
+    { label: "Query", href: link("query.html") },
+    { label: "Export", href: link("export.html") }
 ]
 
 const isActive = href => {
@@ -39,11 +40,12 @@ const renderLink = item =>
     `<a class="navlink" href="${item.href}"${current(item.href)}>${item.label}</a>`
 
 const renderDropdown = item => {
-    // when a child page is open, surface it in the button: "Use case: <selected>"
-    const selected = item.children.find(c => isActive(c.href))
+    // when a child use case is open, surface it in the button: "Anwendungsfall: <selected>"
+    // (a divider-separated entry like "Weitere?" is excluded - it is not a use case)
+    const selected = item.children.find(c => isActive(c.href) && !c.separated)
     const label = selected ? `${item.selectedPrefix}: ${selected.label}` : item.label
     const menu = item.children.map(c =>
-        `<a role="menuitem" class="menuitem" href="${c.href}"${current(c.href)}>${c.label}</a>`
+        `${c.separated ? '<hr class="menu-sep" role="separator">' : ""}<a role="menuitem" class="menuitem" href="${c.href}"${current(c.href)}>${c.label}</a>`
     ).join("")
     return `
         <div class="dropdown">

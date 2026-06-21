@@ -9,67 +9,59 @@
 </head>
 <body>
     <site-nav></site-nav>
-    <main class="container">
+    <main class="container landing">
         <h1>Der Deutschland-Stack als Wissensgraph</h1>
-        <p class="lead">Ein inoffizieller Prototyp, der den Deutschland-Stack als Wissensgraphen modelliert und sich daraus ergebende Möglichkeiten skizziert.</p>
+        <p>Heute liegt der D-Stack in getrennten Quellen: eine Landkarte der Standards und Technologien, Verzeichnisse von Verwaltungsleistungen, Beschlüsse als PDF. Jede für sich ist nützlich, aber statisch und unverbunden. Was wäre, wenn daraus ein <strong>abfragbarer Wissensgraph</strong> (Knowledge Graph) würde?</p>
+        <p>Dieser inoffizielle Prototyp bringt drei bisher getrennte Sichten in einen gemeinsamen Graphen: <strong>worauf der Staat läuft</strong> (Standards und Technologien), <strong>was er damit tut</strong> (Verwaltungsleistungen aus PVOG, FIM und FIT-Connect) und <strong>was darüber entschieden wird</strong> (die Beschlusslage des IT-Planungsrats). So wächst die Zahl der beantwortbaren Fragen überproportional dank Netzwerkeffekt.</p>
 
-        <p>Das trifft einen aktuellen Moment: Der IT-Planungsrat hat (49. und 50. Sitzung 2026) »Semantische Technologien« zu einem verbindlichen Standardbereich gemacht, also genau das Mittel, in dem dieser Prototyp gebaut ist.</p>
+        <div class="landing-example">
+            <p class="le-q">Was hängt an einem einzigen D-Stack Baustein wie OpenID Connect?</p>
+            <p class="le-a">OpenID Connect ist der Login-Standard hinter vielen Online-Anträgen. Der Graph zeigt, was betroffen wäre, fiele er aus: <a class="le-link" id="ql-leistungen" href="query.html" target="_blank" rel="noopener">4 Verwaltungsleistungen ↗</a>, dahinter <a class="le-link" id="ql-behoerden" href="query.html" target="_blank" rel="noopener">53 zuständige Behörden ↗</a> und <a class="le-link" id="ql-lebenslagen" href="query.html" target="_blank" rel="noopener">7 Lebenslagen ↗</a>, bis hinein in eine kommunale IT-Landschaft. Eine gute Grundlage für eine Folgenabschätzung.</p>
+        </div>
 
-        <h2>Mehr als ein technisches Format</h2>
-        <p>Formate wie JSON oder XML machen es einfach, in der eigenen Anwendungswelt zu bleiben: Ein <code>name</code> ist dort einfach ein <code>name</code>, und <code>1</code>, <code>2</code> oder <code>3</code> genügen als eindeutige Identifier. RDF ("Linked Data") dagegen legt von Anfang an nahe, über die eigene Welt hinauszudenken, in Richtung Nachnutzung und Interoperabilität. Jeder Identifier ist im Idealfall weltweit eindeutig, jeder Begriff verweist auf eine geteilte Bedeutung. Das klingt nach Zusatzaufwand, zahlt sich aber gerade auf Infrastruktur-Ebene um ein Vielfaches aus: Man wird unmittelbar Teil eines riesigen globalen, dezentralen Graphen und wirkt vernetzend statt fragmentierend. Durch diese Perspektive sind semantische Technologien nicht nur ein "technisches Format", dessen Für und Wider allein in der IT abgewogen werden sollte.</p>
-
-        <details class="disclosure">
-            <summary>Vorteile von Linked Data</summary>
-            <ul>
-                <li><strong>Immer selbstbeschreibend.</strong> Jedes Feld trägt seine Bedeutung mit sich: Was es ist und worauf es sich bezieht, steht im Graphen selbst, nicht in separater Dokumentation.</li>
-                <li><strong>Mit Stift und Papier darstellbar.</strong> Knoten und Pfeile, mehr braucht es zum Verständnis nicht. Das senkt die Einstiegshürde und macht den Graphen zum gemeinsamen Gesprächsgegenstand.</li>
-                <li><strong>Unmittelbare Anwendung von Graphentheorie.</strong> Fragen wie "Welche Standards sind tragend?", "Was bricht weg, wenn einer wegfällt?" oder "Wo gibt es isolierte Inseln?" werden zu berechenbaren Analysen statt Vermutungen.</li>
-                <li><strong>Nachnutzung tief eingebaut.</strong> Auf der tiefsten Ebene von Graphen, den sog. Triples, ist Nachnutzung bereits eingebaut: ein beständiger Treiber für Kollaboration.</li>
-                <li><strong>Fundament für verlässliche KI.</strong> Branchenanalysten wie Gartner zählen Wissensgraphen zu den Schlüsseltechnologien, um KI auf geprüftes, nachvollziehbares Wissen zu stützen.</li>
-            </ul>
-        </details>
-
-        <p>Wie die Beispiele auf dieser Seite zeigen sollen, wächst mit jeder weiteren Integration und Verknüpfung von bisher isolierten Datenquellen die Zahl der beantwortbaren Fragen überproportional. Antworten sind dann oft nur noch eine Abfrage entfernt, ohne dass Daten vorher mühsam zusammengeführt und aufeinander abgebildet werden müssten. Zudem entsteht eine eigene Dynamik: Ein so reichhaltiger Wissensgraph beantwortet nicht nur bekannte Fragen schneller, er inspiriert außerdem zu Fragen, die vorher niemand hätte stellen können. Er macht den Deutschland-Stack zu einem lebendigen, multidimensionalen und abfragbaren mensch- und maschinenlesbaren Gegenstand statt einer statischen Landkarte.</p>
-
-        <h2>Von der Kachelwand zum Graphen</h2>
-        <p>
-            Der erste Schritt war, aus der offiziellen <a href="https://technologie.deutschland-stack.gov.de/" target="_blank" rel="noopener">Tech-Stack Landkarte</a> die nicht-öffentlichen Quelldaten zu rekonstruieren. Diese wurden dann zu Linked Data umgewandelt: der Grundstein für den D-Stack als Wissensgraphen. Unter <a href="vocabulary.html" target="_blank" rel="noopener">Vokabular</a> findet sich die Struktur dieses Wissensgraphen.
-        </p>
-        <details class="disclosure">
-            <summary>Bisher prototypisch umgesetzte Anwendungsfälle</summary>
-            <ul>
-                <li><strong><a href="use-case/landkarte.html" target="_blank" rel="noopener">1. Tech-Stack Landkarte</a>:</strong> nichts Neues, sondern ein "proof-of-concept roundtrip"; die Neugenerierung der offiziellen Tech-Stack Landkarte auf Basis des Wissensgraphen. Das hat auch geklappt, bis auf Layout/Darstellungs-Details, an die man mangels offener offizieller Quelle nicht kommt.</li>
-                <li><strong><a href="use-case/leistungen.html" target="_blank" rel="noopener">2. PVOG-Leistungen</a>:</strong> zeigt beispielhaft auf, was möglich wird, wenn auch Leistungen aus dem Portalverbund Online-Gateway (PVOG) semantisch modelliert werden und dabei eine fehlende Brücke von Hand erstellt wird: welche Elemente aus dem D-Stack in einer Leistung verwendet werden.</li>
-                <li><strong><a href="use-case/fachdaten.html" target="_blank" rel="noopener">3. FIM & FIT-Connect</a>:</strong> geht bei denselben Leistungen in die Tiefe und kommt ohne geratene Brücke aus: Über die echte LeiKa-ID verbinden sich das FIM-Portal (Steckbrief, Rechtsgrundlage) und FIT-Connect (der Zustellpunkt, der die Leistung digital empfängt, samt Fachdatenschema) zu einer durchgehenden Kette vom Gesetz bis zur Einreichung, hinunter bis zu den einzelnen FIM-Datenfeldern und dem Format, in dem sie reisen.</li>
-                <li><strong><a href="use-case/kommune.html" target="_blank" rel="noopener">4. Kommunale IT</a>:</strong> der bislang fiktivste Anwendungsfall. Während die Fälle 2 und 3 reale Leistungen nutzen und nur eine kleine Brücke schlagen, fehlt hier die Datengrundlage ganz: Keine Kommune veröffentlicht ihre IT-Landschaft offen und maschinenlesbar. Deshalb wird eine erfundene »Stadt Musterstadt« gegen den D-Stack geprüft: Wie viel ist schon abgedeckt, wo klaffen Lücken, und wie ließe sich ein neues Vorhaben so bauen, dass es möglichst viel aus dem Stack wiederverwendet?</li>
-                <li><strong><a href="use-case/kommunikation.html" target="_blank" rel="noopener">5. Kommunikation aus dem Graphen</a>:</strong> rendert fertige Kommunikationsstücke direkt aus dem Graphen: Blickwinkel als »Textbausteine« und automatische Steckbriefe je Leistung, wahlweise technisch oder fachlich. Die Zahlen kommen so immer live, die Formulierung ist von Hand verfasst. Wie schon bei den anderen Fällen sind diese Texte eigens für die Demo geschrieben (also handkuratiert bzw. fiktiv), nicht aus einer offiziellen Quelle bezogen.</li>
-                <li><strong><a href="use-case/beschlusslage.html" target="_blank" rel="noopener">6. Beschlusslage</a>:</strong> bildet die Beschlüsse des IT-Planungsrats selbst als abfragbare Daten ab: die sieben verbindlichen Standardbereiche (mit ihrer Deckung in der Landkarte und den offenen Festlegungsbedarfen), die fünf Basisdienste (mit Finanzierung und Anbindungspflicht) sowie eine Betroffenheitsabfrage quer über alle Ebenen. Jede offizielle Aussage ist über ihren datierten Beschluss belegt; ergänzt wird nur, was eigens als solches gekennzeichnet ist.</li>
-            </ul>
-        </details>
-
-        <h2>Akteure und Standards, die hier zusammenkommen</h2>
-        <p>Für die Anwendungsfälle werden mehrere Welten der Verwaltungsdigitalisierung zusammengeführt. Die in JSON oder XML vorliegenden Quelldaten wurden auf RDF angehoben und in einen gemeinsamen Graphen gehängt. Dabei wurden an etlichen Stellen <strong>pragmatische Modellierungsentscheidungen</strong> getroffen (Platzhalter-IRIs, manuell geratene "Brücken", aus dem MIME-Typ abgelesene Formate, "best-guess Nachnutzung" bestehender Vokabulare). Aus den jeweiligen APIs wird <strong>nur eine kleine Auswahl ausgelesen</strong> – genug, um prototypische Durchstiche zu zeigen.</p>
-        <details class="disclosure">
-            <summary>Die einzelnen Akteure und Standards im Detail</summary>
-            <ul>
-                <li><strong><a href="https://deutschland-stack.gov.de/" target="_blank" rel="noopener">Deutschland-Stack</a>:</strong> die <a href="https://technologie.deutschland-stack.gov.de/" target="_blank" rel="noopener">Tech-Stack Landkarte</a>, der Katalog der Standards und Technologien, auf denen der Staat baut. Er bildet den technischen Kern des Graphen.</li>
-                <li><strong><a href="https://produktportal.pvog.fitko.de/" target="_blank" rel="noopener">PVOG</a></strong> (Portalverbund Online-Gateway): FITKOs Bundes-Gateway mit den Verwaltungsleistungen, beschrieben im XÖV-Standard <strong>XZuFi</strong>. Es liefert, welche Leistung es gibt, wer sie anbietet und über welchen Onlinedienst sie erreichbar ist.</li>
-                <li><strong><a href="https://fimportal.de" target="_blank" rel="noopener">FIM</a></strong> (Föderales Informationsmanagement): die fachliche Seite der Leistungen: die Steckbriefe (aus dem Leistungskatalog <a href="https://docs.fitko.de/fim/docs/glossar/#leika" target="_blank" rel="noopener"><strong>LeiKa</strong></a>, mit Rechtsgrundlage und OZG-Themenfeld) und die Datenfelder und Datenfeldgruppen (»Bausteine«), aus denen sich Formulare zusammensetzen. Die <strong>LeiKa-ID</strong> aus dem Steckbrief ist zugleich der echte gemeinsame Schlüssel, über den PVOG, FIM und FIT-Connect zusammenfinden.</li>
-                <li><strong><a href="https://docs.fitko.de/fit-connect/" target="_blank" rel="noopener">FIT-Connect</a>:</strong> der Übertragungsweg: der Zustellpunkt, an dem eine Behörde Einreichungen digital empfängt, samt dem Fachdatenschema, dem die Daten genügen müssen.</li>
-                <li><strong>XÖV / XRepository:</strong> die XML-Standards der öffentlichen Verwaltung (etwa XZuFi, XSozial oder <a href="https://www.xrepository.de/details/urn:xoev-de:fim:standard:xdatenfelder" target="_blank" rel="noopener">XDatenfelder</a>), registriert im <a href="https://www.xrepository.de/" target="_blank" rel="noopener">XRepository</a>. Sie kommen bei Fachdatenschema ins Spiel.</li>
-                <li><strong>GerPS</strong> (<a href="https://github.com/fusion-jena/GerPS-Process" target="_blank" rel="noopener">Process</a> / <a href="https://github.com/fusion-jena/GerPS-Datafield" target="_blank" rel="noopener">Datafield</a>): die bislang einzige veröffentlichte RDF-Fassung dieser FIM-Konzepte (openDVA / Uni Jena, an die EU-Vokabulare angelehnt). Die lokalen Begriffe werden daran verankert.</li>
-                <li><strong>EU-Vokabulare</strong> (<a href="https://semiceu.github.io/CPSV-AP/" target="_blank" rel="noopener">CPSV-AP</a> / <a href="https://semiceu.github.io/CCCEV/" target="_blank" rel="noopener">CCCEV</a>): die europäischen Standardvokabulare für öffentliche Leistungen, direkt nachgenutzt, damit Abfragen über diese Daten unverändert funktionieren.</li>
-                <li><strong><a href="https://www.opengroup.org/archimate-forum/archimate-overview" target="_blank" rel="noopener">ArchiMate</a></strong> (The Open Group): eine Modellierungssprache für IT-Landschaften, hier in der RDF-Fassung der <a href="https://github.com/AlbertoDMendoza/archimate_ontology" target="_blank" rel="noopener">ArchiMate Ontology</a> genutzt. Vorbild für die fiktive kommunale IT-Landschaft sind die offenen Referenzarchitekturen <a href="https://github.com/VNG-Realisatie/GEMMA-Archi-repository" target="_blank" rel="noopener">GEMMA</a> (NL), <a href="https://joinup.ec.europa.eu/collection/european-interoperability-reference-architecture-eira" target="_blank" rel="noopener">EIRA</a> (EU) und das sächsische <a href="https://www.ssg-sachsen.de/de/projekte/digital-lotsen-sachsen/dlsn-aktuelles/2026/was-ist-ein-referenzarchitekturmodell-fuer-kommunen/" target="_blank" rel="noopener">IT-Referenzarchitekturmodell</a>.</li>
-            </ul>
-        </details>
-        <p>Der Deutschland-Stack war der konkrete Anlass, verschiedene Bausteine zu einem Wissensgraphen zusammenzuziehen. Das Experiment, mehrere Verwaltungswelten semantisch miteinander zu verbinden, ist aber so oder so reizvoll.</p>
-
-        <p>Auf der <a href="query.html" target="_blank" rel="noopener">Query</a>-Seite kann der Wissensgraph durch SPARQL-Abfragen erkundet werden (Beispiele und ein visueller Query-Builder sind vorhanden). Er setzt sich aus mehreren Artefakten zusammen, die auf der <a href="vocabulary.html#artefakte" target="_blank" rel="noopener">Vokabular-Seite</a> aufgelistet sind.</p>
-
-        <h2>Den D-Stack mit seinen eigenen Mitteln beschreiben</h2>
-        <p>Da der Deutschland-Stack <a href="https://deutschland-stack.gov.de/gesamtbild/#semantische-technologien-und-echtzeitanalytik" target="_blank" rel="noopener">semantische Technologien</a> nicht nur als einen Baustein, sondern als einen verbindlichen Standardbereich führt, bietet es sich an, dieses Mittel auch auf den Stack selbst anzuwenden, bis hin zur <a href="use-case/beschlusslage.html" target="_blank" rel="noopener">Beschlusslage</a> als abfragbarem Graphen. Dieser Prototyp versteht sich als eine Exploration in diese Richtung. Einiges davon wird andernorts bereits vorangetrieben; Austausch und die Gelegenheit, daran anzuknüpfen, sind sehr willkommen.</p>
-
-        <footer class="page-footer">Entwickelt von <a href="https://www.linkedin.com/in/bdegenhart/" target="_blank" rel="noopener">Benjamin Degenhart</a> im Juni 2026 · <a href="mailto:benjamin.degenhart@foerderfunke.org">E-Mail</a></footer>
+        <p class="landing-signals-intro">Der Prototyp greift eine Richtung auf, die der IT-Planungsrat selbst eingeschlagen hat:</p>
+        <ul class="landing-signals">
+            <li>Semantische Technologien sind ein <a href="https://www.it-planungsrat.de/beschluss/b-2026-03-it" target="_blank" rel="noopener">Standardbereich ↗</a> des D-Stacks, genau die Mittel dieses Prototyps.</li>
+            <li>Der FIM-Datenfeld-Baukasten selbst soll <a href="https://www.it-planungsrat.de/fileadmin/beschluesse/2025/Beschluss_2025_22_AL_Handlungsfelder.pdf" target="_blank" rel="noopener">bis Sommer 2027 ↗</a> als Wissensgraph pilotiert werden.</li>
+        </ul>
+        <footer class="page-footer">
+            Die Daten sind aus offiziellen Quellen oder bewusst erfunden (dann als solche markiert). Sie sind weder aktuell noch vollständig.<br>
+            Entwickelt von <a href="https://www.linkedin.com/in/bdegenhart/" target="_blank" rel="noopener">Benjamin Degenhart</a> im Juni 2026 · <a href="mailto:benjamin.degenhart@foerderfunke.org">E-Mail</a></footer>
     </main>
+    <script type="module">
+        // each bold count in the example deep-links to the small query that produces it
+        const PRE = `PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX dct: <http://purl.org/dc/terms/>
+PREFIX cpsv: <http://purl.org/vocab/cpsv#>
+PREFIX m8g: <http://data.europa.eu/m8g/>
+PREFIX ds: <https://deutschland-stack.gov.de/id/>
+PREFIX dstack: <https://deutschland-stack.gov.de/vocab#>
+
+`
+        const queries = {
+            "ql-leistungen": `# Verwaltungsleistungen, die auf OpenID Connect aufbauen
+SELECT DISTINCT ?leistung WHERE {
+    ?l a cpsv:PublicService
+        ; m8g:hasChannel/dstack:realisiertDurch ds:open-id-connect
+        ; dct:title ?leistung .
+} ORDER BY ?leistung`,
+            "ql-behoerden": `# Zuständige Behörden hinter den Leistungen, die OpenID Connect nutzen
+SELECT DISTINCT ?behoerde WHERE {
+    ?l a cpsv:PublicService
+        ; m8g:hasChannel/dstack:realisiertDurch ds:open-id-connect
+        ; m8g:hasCompetentAuthority ?b .
+    ?b skos:prefLabel ?behoerde .
+} ORDER BY ?behoerde`,
+            "ql-lebenslagen": `# Lebenslagen, die auf OpenID Connect aufbauen
+SELECT DISTINCT ?lebenslage WHERE {
+    ?l a cpsv:PublicService
+        ; m8g:hasChannel/dstack:realisiertDurch ds:open-id-connect
+        ; m8g:isGroupedBy/dct:title ?lebenslage .
+} ORDER BY ?lebenslage`,
+        }
+        for (const [id, q] of Object.entries(queries)) {
+            document.getElementById(id).href = "query.html?query=" + encodeURIComponent(PRE + q)
+        }
+    </script>
 </body>
 </html>

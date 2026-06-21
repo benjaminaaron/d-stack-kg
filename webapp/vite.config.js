@@ -38,6 +38,7 @@ export default defineConfig({
                 beschlusslage: resolve(root, "use-case/beschlusslage.html"),
                 ideen: resolve(root, "ideen.html"),
                 export: resolve(root, "export.html"),
+                ueber: resolve(root, "ueber.html"),
             },
         },
     },

@@ -42,6 +42,15 @@ h1 { font-size: 1.8rem; margin-top: 0; }
 a { color: var(--accent); }
 
 .lead { color: var(--muted); font-style: italic; padding-bottom: 10px }
+.landing .lead { font-style: normal }
+.landing-example { border-left: 3px solid var(--accent); padding: 0.1rem 0 0.1rem 1.1rem; margin: 1.6rem 0 0.4rem; }
+.landing-example .le-q { font-weight: 600; margin: 0 0 0.45rem; }
+.landing-example .le-a { margin: 0; color: var(--muted); }
+.landing-example .le-link { color: inherit; text-decoration: underline; }
+.landing-signals-intro { color: var(--muted); margin: 1.4rem 0 0.5rem; }
+.landing-signals { color: var(--muted); margin: 0 0 0.4rem; padding-left: 1.1rem; }
+.landing-signals li { margin: 0.35rem 0; }
+.landing-signals a, .landing-signals-intro a { color: inherit; text-decoration: underline; }
 
 /* small, gray "who built this" line at the foot of the landing page */
 .page-footer { margin-top: 2.5rem; padding-top: 1rem; border-top: 1px solid var(--border); font-size: 0.8rem; color: var(--muted); opacity: 0.75; }
@@ -166,6 +175,14 @@ site-nav {
     color: var(--muted);
     padding: 0.45rem 0.6rem;
     border-radius: 6px;
+}
+
+/* divider in a dropdown menu, before a trailing entry like "Weitere?" */
+.menu-sep {
+    height: 0;
+    margin: 0.3rem 0.4rem;
+    border: 0;
+    border-top: 1px solid var(--border);
 }
 
 /* mobile: collapse the nav row into a burger-toggled panel */
