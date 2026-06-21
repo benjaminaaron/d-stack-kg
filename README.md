@@ -35,6 +35,7 @@ Everything below documents the full pipeline (re-generating the data from the li
         dstack --> fachdaten["FIM &amp; FIT-Connect"]
         dstack --> kommune["Kommunale IT"]
         dstack --> komm["Kommunikation"]
+        dstack --> beschluss["Beschlusslage"]
     end
     sq -- "full.json" --> kg
 
@@ -132,6 +133,7 @@ Committed:
 - `authored/musterstadt-it-landschaft.fictional.ttl`: a fictional municipal IT landscape (ArchiMate, checked against the D-Stack)
 - `authored/musterstadt-chatbot.scenario.ttl`: a hypothetical new project (Bürger-Chatbot) for that landscape, modelled as capabilities with candidate Stack elements
 - `authored/comms.authored.ttl`: comms snippets rendered straight from the graph — `dstack:Textbaustein` is the only local term, each snippet carrying its own SPARQL query (`sh:select`); plus a per-Leistung Steckbrief and a cross-layer footprint (both `schema:Report`), on the [Kommunikation page](webapp/use-case/kommunikation.html)
+- `authored/beschlusslage.authored.ttl`: the IT-Planungsrat Beschlusslage as data — the 7 binding Standardbereiche (with their coverage in the Landkarte and the open Festlegungsbedarfe) and the 5 Basisdienste (with financing and Anbindungspflicht), transcribed from the B-2026/03 annexes, each node sourced to a dated `dstack:Beschluss`, on the [Beschlusslage page](webapp/use-case/beschlusslage.html)
 
 Gitignored: the intermediates (incl. `data/1-build-kg/landscape.ttl`), the fetched PVOG/FIM/FIT-Connect responses + lift intermediates (`data/2-enrich-kg/{pvog,fim,fit-connect}/`), the use-case projections, and `data/scratch/`.
 

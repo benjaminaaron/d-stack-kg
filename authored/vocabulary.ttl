@@ -93,6 +93,25 @@ dstack:Konformitaetsbewertung a rdfs:Class ;
 # with the EU public-service classes (cpsv:PublicService, m8g:PublicOrganisation,
 # m8g:LifeEvent, m8g:Channel) — see the reused-vocabularies block at the foot.
 
+# The governance layer (authored/beschlusslage.authored.ttl) transcribes the
+# IT-Planungsrat decisions: the binding Standardbereiche and the Basisdienste, each
+# fact dct:source'd to a dated dstack:Beschluss. The Produkte that realise the
+# Basisdienste reuse archimate:ApplicationComponent (no local class).
+
+dstack:Beschluss a rdfs:Class ;
+    rdfs:label "Beschluss"@de , "Decision"@en ;
+    rdfs:comment "A dated IT-Planungsrat decision. Nodes in the governance layer cite one via dct:source, so each is traceable to its source decision (carrying its dct:date and schema:url). Provenance is node-level, not per-statement."@en .
+
+dstack:Standardbereich a rdfs:Class ;
+    rdfs:subClassOf skos:Concept ;
+    rdfs:label "Standardbereich"@de , "Standard area"@en ;
+    rdfs:comment "One of the binding standard areas the IT-Planungsrat defines (Anlage Standards). It names the standards it binds (dstack:nenntStandard) and carries the open Festlegungsbedarfe (dstack:festlegungsbedarf). A classification parallel to the Landkarte's own Schicht/Gruppe taxonomy, not a relabeling of it."@en .
+
+dstack:Basisdienst a rdfs:Class ;
+    rdfs:subClassOf skos:Concept ;
+    rdfs:label "Basisdienst"@de , "Base service"@en ;
+    rdfs:comment "One of the five Basisdienste of the Deutschland-Stack portfolio (Anlage Portfolio): a Digital-Public-Infrastructure slot realised by an exchangeable Produkt (dstack:realisiertDurch). schema:funder on the Produkt marks Bund financing (B-2026/18); its absence is itself the queryable distinction."@en .
+
 
 # =============================================================================
 # Properties — StackElement
@@ -153,17 +172,36 @@ dstack:wertProzent a rdf:Property ;
 
 
 # =============================================================================
-# Property — the bridge between the technical and the administrative layer
+# Property — "realised by", connecting layers
 # -----------------------------------------------------------------------------
-# The one predicate that connects the two floors. There is no authoritative source
-# for which technologies an online service runs on, so its edges are a hand-curated
-# proposal (pvog-dstack-bridge.assumed.ttl), using only real Landkarte StackElements.
+# Used in two places, hence no single rdfs:domain/range:
+#   (1) the assumed bridge — an Onlinedienst (m8g:Channel) is built on a Landkarte
+#       StackElement. No register records this, so its edges are a hand-curated
+#       proposal (pvog-dstack-bridge.assumed.ttl), using only real StackElements.
+#   (2) the governance layer — a dstack:Basisdienst is provided by its Produkt (an
+#       archimate:ApplicationComponent), transcribed from the Portfolio annex and
+#       dct:source'd to the Beschluss (beschlusslage.authored.ttl).
+# Truth-status is carried by the file (.assumed) and by dct:source, not by the predicate.
 # =============================================================================
 
 dstack:realisiertDurch a rdf:Property ;
     rdfs:label "realisiert durch"@de , "realised by"@en ;
-    rdfs:domain m8g:Channel ; rdfs:range dstack:StackElement ;
-    rdfs:comment "An Onlinedienst (m8g:Channel) is built on this Landkarte StackElement. PROPOSED: no register records this today, therefore hand-curated choices for now, not derived data."@en .
+    rdfs:comment "X is realised by Y: an Onlinedienst (m8g:Channel) by a Landkarte StackElement (the assumed bridge), or a Basisdienst by its Produkt (the governance layer). See the section comment for the provenance of each use."@en .
+
+
+# =============================================================================
+# Properties — the governance layer (the Beschlusslage)
+# =============================================================================
+
+dstack:nenntStandard a rdf:Property ;
+    rdfs:label "nennt Standard"@de , "names standard"@en ;
+    rdfs:domain dstack:Standardbereich ;
+    rdfs:comment "A Standardbereich names this standard as binding. The object is a Landkarte StackElement where the standard is a tile, or a dstack:ReferenzierterStandard (dstack:inLandkarte false) where the decision names it but the Landkarte lacks it (e.g. SPARQL/OWL/SKOS) — so the gap is queryable, not papered over. No single rdfs:range for that reason."@en .
+
+dstack:festlegungsbedarf a rdf:Property ;
+    rdfs:label "Festlegungsbedarf"@de , "open standardisation item"@en ;
+    rdfs:domain dstack:Standardbereich ; rdfs:range rdfs:Literal ;
+    rdfs:comment "An open standardisation item the IT-Planungsrat itself flags as not yet settled within a Standardbereich, transcribed verbatim. A literal for now; a later foresight step may promote it to a node that demonstrations attach to."@en .
 
 
 # =============================================================================

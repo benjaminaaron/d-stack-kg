@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Beschlusslage</title>
+    <link rel="stylesheet" href="../assets/styles.css">
+    <script type="module" src="../assets/nav-bar.js"></script>
+    <script type="module" src="../assets/beschlusslage.js"></script>
+</head>
+<body>
+    <site-nav></site-nav>
+
+    <main class="container">
+        <h1>Die Beschlusslage des IT-Planungsrats als Graph</h1>
+        <p>Der IT-Planungsrat hat für den Deutschland-Stack <b>verbindliche Standards</b> und ein <b>gemeinsames Portfolio</b> beschlossen <span class="muted bl-quellen">(Quellen: <a href="https://www.it-planungsrat.de/beschluss/b-2026-03-it" target="_blank" rel="noopener">Beschluss B-2026/03</a> der 49. Sitzung vom 18.03.2026 sowie aus der <a href="https://www.it-planungsrat.de/beschluesse-informationen/sitzungen-it-planungsrat/50-sitzung" target="_blank" rel="noopener">50. Sitzung vom 17.06.2026</a> das <a href="https://www.it-planungsrat.de/beschluss/b-2026-18-it" target="_blank" rel="noopener">Finanzierungsmodell B-2026/18</a> und die <a href="https://www.it-planungsrat.de/beschluss/b-2026-19-it" target="_blank" rel="noopener">EUDI-Wallet-Anbindung B-2026/19</a>)</span>. Beides liegt als PDFs vor. Hier wird es experimentell als abfragbare Daten modelliert: die sieben Standardbereiche und die fünf Basisdienste, dazu die Beschlüsse selbst als Quellen. So lässt sich die Beschlusslage direkt befragen.</p>
+
+        <p>Dies ist eine Transkription, keine eigene Bewertung: Was der Beschluss festlegt, wird über <code>dct:source</code> an den jeweiligen Beschluss-Knoten gehängt (mit Datum und Link). Wo dieser Prototyp etwas Eigenes ergänzt, ist es als solches gekennzeichnet. Nebenbei ist es ein Selbstbezug: Der Beschluss führt <a href="https://deutschland-stack.gov.de/gesamtbild/#semantische-technologien-und-echtzeitanalytik" target="_blank" rel="noopener">semantische Technologien</a> als verbindlichen Standardbereich, und genau darin ist dieser Graph gebaut.</p>
+
+        <section>
+            <h2>Standardbereiche und ihre Deckung in der Landkarte</h2>
+            <p>Jeder der sieben Standardbereiche nennt die Standards, die er verbindlich macht. Gezeigt wird, welche davon bereits als <b>Kachel in der Tech-Stack Landkarte</b> geführt werden, dazu die offenen <b>Festlegungsbedarfe</b>, die der Rat selbst notiert. Für <b>Semantische Technologien</b>, die Domäne, in der dieser Prototyp selbst läuft, ist zusätzlich vollständig erfasst, welche benannten Standards die Landkarte (noch) nicht führt.</p>
+            <div id="coverage" class="answer" aria-live="polite"></div>
+        </section>
+
+        <section>
+            <h2>Plattformkern: die fünf Basisdienste</h2>
+            <p>Die Basisdienste sind die zentralen Bausteine einer Digital Public Infrastructure: ein Funktionsbaustein (der Slot) und ein austauschbares Produkt, das ihn realisiert. Sichtbar wird, <b>wer was finanziert</b> und welche <b>Anbindungspflicht</b> für die Länder gilt.</p>
+            <div id="basisdienste" class="answer" aria-live="polite"></div>
+        </section>
+
+        <section>
+            <h2>Betroffenheit: was hängt an einem Standard oder Basisdienst?</h2>
+            <p>Die eigentliche Stärke eines gemeinsamen Graphen: Ändert sich ein Basisdienst oder ein Standardbereich, lässt sich in einer Abfrage über alle Ebenen hinweg sehen, was davon berührt ist, von der Verwaltungsleistung bis zur kommunalen Komponente. Die Querverbindungen beruhen hier teils auf angenommenen Brücken (etwa von Leistung zu Standard) und auf der fiktiven Stadt »Musterstadt«; die Markierungen unten weisen jeweils darauf hin.</p>
+            <p class="picker-row"><label for="betroffenheit-picker"><b>Auslöser:</b></label> <select id="betroffenheit-picker"></select></p>
+            <div id="betroffenheit" class="answer" aria-live="polite"></div>
+        </section>
+
+        <section>
+            <h2>Weitere Fragen, die der Graph beantwortet</h2>
+            <div id="gallery" class="gallery"></div>
+        </section>
+    </main>
+</body>
+</html>

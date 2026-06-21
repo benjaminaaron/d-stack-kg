@@ -16,7 +16,8 @@
  */
 
 import { ROOT, DSTACK_TTL, PVOG_LEISTUNGEN_TTL, FIM_LEISTUNGEN_TTL, FIT_CONNECT_TTL,
-    PVOG_DSTACK_BRIDGE_TTL, MUSTERSTADT_LANDSCHAFT_TTL, MUSTERSTADT_CHATBOT_TTL, COMMS_TTL, VOCABULARY_TTL } from "../../common/utils.js"
+    PVOG_DSTACK_BRIDGE_TTL, MUSTERSTADT_LANDSCHAFT_TTL, MUSTERSTADT_CHATBOT_TTL, COMMS_TTL,
+    BESCHLUSSLAGE_TTL, VOCABULARY_TTL } from "../../common/utils.js"
 import { storeFromTurtles } from "@foerderfunke/sem-ops-utils/core"
 import { queryEngine } from "@foerderfunke/sem-ops-utils/sparql"
 import fs from "fs"
@@ -90,6 +91,11 @@ const EXTERNAL_LABELS = {
     [SCHEMA + "description"]: { en: "note", de: "Hinweis" },
     [SH + "order"]: { en: "order", de: "Reihenfolge" },
     [SH + "select"]: { en: "query", de: "Abfrage" },
+    // the governance layer (Standardbereiche + Basisdienste): the reused terms it leans on
+    // (the dstack: terms — Standardbereich, Basisdienst, nenntStandard, festlegungsbedarf — are labelled in vocabulary.ttl)
+    [SCHEMA + "funder"]: { en: "funder", de: "Finanzierung" },
+    [SKOS + "altLabel"]: { en: "alternative name", de: "alternative Bezeichnung" },
+    [SKOS + "scopeNote"]: { en: "scope note", de: "Anwendungshinweis" },
     // the EU public-service layer (CPSV-AP / CCCEV m8g) — German labels for the builder
     [CPSV + "PublicService"]: { en: "Public service", de: "Verwaltungsleistung" },
     [CPSV + "Rule"]: { en: "Legal rule", de: "Rechtsgrundlage" },
@@ -135,7 +141,7 @@ const TEMPORAL = new Set([XSD + "date", XSD + "dateTime"])
 // and the comms layer (Textbausteine + Blickwinkel + the fachlich register)
 const graph = storeFromTurtles([
     DSTACK_TTL, PVOG_LEISTUNGEN_TTL, FIM_LEISTUNGEN_TTL, FIT_CONNECT_TTL,
-    PVOG_DSTACK_BRIDGE_TTL, MUSTERSTADT_LANDSCHAFT_TTL, MUSTERSTADT_CHATBOT_TTL, COMMS_TTL,
+    PVOG_DSTACK_BRIDGE_TTL, MUSTERSTADT_LANDSCHAFT_TTL, MUSTERSTADT_CHATBOT_TTL, COMMS_TTL, BESCHLUSSLAGE_TTL,
 ].map(f => fs.readFileSync(f, "utf8")))
 const vocab = storeFromTurtles([fs.readFileSync(VOCABULARY_TTL, "utf8")])
 

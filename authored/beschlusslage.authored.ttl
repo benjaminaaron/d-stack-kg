@@ -1,0 +1,288 @@
+# =============================================================================
+# The governance layer — the IT-Planungsrat Beschlusslage as data
+# -----------------------------------------------------------------------------
+# A transcription (not our own assertion) of the binding standards (Anlage Standards) and
+# the portfolio (Anlage Portfolio) the IT-Planungsrat decided, verified against the two
+# B-2026/03 annex PDFs. Each node dct:source's a dated dstack:Beschluss.
+#   - 7 dstack:Standardbereich: each nennt the standards it binds (a Landkarte tile, or a
+#     dstack:ReferenzierterStandard where the Landkarte lacks it) and carries the open
+#     Festlegungsbedarfe verbatim. The gap is modelled in full only for Semantische
+#     Technologien; other areas' non-tile practices/frameworks (CI/CD, EVB-IT, …) are not nodes.
+#   - 5 dstack:Basisdienst: each a swappable DPI slot realised by a Produkt; schema:funder marks
+#     Bund financing (B-2026/18), its absence on ZBDS/ZaPuK the queryable distinction.
+# Honesty boundary: membership, Basisdienst→Produkt and financing are TRANSCRIBED; the
+# Produkt→standard dct:conformsTo links are our own (assumed) attribution, marked below.
+# Full rationale: modeling-notes.md.
+# =============================================================================
+
+@prefix dstack:    <https://deutschland-stack.gov.de/vocab#> .
+@prefix ds:        <https://deutschland-stack.gov.de/id/> .
+@prefix skos:      <http://www.w3.org/2004/02/skos/core#> .
+@prefix dct:       <http://purl.org/dc/terms/> .
+@prefix schema:    <http://schema.org/> .
+@prefix archimate: <https://purl.org/archimate#> .
+@prefix rdfs:      <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:       <http://www.w3.org/2001/XMLSchema#> .
+
+
+# =============================================================================
+# The decisions — every official fact below cites one of these
+# =============================================================================
+
+# 49. Sitzung (18.03.2026) — sets the binding Standards + the initial Portfolio
+ds:beschluss-b-2026-03 a dstack:Beschluss ;
+    dct:title "B-2026/03 Deutschland-Stack"@de ;
+    dct:date "2026-03-18"^^xsd:date ;
+    schema:url <https://www.it-planungsrat.de/beschluss/b-2026-03-it> .
+
+# 50. Sitzung (17.06.2026) — turns the foundation into binding governance + money.
+ds:beschluss-b-2026-18 a dstack:Beschluss ;
+    dct:title "B-2026/18 D-Stack Finanzierungsmodell"@de ;
+    dct:date "2026-06-17"^^xsd:date ;
+    rdfs:comment "Bund finanziert Konzeption, Pflege und Entwicklung von eID, EUDI-Wallet, FIT-Connect und NOOTS; Länder: verbindliche Anbindung und Flächendeckung."@de ;
+    schema:url <https://www.it-planungsrat.de/beschluss/b-2026-18-it> .
+
+ds:beschluss-b-2026-19 a dstack:Beschluss ;
+    dct:title "B-2026/19 Verwaltungsanbindung EUDI-Wallet"@de ;
+    dct:date "2026-06-17"^^xsd:date ;
+    schema:url <https://www.it-planungsrat.de/beschluss/b-2026-19-it> .
+
+
+# =============================================================================
+# Standardbereiche — the 7 binding standard areas (Anlage Standards, B-2026/03)
+# nenntStandard → a Landkarte tile (StackElement). festlegungsbedarf = the Rat's
+# own open items, transcribed verbatim. (See the header note on scoping.)
+# =============================================================================
+
+ds:standardbereiche a skos:ConceptScheme ;
+    skos:prefLabel "Standardbereiche des Deutschland-Stack"@de ;
+    dct:source ds:beschluss-b-2026-03 ;
+    dct:date "2026-03-18"^^xsd:date ;
+    rdfs:comment "Die sieben verbindlichen Standardbereiche der Anlage Standards. Eine zur Landkarte-Taxonomie (Schicht/Gruppe) parallele Klassifikation, keine Umbenennung von ihr."@de .
+
+ds:standardbereich-kuenstliche-intelligenz a dstack:Standardbereich ;
+    skos:inScheme ds:standardbereiche ;
+    skos:prefLabel "Künstliche Intelligenz"@de ;
+    dct:source ds:beschluss-b-2026-03 ;
+    dstack:nenntStandard ds:model-context-protocol , ds:agent-network-protocol ,
+        ds:agent-to-agent-protocol , ds:agent-user-interaction-protocol ;
+    dstack:festlegungsbedarf
+        "Format zur Auswahl verschiedener Basis- und Fach-Sprachmodellen"@de ,
+        "Format zur Einbindung von fachspezifischen Quellen (Retrieval-Augmented Generation)"@de ,
+        "Format zur Nachvollziehbarkeit der Ergebnisse (Responsible AI)"@de ,
+        "Format zum Austausch von Sprachmodellen und Nachnutzung von Trainingsdaten"@de .
+
+ds:standardbereich-semantische-technologien a dstack:Standardbereich ;
+    skos:inScheme ds:standardbereiche ;
+    skos:prefLabel "Semantische Technologien"@de ;
+    dct:source ds:beschluss-b-2026-03 ;
+    # present as Landkarte tiles
+    dstack:nenntStandard ds:resource-description-framework , ds:data-catalog-vocabulary ,
+        ds:open-archives-initiative-protocol-for-metadata-harvesting ,
+        ds:extensible-markup-language , ds:comma-separated-values , ds:javascript-object-notation ,
+    # named binding but ABSENT from the Landkarte (modelled completely for this area, below)
+        ds:sparql , ds:web-ontology-language , ds:simple-knowledge-organization-system ,
+        ds:open-document-format , ds:portable-document-format-ua ,
+        ds:structured-query-language , ds:open-database-connectivity , ds:java-database-connectivity ;
+    dstack:festlegungsbedarf
+        "Format für vektor-, graphen-, dokumenten- und objektorientierte Datenhaltung"@de ,
+        "Format für Datenmodellierung, Datenintegration, Datenauswertung und Datenvisualisierung"@de ,
+        "Formate für Fachdatenaustausch (Fachdatenstandards, harmonisierte Fachdatenräume)"@de .
+
+ds:standardbereich-virtualisierte-infrastruktur a dstack:Standardbereich ;
+    skos:inScheme ds:standardbereiche ;
+    skos:prefLabel "Virtualisierte softwarebasierte Infrastruktur"@de ;
+    dct:source ds:beschluss-b-2026-03 ;
+    dstack:nenntStandard ds:sd-wan-service-attributes-and-service-framework ;
+    dstack:festlegungsbedarf
+        "Format für Software-Defined Storage (SDS)"@de ,
+        "Format für Verwaltung von virtuellen Maschinen und Ressourcen"@de .
+
+ds:standardbereich-devsecops a dstack:Standardbereich ;
+    skos:inScheme ds:standardbereiche ;
+    skos:prefLabel "Integrierter Lebenszyklus (DevSecOps) und Schnittstellenmanagement"@de ;
+    dct:source ds:beschluss-b-2026-03 ;
+    dstack:nenntStandard ds:openapi , ds:representational-state-transfer , ds:kubernetes ,
+        ds:graphql , ds:general-purpose-remote-procedure-calls , ds:internet-protocol-version-6 ,
+        ds:file-transfer-protocol-uber-tls , ds:simple-mail-transfer-protocol-secure ,
+        ds:quick-udp-internet-connections ;
+    dstack:festlegungsbedarf
+        "Formate für Scan, Test, Analyse, Logs, Observability, Security (u.a. SIEM, IDS, EDR, SAST, DAST, CS)"@de ,
+        "Formate für Package Management, Distribution, Load Balancing, Proxies, Gateways, Service Mesh und Service Discovery"@de .
+
+ds:standardbereich-managed-services-cloud a dstack:Standardbereich ;
+    skos:inScheme ds:standardbereiche ;
+    skos:prefLabel "Managed Services und Cloud"@de ;
+    dct:source ds:beschluss-b-2026-03 ;
+    dstack:festlegungsbedarf
+        "Formate für standardisierte, bedarfsorientierte Service Levels, Berichtsmechanismen und Geschäftsbedingungen zu Leistungen in insbesondere Compute, Storage, Communication, Logging, Observability, Backup, Support, Cost Calculation, License und Performance Management"@de .
+
+ds:standardbereich-it-sicherheit a dstack:Standardbereich ;
+    skos:inScheme ds:standardbereiche ;
+    skos:prefLabel "IT-Sicherheit"@de ;
+    dct:source ds:beschluss-b-2026-03 ;
+    dstack:nenntStandard ds:advanced-encryption-standard , ds:rivest-shamir-adleman ,
+        ds:module-lattice-based-key-encapsulation-mechanism ,
+        ds:open-authorization , ds:open-id-connect , ds:json-web-tokens , ds:one-time-password ;
+    dstack:festlegungsbedarf
+        "Format zu Sensibilisierung von Nutzenden"@de ,
+        "Format für Krypto-Agilität"@de .
+
+ds:standardbereich-workflowautomatisierung a dstack:Standardbereich ;
+    skos:inScheme ds:standardbereiche ;
+    skos:prefLabel "Workflowautomatisierung (LowCode)"@de ;
+    dct:source ds:beschluss-b-2026-03 ;
+    dstack:festlegungsbedarf
+        "Format zur Integration oder Anbindung von externen Lösungen"@de ,
+        "Format für Export und Import von Modellen"@de ,
+        "Format für die Ausführung auf verschiedenen Betriebs- und Infrastrukturumgebungen"@de .
+
+
+# =============================================================================
+# Named binding, but not (yet) a tile in the Tech-Stack-Landkarte
+# -----------------------------------------------------------------------------
+# The same dstack:ReferenzierterStandard + dstack:inLandkarte machinery the
+# FIT-Connect layer uses for XÖV standards the Landkarte lacks. Here the referencing
+# source is the Beschluss (dct:source). These are the named standards under
+# Semantische Technologien that the Landkarte does not list. The pointed case:
+# SPARQL, OWL and SKOS — the IT-Planungsrat names them binding, this prototype runs
+# on all three, the Landkarte lists none. A sourced finding, not a claim they belong.
+# =============================================================================
+
+ds:sparql a dstack:ReferenzierterStandard ;
+    rdfs:label "SPARQL" ;
+    dct:source ds:beschluss-b-2026-03 ;
+    dstack:inLandkarte false ;
+    rdfs:seeAlso <https://www.w3.org/TR/sparql11-query/> .
+
+ds:web-ontology-language a dstack:ReferenzierterStandard ;
+    rdfs:label "OWL (Web Ontology Language)" ;
+    dct:source ds:beschluss-b-2026-03 ;
+    dstack:inLandkarte false ;
+    rdfs:seeAlso <https://www.w3.org/TR/owl2-overview/> .
+
+ds:simple-knowledge-organization-system a dstack:ReferenzierterStandard ;
+    rdfs:label "SKOS (Simple Knowledge Organization System)" ;
+    dct:source ds:beschluss-b-2026-03 ;
+    dstack:inLandkarte false ;
+    rdfs:seeAlso <https://www.w3.org/TR/skos-reference/> .
+
+ds:open-document-format a dstack:ReferenzierterStandard ;
+    rdfs:label "ODF (Open Document Format)" ;
+    dct:source ds:beschluss-b-2026-03 ;
+    dstack:inLandkarte false .
+
+ds:portable-document-format-ua a dstack:ReferenzierterStandard ;
+    rdfs:label "PDF/UA (Portable Document Format Universal Accessibility)" ;
+    dct:source ds:beschluss-b-2026-03 ;
+    dstack:inLandkarte false .
+
+ds:structured-query-language a dstack:ReferenzierterStandard ;
+    rdfs:label "SQL (Structured Query Language)" ;
+    dct:source ds:beschluss-b-2026-03 ;
+    dstack:inLandkarte false .
+
+ds:open-database-connectivity a dstack:ReferenzierterStandard ;
+    rdfs:label "ODBC (Open Database Connectivity)" ;
+    dct:source ds:beschluss-b-2026-03 ;
+    dstack:inLandkarte false .
+
+ds:java-database-connectivity a dstack:ReferenzierterStandard ;
+    rdfs:label "JDBC (Java Database Connectivity)" ;
+    dct:source ds:beschluss-b-2026-03 ;
+    dstack:inLandkarte false .
+
+
+# =============================================================================
+# Basisdienste — the 5 DPI slots (Anlage Portfolio, B-2026/03)
+# Basisdienst → Produkt via dstack:realisiertDurch. skos:altLabel = the
+# Funktionsbaustein (Deutschland-Architektur). skos:scopeNote carries the
+# Länder-Anbindungspflicht for the Bund-financed services (B-2026/18).
+# =============================================================================
+
+ds:basisdienste a skos:ConceptScheme ;
+    skos:prefLabel "Basisdienste des Deutschland-Stack"@de ;
+    dct:source ds:beschluss-b-2026-03 ;
+    dct:date "2026-03-18"^^xsd:date ;
+    rdfs:comment "Initiales Portfolio (49. IT-PLR). Die Basisdienste stellen Basisfunktionen einer Digital Public Infrastructure zentral bereit."@de .
+
+ds:basisdienst-identitaet-vertrauen a dstack:Basisdienst ;
+    skos:inScheme ds:basisdienste ;
+    skos:prefLabel "Identität und Vertrauen"@de ;
+    skos:altLabel "Authentifizierung"@de ;
+    dct:source ds:beschluss-b-2026-03 ;
+    skos:scopeNote "Länder: verbindliche Anbindung und Flächendeckung (B-2026/18). Anbindung der Verwaltung an die EUDI-Wallet beschlossen (B-2026/19)."@de ;
+    dstack:realisiertDurch ds:eid , ds:eudi-wallet .
+
+ds:basisdienst-datenaustausch a dstack:Basisdienst ;
+    skos:inScheme ds:basisdienste ;
+    skos:prefLabel "Datenaustausch"@de ;
+    skos:altLabel "Datenaustausch"@de ;
+    dct:source ds:beschluss-b-2026-03 ;
+    skos:scopeNote "Länder: verbindliche Anbindung und Flächendeckung (B-2026/18)."@de ;
+    dstack:realisiertDurch ds:fit-connect .
+
+ds:basisdienst-datenabruf a dstack:Basisdienst ;
+    skos:inScheme ds:basisdienste ;
+    skos:prefLabel "Datenabruf"@de ;
+    skos:altLabel "Abruf und Bereitstellung von Daten und Nachweisen"@de ;
+    dct:source ds:beschluss-b-2026-03 ;
+    skos:scopeNote "Länder: verbindliche Anbindung und Flächendeckung (B-2026/18)."@de ;
+    dstack:realisiertDurch ds:noots .
+
+ds:basisdienst-zahlungsabwicklung a dstack:Basisdienst ;
+    skos:inScheme ds:basisdienste ;
+    skos:prefLabel "Zahlungsabwicklung"@de ;
+    skos:altLabel "Ein- und Auszahlung"@de ;
+    dct:source ds:beschluss-b-2026-03 ;
+    rdfs:comment "Nicht Teil des Bundes-Finanzierungsmodells B-2026/18 (kein schema:funder)."@de ;
+    dstack:realisiertDurch ds:zbds .
+
+ds:basisdienst-postfach a dstack:Basisdienst ;
+    skos:inScheme ds:basisdienste ;
+    skos:prefLabel "Postfach"@de ;
+    skos:altLabel "Postfach und Interaktion (G2C)"@de ;
+    dct:source ds:beschluss-b-2026-03 ;
+    rdfs:comment "Nicht Teil des Bundes-Finanzierungsmodells B-2026/18 (kein schema:funder)."@de ;
+    dstack:realisiertDurch ds:zapuk .
+
+
+# =============================================================================
+# Produkte — the swappable realisations (archimate:ApplicationComponent, reused).
+# Names are taken verbatim from the Portfolio annex. schema:funder "Bund (BMDS)"
+# only on the four B-2026/18-financed products. dct:conformsTo → Landkarte tiles is
+# our OWN attribution (not from the annex): it closes the loop to the standards the
+# graph already models. Honest and sparse.
+# =============================================================================
+
+ds:eid a archimate:ApplicationComponent ;
+    archimate:name "eID" ;
+    dct:source ds:beschluss-b-2026-18 ;
+    schema:funder "Bund (BMDS)"@de ;
+    dct:conformsTo ds:open-id-connect .
+
+# two sources: B-2026/18 finances it (schema:funder), B-2026/19 is its Verwaltungsanbindung
+ds:eudi-wallet a archimate:ApplicationComponent ;
+    archimate:name "EUDI-Wallet" ;
+    dct:source ds:beschluss-b-2026-18 , ds:beschluss-b-2026-19 ;
+    schema:funder "Bund (BMDS)"@de ;
+    dct:conformsTo ds:open-id-connect , ds:open-authorization .
+
+ds:fit-connect a archimate:ApplicationComponent ;
+    archimate:name "FIT-Connect" ;
+    dct:source ds:beschluss-b-2026-18 ;
+    schema:funder "Bund (BMDS)"@de ;
+    dct:conformsTo ds:openapi , ds:extensible-markup-language , ds:transport-layer-security .
+
+ds:noots a archimate:ApplicationComponent ;
+    archimate:name "NOOTS" ;
+    dct:source ds:beschluss-b-2026-18 ;
+    schema:funder "Bund (BMDS)"@de .
+
+ds:zbds a archimate:ApplicationComponent ;
+    archimate:name "ZBDS (ePayBL inkludierend)" ;
+    dct:source ds:beschluss-b-2026-03 .
+
+ds:zapuk a archimate:ApplicationComponent ;
+    archimate:name "ZaPuK" ;
+    dct:source ds:beschluss-b-2026-03 .

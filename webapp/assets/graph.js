@@ -1,7 +1,8 @@
 // The knowledge graph's layers — technical (d-stack-kg) + PVOG services + the FIM
 // Steckbrief enrichment + the FIT-Connect Zustellpunkte/Fachdatenschemata + the assumed
 // bridge + the fictional municipal IT landscape (Musterstadt) + the communication layer
-// (comms snippets, each carrying its own query) — inlined by Vite (?raw) and loaded into one
+// (comms snippets, each carrying its own query) + the governance layer (the IT-Planungsrat
+// Beschlusslage: Standardbereiche + Basisdienste) — inlined by Vite (?raw) and loaded into one
 // in-browser store. That composition is the join the project is about; shared by every page
 // that queries it (the Query page and the use-case pages).
 
@@ -13,6 +14,7 @@ import bridgeTtl from "../../authored/pvog-dstack-bridge.assumed.ttl?raw"
 import musterstadtTtl from "../../authored/musterstadt-it-landschaft.fictional.ttl?raw"
 import chatbotTtl from "../../authored/musterstadt-chatbot.scenario.ttl?raw"
 import commsTtl from "../../authored/comms.authored.ttl?raw"
+import beschlusslageTtl from "../../authored/beschlusslage.authored.ttl?raw"
 import { storeFromTurtles } from "@foerderfunke/sem-ops-utils/core"
 
-export const graphStore = () => storeFromTurtles([dstackTtl, leistungenTtl, fimTtl, fitConnectTtl, bridgeTtl, musterstadtTtl, chatbotTtl, commsTtl])
+export const graphStore = () => storeFromTurtles([dstackTtl, leistungenTtl, fimTtl, fitConnectTtl, bridgeTtl, musterstadtTtl, chatbotTtl, commsTtl, beschlusslageTtl])
