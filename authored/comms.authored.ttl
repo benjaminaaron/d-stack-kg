@@ -43,7 +43,8 @@ dstack:tb-souveraenitaet a dstack:Textbaustein ;
     schema:headline "Am souveränsten ist die Kategorie »{{kategorie}}« mit im Schnitt {{wert}} %."@de ;
     schema:description "Jeder Baustein des Deutschland-Stack wird auf sechs Kriterien von 0 bis 100 % bewertet. Hier zählt allein die digitale Souveränität, gemittelt je Kategorie."@de ;
     schema:text "{{kategorie}}: Ø {{wert}} %"@de ;
-    sh:select """SELECT ?kategorie (ROUND(AVG(?w)) AS ?wert) WHERE {
+    sh:select """# Digitale Souveränität je D-Stack-Kategorie, Durchschnitt über die Bausteine (stärkste zuerst)
+SELECT ?kategorie (ROUND(AVG(?w)) AS ?wert) WHERE {
     ?el a dstack:StackElement ;
         dct:subject/skos:prefLabel ?kategorie ;
         dstack:konformitaet ?a .
@@ -60,7 +61,8 @@ dstack:tb-buergernah a dstack:Textbaustein ;
     schema:headline "Hinter dem Online-Antrag »{{leistung}}« stehen {{anzahl}} Bausteine des Deutschland-Stack."@de ;
     schema:description "Was als ein Klick erscheint, stützt sich auf konkrete, offene Bausteine. Gezeigt ist die Leistung mit den meisten hinterlegten Bausteinen (die Zuordnung ist eine Annahme, siehe PVOG-Leistungen)."@de ;
     schema:text "{{baustein}}"@de ;
-    sh:select """SELECT ?leistung ?baustein WHERE {
+    sh:select """# Die Verwaltungsleistung mit den meisten hinterlegten D-Stack-Bausteinen und diese Bausteine
+SELECT ?leistung ?baustein WHERE {
     {
         SELECT ?l (COUNT(DISTINCT ?e) AS ?n) WHERE {
             ?l a cpsv:PublicService ;
@@ -81,7 +83,8 @@ dstack:tb-wiederverwendung a dstack:Textbaustein ;
     schema:headline "Eine Kommune wie Musterstadt setzt schon {{anzahl}} Bausteine des Deutschland-Stack ein. Einmal gebaut, vielfach genutzt."@de ;
     schema:description "Wer sich am Stack ausrichtet, baut nicht jedes Mal neu. Gezeigt sind die Bausteine, die Musterstadts IT-Landschaft heute schon trägt, mit ihrer Verbreitung."@de ;
     schema:text "{{element}} ({{n}}× im Einsatz)"@de ;
-    sh:select """SELECT ?element (COUNT(DISTINCT ?c) AS ?n) WHERE {
+    sh:select """# D-Stack-Bausteine, die Musterstadts IT-Landschaft schon nutzt, nach Verbreitung
+SELECT ?element (COUNT(DISTINCT ?c) AS ?n) WHERE {
     mus:it-landschaft dct:hasPart ?c .
     ?c dct:conformsTo ?el .
     ?el a dstack:StackElement ;
@@ -97,7 +100,8 @@ dstack:tb-luecken a dstack:Textbaustein ;
     schema:headline "Ehrlich bleibt der Graph auch bei den Lücken: {{anzahl}} real genutzte Standards führt die Landkarte noch nicht."@de ;
     schema:description "Kommunikation aus dem Graphen heißt nicht Schönfärben. Dieselbe Datenbasis benennt, wo der Deutschland-Stack einen in Musterstadt real genutzten Standard noch nicht abbildet."@de ;
     schema:text "{{standard}}"@de ;
-    sh:select """SELECT DISTINCT ?standard WHERE {
+    sh:select """# In Musterstadt real genutzte Standards, die die Tech-Stack Landkarte noch nicht führt
+SELECT DISTINCT ?standard WHERE {
     mus:it-landschaft dct:hasPart ?c .
     ?c dct:conformsTo ?std .
     ?std a dstack:ReferenzierterStandard ;
@@ -114,7 +118,8 @@ dstack:tb-luecken a dstack:Textbaustein ;
 # both description registers; the webapp renders the element name plus the description for the audience.
 dstack:bericht-leistung a schema:Report ;
     rdfs:label "Leistungs-Steckbrief"@de ;
-    sh:select """SELECT ?leistung ?element ?technisch ?fachlich WHERE {
+    sh:select """# Je Verwaltungsleistung die D-Stack-Bausteine dahinter, technisch und fachlich beschrieben
+SELECT ?leistung ?element ?technisch ?fachlich WHERE {
     ?l a cpsv:PublicService ;
         dct:title ?leistung ;
         m8g:hasChannel/dstack:realisiertDurch ?el .
@@ -131,7 +136,8 @@ dstack:bericht-leistung a schema:Report ;
 # source dataset; that they add up to one picture is only possible because it is all one graph.
 dstack:bericht-reichweite a schema:Report ;
     rdfs:label "Bausteinreichweite"@de ;
-    sh:select """SELECT ?element ?layer ?ziel WHERE {
+    sh:select """# Was ein D-Stack-Baustein über alle Ebenen verbindet: Leistung, Fachdatenschema, Komponente, Fähigkeit
+SELECT ?element ?layer ?ziel WHERE {
     ?el a dstack:StackElement ; skos:prefLabel ?element .
     {
         ?l a cpsv:PublicService ;

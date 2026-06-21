@@ -2,6 +2,8 @@
 
 How step 4 turns `landscape.yml` into the RDF knowledge graph (`data/1-build-kg/landscape.ttl`), the judgement calls along the way, and a few notes on the source data.
 
+Across all layers, the model uses RDF/RDFS and SKOS; it defines no OWL axioms or SHACL shapes yet.
+
 ## Lift, then transform
 
 1. **Lift**: [SPARQL Anything](https://sparql-anything.cc) triplifies `landscape.yml` into the raw, generic Facade-X model, dumped verbatim (`sparql/lift.sparql`). No interpretation.

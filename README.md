@@ -29,7 +29,7 @@ Everything below documents the full pipeline (re-generating the data from the li
     end
     subgraph kg ["This project"]
         direction LR
-        yml["reconstructed<br/>source artifacts"] --> ttl["landscape.ttl"] --> dstack["<b>d-stack-kg.ttl</b><br/>(enriched)"]
+        yml["reconstructed<br/>source artifacts"] --> dstack["<b>d-stack-kg.ttl</b><br/>+ more turtle-artifacts"]
         dstack --> roundtrip["Reconstructed:</br>Tech-Stack Landkarte"]
         dstack --> leistungen["PVOG-Leistungen"]
         dstack --> fachdaten["FIM &amp; FIT-Connect"]
