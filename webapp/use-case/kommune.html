@@ -13,30 +13,34 @@
 
     <main class="container">
         <h1>Die kommunale IT gegen den Deutschland-Stack prüfen</h1>
-        <p>Was wird möglich, wenn nicht nur der Deutschland-Stack maschinenlesbar vorliegt, sondern auch die IT einer Kommune? Dann lässt sich bspw. abfragen, wie weit eine Verwaltung schon am Stack ausgerichtet ist, und ein geplantes Vorhaben so durchspielen, dass es möglichst viel vom Stack wiederverwendet.</p>
+        <p>Liegt nicht nur der Deutschland-Stack maschinenlesbar vor, sondern auch die IT einer Kommune, lässt sich abfragen, wie weit eine Verwaltung schon am Stack ausgerichtet ist, und ein geplantes Vorhaben so durchspielen, dass es möglichst viel vom Stack wiederverwendet.</p>
 
-        <p>Die konkrete IT-Landschaft einer einzelnen Kommune veröffentlicht niemand offen und maschinenlesbar. Es gibt aber maschinenlesbare Referenzarchitekturen für Kommunen: in den Niederlanden <a href="https://github.com/VNG-Realisatie/GEMMA-Archi-repository" target="_blank" rel="noopener">GEMMA</a>, EU-weit <a href="https://joinup.ec.europa.eu/collection/european-interoperability-reference-architecture-eira" target="_blank" rel="noopener">EIRA</a> (beide offen als ArchiMate) und in Deutschland das sächsische <a href="https://www.ssg-sachsen.de/de/projekte/digital-lotsen-sachsen/dlsn-aktuelles/2026/was-ist-ein-referenzarchitekturmodell-fuer-kommunen/" target="_blank" rel="noopener">IT-Referenzarchitekturmodell für Kommunen</a>. Die hier geprüfte <b>Stadt Musterstadt</b> ist deshalb erfunden, aber nah an diesen Vorbildern modelliert. ArchiMate ist dabei nur ein möglicher Ausgangspunkt; ebenso ließen sich weitere Formate anbinden. Das wäre zugleich ein Anknüpfungspunkt zu Themen rund um Enterprise Architecture Management (EAM).</p>
+        <p>Die konkrete IT-Landschaft einer einzelnen Kommune veröffentlicht niemand offen und maschinenlesbar. Die hier geprüfte <b>Stadt Musterstadt</b> ist deshalb erfunden, aber nah an offenen Referenzarchitekturen modelliert.</p>
+        <details class="disclosure">
+            <summary>Vorbilder für Musterstadt</summary>
+            <p>Es gibt maschinenlesbare Referenzarchitekturen für Kommunen: in den Niederlanden <a href="https://github.com/VNG-Realisatie/GEMMA-Archi-repository" target="_blank" rel="noopener">GEMMA</a>, EU-weit <a href="https://joinup.ec.europa.eu/collection/european-interoperability-reference-architecture-eira" target="_blank" rel="noopener">EIRA</a> (beide offen als ArchiMate) und in Deutschland das sächsische <a href="https://www.ssg-sachsen.de/de/projekte/digital-lotsen-sachsen/dlsn-aktuelles/2026/was-ist-ein-referenzarchitekturmodell-fuer-kommunen/" target="_blank" rel="noopener">IT-Referenzarchitekturmodell für Kommunen</a>. ArchiMate ist dabei nur ein möglicher Ausgangspunkt; ebenso ließen sich weitere Formate anbinden. Das wäre zugleich ein Anknüpfungspunkt zu Themen rund um Enterprise Architecture Management (EAM).</p>
+        </details>
 
         <section>
-            <h2>Abfragebeispiel 1: Wie viel D-Stack steckt schon drin?</h2>
+            <h2>1. Wie viel D-Stack steckt schon drin?</h2>
             <p>Die Abfrage ordnet jede Komponente der IT von Musterstadt einer von drei Gruppen zu: <b>abgedeckt</b> (folgt einem D-Stack-Element), <b>Lücke</b> (nutzt einen realen Standard, den der D-Stack noch nicht führt), oder <b>Insellösung</b> (gar kein offener Standard).</p>
             <div id="coverage" class="answer" aria-live="polite"></div>
         </section>
 
         <section>
-            <h2>Abfragebeispiel 2: Wie bewertet der D-Stack Musterstadts Bestand?</h2>
+            <h2>2. Wie bewertet der D-Stack Musterstadts Bestand?</h2>
             <p>Jedes D-Stack-Element trägt im Deutschland-Stack eine eigene Bewertung auf sechs Kriterien (0 bis 100 %), unabhängig davon, wer es einsetzt. Diese Werte werden hier für genau die Elemente gezeigt, die Musterstadt nutzt; so überträgt sich die Bewertung des Stack auf Musterstadts Bestand. Das Kriterium ist wählbar, und »in N Komponenten« sagt, in wie vielen Komponenten von Musterstadt das jeweilige Element steckt.</p>
             <p class="picker-row"><label for="kriterium-picker"><b>Kriterium:</b></label> <select id="kriterium-picker"></select></p>
             <div id="sovereignty" class="answer" aria-live="polite"></div>
         </section>
 
         <section>
-            <h2>Abfragebeispiele 3: weitere Fragen, die der Graph beantwortet</h2>
+            <h2>3. Weitere Fragen, die der Graph beantwortet</h2>
             <div id="gallery" class="gallery"></div>
         </section>
 
         <section>
-            <h2>Ein neues Projekt als Stack-Maximierung (Bürger-Chatbot)</h2>
+            <h2>4. Ein neues Projekt als Stack-Maximierung (Bürger-Chatbot)</h2>
             <p>Die Stadt plant einen Bürger-Chatbot fürs Serviceportal und will dabei so viel wie möglich aus dem Deutschland-Stack wiederverwenden. Das Vorhaben ist als eigenes Szenario modelliert: Pro Fähigkeit hat die Stadt-IT die Optionen bewertet, Stack-Elemente und, wo vorhanden, proprietäre Alternativen. Durch die semantische Modellierung fällt die Empfehlung samt Abdeckung vor und nach dem Projekt aus einer einzigen Abfrage.</p>
             <div id="chatbot" class="answer" aria-live="polite"></div>
         </section>

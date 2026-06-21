@@ -16,7 +16,7 @@
         <p>Erklärungen über den Deutschland-Stack (wie bspw. ein Steckbrief oder eine Textpassage) werden heute getrennt vom Modell gepflegt. Sie veralten, sobald sich eine Zahl ändert, und niemand sieht ihnen an, woher sie stammen. Hängt man sie stattdessen direkt an den Graphen, werden »Kommunikationsstücke« zur Projektion des Graphen.</p>
 
         <section>
-            <h2>Automatischer Steckbrief zu einer Leistung</h2>
+            <h2>1. Automatischer Steckbrief zu einer Leistung</h2>
             <p>Aus dem Graphen ließen sich bspw. Steckbriefe zur D-Stack-Abdeckung in Verwaltungsleistungen für ein gewünschtes Zielpublikum generieren. Die Leistungen hier im Beispiel stammen aus dem Portalverbund Online-Gateway (PVOG); erfunden ist nur die Zuordnung, welche Bausteine hinter einer Leistung stehen. <b>Technisch</b> zeigt die technischen Beschreibungen aus der offiziellen Landkarte, <b>fachlich</b> beispielhaft verfasste Texte. Beide hängen am selben Knoten, sodass die Texte nie auseinanderlaufen.</p>
             <p class="picker-row"><label for="bericht-picker"><b>Leistung:</b></label> <select id="bericht-picker"></select></p>
             <div id="bericht-aud" class="elbuttons"></div>
@@ -24,14 +24,14 @@
         </section>
 
         <section>
-            <h2>Was alles an einem Baustein hängt</h2>
+            <h2>2. Was alles an einem Baustein hängt</h2>
             <p>Hier soll verdeutlicht werden, warum sich ein gemeinsames Modell aus Komms-Perspektive lohnt: Wähle einen Baustein des D-Stack und automatisch wird berichtet, was alles an ihm hängt, quer durch die Schichten. Jede Zahl stammt aus einer anderen Datenquelle (PVOG, FIT-Connect, die fiktive Kommune Musterstadt und deren hypothetisches Vorhaben). So ließe sich etwa auf einen Blick abschätzen, wen eine Änderung an diesem Baustein berühren würde.</p>
             <p class="picker-row"><label for="reichweite-picker"><b>Baustein:</b></label> <select id="reichweite-picker"></select></p>
             <div id="reichweite-out" class="answer" aria-live="polite"></div>
         </section>
 
         <section>
-            <h2>Textvorlagen, live aus dem Graphen befüllt</h2>
+            <h2>3. Textvorlagen, live aus dem Graphen befüllt</h2>
             <p>Derselbe Deutschland-Stack, vier beispielhafte Perspektiven. Jede ist eine vorgefertigte Textvorlage mit Platzhaltern für die Zahlen. Wird eine ausgewählt, werden die Platzhalter mit aktuellen Zahlen aus dem Graphen gefüllt.</p>
             <p>Jede Vorlage bringt dabei die Abfrage, die ihre Zahlen besorgt, selbst mit. Sie liegt nicht versteckt im Programm, sondern steckt direkt im Graphen. So bleibt die Aussage aktuell, und über die verlinkte Abfrage sind die Zahlen nachprüfbar.</p>
             <div id="comms-tags" class="elbuttons comms-tags"></div>

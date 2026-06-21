@@ -7,6 +7,7 @@
 // page, the visual builder and the export include it too — each Textbaustein carries its own query.
 
 import { useCase, esc, $ } from "./use-case.js"
+import commsTtl from "../../authored/comms.authored.ttl?raw"
 
 const PRE = `PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
@@ -22,19 +23,15 @@ PREFIX mus: <https://example.org/musterstadt#>`
 
 const { select, queryLink } = useCase(PRE)
 
-// deep-link a snippet's whole self-describing shape on Codeberg (its leading comment, triples and the
-// carried query). Line ranges are hardcoded for simplicity — re-check them if comms.authored.ttl is
-// re-laid-out above or within these blocks.
+// deep-link a snippet's self-describing shape on Codeberg. The line is derived from the committed
+// Turtle at load time (find the node's declaration), so the anchor never drifts when the file is
+// re-laid-out — the hand-maintained ranges this replaced had silently gone stale.
 const TTL_URL = "https://codeberg.org/benjaminaaron/d-stack-kg/src/branch/main/authored/comms.authored.ttl"
-const VORLAGE_LINES = {
-    "tb-souveraenitaet": "L37-L52",
-    "tb-buergernah": "L54-L73",
-    "tb-wiederverwendung": "L75-L89",
-    "tb-luecken": "L91-L106",
-}
+const TTL_LINES = commsTtl.split("\n")
 const vorlageLink = (iri) => {
-    const range = VORLAGE_LINES[iri.split(/[#/]/).pop()]
-    return range ? `${TTL_URL}#${range}` : null
+    const local = iri.split(/[#/]/).pop()
+    const i = TTL_LINES.findIndex(l => new RegExp(`^dstack:${local}\\b`).test(l))
+    return i >= 0 ? `${TTL_URL}#L${i + 1}` : null
 }
 
 // fill {{key}} placeholders from a bindings row; round decimal-looking numbers for display

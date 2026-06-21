@@ -42,7 +42,6 @@ h1 { font-size: 1.8rem; margin-top: 0; }
 a { color: var(--accent); }
 
 .lead { color: var(--muted); font-style: italic; padding-bottom: 10px }
-.landing .lead { font-style: normal }
 .landing-example { border-left: 3px solid var(--accent); padding: 0.1rem 0 0.1rem 1.1rem; margin: 1.6rem 0 0.4rem; }
 .landing-example .le-q { font-weight: 600; margin: 0 0 0.45rem; }
 .landing-example .le-a { margin: 0; color: var(--muted); }
@@ -295,7 +294,6 @@ body.full { display: flex; flex-direction: column; min-height: 100dvh; }
 
 /* Kommunikation page: the Blickwinkel tags reuse .elbtn; the card renders inside .answer */
 .comms-tags { margin-bottom: 0; }
-.graph-note { border-top: 1px solid var(--border); margin-top: 2rem; padding-top: 1rem; }
 .comms-piece .comms-headline { font-size: 1.25rem; font-weight: 600; line-height: 1.35; margin: 0.1rem 0 0.5rem; }
 .comms-piece .comms-hinweis { color: var(--muted); margin: 0 0 0.6rem; }
 .comms-piece .comms-list { opacity: 1; }
@@ -310,14 +308,12 @@ body.full { display: flex; flex-direction: column; min-height: 100dvh; }
 .bericht-name { font-weight: 600; margin: 0 0 0.2rem; }
 .bericht-text { margin: 0 0 0.2rem; }
 .bericht-text .mehr { font-size: 0.8rem; font-style: italic; color: var(--muted); text-decoration: none; cursor: pointer; }
-/* the cross-layer footprint: the punch line that names why one graph matters */
-/* the footprint: one bordered group per layer, the data source in a small badge */
+/* the cross-layer footprint: one bordered group per layer, the data source in a small badge */
 .reach-group { border-left: 3px solid var(--border); padding: 0.1rem 0 0.1rem 0.7rem; margin: 0.6rem 0; }
 .reach-head { font-weight: 600; font-size: 0.95rem; margin: 0 0 0.25rem; }
 .reach-src { font-size: 0.7rem; font-weight: 400; color: var(--muted); border: 1px solid var(--border); border-radius: 999px; padding: 0.05rem 0.45rem; margin-left: 0.3rem; white-space: nowrap; }
 .reach-list { margin: 0; padding-left: 1.1rem; font-size: 0.9rem; opacity: 0.8; }
 .reach-list li { margin: 0.1rem 0; }
-.reichweite-punch { margin: 0.9rem 0 0; font-style: italic; }
 
 /* Beschlusslage coverage: compact inline standards, gentle Landkarte deep-links */
 .bl-note, .bl-quellen { font-size: 0.85rem; }

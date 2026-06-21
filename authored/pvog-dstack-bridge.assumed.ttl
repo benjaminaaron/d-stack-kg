@@ -3,7 +3,7 @@
 # to the administrative one (pvog-leistungen.ttl).
 #
 # There are no public records which technologies a public service is built on. So every
-# dstack:realisiertDurch connection below is an assumption by Claude, not derived
+# dstack:realisiertDurch connection below is an assumption, not derived
 # data. It connects a real Onlinedienst (m8g:Channel) to the real Landkarte StackElements
 # it likely runs on. TLS is a safe bet (every form is HTTPS); the rest are informed assumptions.
 #

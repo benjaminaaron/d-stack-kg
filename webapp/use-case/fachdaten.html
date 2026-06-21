@@ -11,29 +11,29 @@
 <body>
     <site-nav></site-nav>
 
-    <main class="container vl">
+    <main class="container">
         <h1>Vom Gesetz zur Einreichung: FIM &amp; FIT-Connect</h1>
-        <p>Was wird möglich, wenn man den Deutschland-Stack als Wissensgraph modelliert und die vielen schon vorhandenen, aber getrennten Datenquellen daran semantisch anhängt? Diese Seite exploriert eine durchgehende Kette <b>vom Gesetz bis zur Einreichung</b>: eine Verwaltungsleistung, das Gesetz dahinter, der FIT-Connect Zustellpunkt, der sie digital empfängt, das Fachdatenschema mit seinen konkreten FIM-Bausteinen, bis zum Format, in dem die Daten reisen, einer Kachel der Tech-Stack-Landkarte.</p>
+        <p>Diese Seite verfolgt eine durchgehende Kette <b>vom Gesetz bis zur Einreichung</b>: eine Verwaltungsleistung, das Gesetz dahinter, der FIT-Connect-Zustellpunkt, der sie digital empfängt, das Fachdatenschema mit seinen konkreten FIM-Bausteinen, bis zum Format, in dem die Daten reisen (eine Kachel der Tech-Stack-Landkarte).</p>
 
         <p>Verbunden wird über die <b>LeiKa-ID</b>, ein echter gemeinsamer Schlüssel: Er bringt das <b>FIM-Portal</b> (was die Leistung ist, welches Gesetz sie regelt) und <b>FIT-Connect</b> (welche Behörde sie digital empfängt, in welchem Fachdatenschema) zusammen.</p>
 
         <p>Schon an wenigen realen Zustellpunkten wird ein Spannungsfeld sichtbar: vom groben XÖV-Standardschema, das die einzelnen Felder verbirgt, bis zum leistungsspezifischen Schema, in dem jedes Feld präzise steht, aber auf lokalen FIM-Bausteinen, die zentral nicht auflösbar sind. Und wo der gemeinsame Schlüssel fehlt, etwa bei Thüringens Beihilfe-Anträgen ganz ohne LeiKa, fällt eine Leistung aus dem föderalen Join heraus. Die Beispiele unten machen beides abfragbar.</p>
 
         <section>
-            <h2>Abfragebeispiel 1: Eine Leistung, aus mehreren Quellen zusammengesetzt</h2>
+            <h2>1. Eine Leistung, aus mehreren Quellen zusammengesetzt</h2>
             <p>Die unten gewählte Leistung wird aus FIM (Stammdaten, Rechtsgrundlage) und FIT-Connect (empfangende Behörde, Fachdatenschema) zusammengesetzt; eine Leistung kann mehrere Schemata tragen. »Format in der Tech-Stack-Landkarte« zeigt, in welchem Datenformat (XML, JSON) ein Schema serialisiert ist: die einzige Verbindung zur Landkarte, und eine reine Format-Identifikation aus dem MIME-Typ, keine Annahme. Gruppen lassen sich aufklappen; der Link ↗ führt zur FIM-Portal-Seite des jeweiligen FIM-Bausteins.</p>
             <p class="picker-row"><label for="leistung-picker"><b>Leistung wählen:</b></label> <select id="leistung-picker"></select></p>
             <div id="profile" class="answer" aria-live="polite"></div>
         </section>
 
         <section>
-            <h2>Abfragebeispiel 2: Reale Zustellpunkte, zwei Daten-Philosophien</h2>
+            <h2>2. Reale Zustellpunkte, zwei Daten-Philosophien</h2>
             <p>Dieselbe Art von Leistung wird an realen Zustellpunkten gegensätzlich modelliert: der eine empfängt viele Leistungen über <b>ein einziges, generisches Standardschema</b> (maximal standardisiert, aber die einzelnen Felder bleiben unsichtbar), der andere gibt <b>jeder Leistung ihr eigenes</b>, leistungsspezifisches Schema (jedes Feld sichtbar, dafür oft auf lokalen FIM-Bausteinen). Die Abfrage zählt je Zustellpunkt die Leistungen gegen die Fachdatenschemata; das Verhältnis verrät die Philosophie. Dazu nennt sie das OZG-Themenfeld aus dem FIM-Steckbrief - wo eine Leistung keine LeiKa trägt, fehlt das Themenfeld.</p>
             <div id="philosophies" class="answer" aria-live="polite"></div>
         </section>
 
         <section>
-            <h2>Abfragebeispiele 3: weitere Fragen, die der Graph beantworten kann</h2>
+            <h2>3. Weitere Fragen, die der Graph beantwortet</h2>
             <div id="gallery" class="gallery"></div>
         </section>
     </main>
