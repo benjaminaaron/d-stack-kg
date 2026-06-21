@@ -138,21 +138,25 @@ dstack:bericht-reichweite a schema:Report ;
     rdfs:label "Bausteinreichweite"@de ;
     sh:select """# Was ein D-Stack-Baustein über alle Ebenen verbindet: Leistung, Fachdatenschema, Komponente, Fähigkeit
 SELECT ?element ?layer ?ziel WHERE {
-    ?el a dstack:StackElement ; skos:prefLabel ?element .
+    ?el a dstack:StackElement ;
+        skos:prefLabel ?element .
     {
         ?l a cpsv:PublicService ;
             m8g:hasChannel/dstack:realisiertDurch ?el ;
             dct:title ?ziel .
         BIND("Verwaltungsleistung" AS ?layer)
     } UNION {
-        ?s dstack:serialisiertAls ?el ; rdfs:label ?ziel .
+        ?s dstack:serialisiertAls ?el ;
+            rdfs:label ?ziel .
         BIND("Fachdatenschema" AS ?layer)
     } UNION {
         mus:it-landschaft dct:hasPart ?c .
-        ?c dct:conformsTo ?el ; archimate:name ?ziel .
+        ?c dct:conformsTo ?el ;
+            archimate:name ?ziel .
         BIND("Kommunale Komponente" AS ?layer)
     } UNION {
-        ?cap dstack:kandidat ?el ; rdfs:label ?ziel .
+        ?cap dstack:kandidat ?el ;
+            rdfs:label ?ziel .
         BIND("Geplante Fähigkeit" AS ?layer)
     }
 } ORDER BY ?element ?layer ?ziel""" .

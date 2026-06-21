@@ -27,7 +27,8 @@ const STANDARDS_Q = `# Pro Standardbereich, alles aus dem Graphen: die benannten
 # vorhanden, mit Deep-Link via dstack:landkarteItemId, oder benannt ohne Kachel) UND die offenen
 # Festlegungsbedarfe (wörtlich aus dem Beschluss). ?typ trennt beides.
 SELECT ?bereich ?typ ?wert ?imStack ?itemId WHERE {
-    ?area a dstack:Standardbereich ; skos:prefLabel ?bereich .
+    ?area a dstack:Standardbereich ;
+        skos:prefLabel ?bereich .
     {
         ?area dstack:nenntStandard ?std .
         OPTIONAL { ?std skos:prefLabel ?pl }   # Kachel: skos:prefLabel
@@ -90,7 +91,9 @@ const renderCoverage = async () => {
 const BD_Q = `# Die fünf Basisdienste mit Funktionsbaustein, realisierendem Produkt, Finanzierung
 # (schema:funder, nur bei den vier Bund-finanzierten Produkten) und Anbindungspflicht (skos:scopeNote).
 SELECT ?bd ?dienst ?funktionsbaustein ?produkt ?finanzierung ?pflicht WHERE {
-    ?bd a dstack:Basisdienst ; skos:prefLabel ?dienst ; dstack:realisiertDurch ?p .
+    ?bd a dstack:Basisdienst ;
+        skos:prefLabel ?dienst ;
+        dstack:realisiertDurch ?p .
     ?p archimate:name ?produkt .
     OPTIONAL { ?bd skos:altLabel ?funktionsbaustein }
     OPTIONAL { ?bd skos:scopeNote ?pflicht }
@@ -161,16 +164,23 @@ SELECT DISTINCT ?ebene ?betroffen ?ueber ?imStack WHERE {
         { <${iri}> dstack:realisiertDurch/dct:conformsTo ?el } UNION { <${iri}> dstack:nenntStandard ?el }
         ?el skos:prefLabel ?ueber .
         {
-            ?l a cpsv:PublicService ; dct:title ?betroffen ; m8g:hasChannel/dstack:realisiertDurch ?el .
+            ?l a cpsv:PublicService ;
+                dct:title ?betroffen ;
+                m8g:hasChannel/dstack:realisiertDurch ?el .
             BIND("Verwaltungsleistung" AS ?ebene)
         } UNION {
-            ?fds a dstack:Fachdatenschema ; dstack:serialisiertAls ?el ; rdfs:label ?betroffen .
+            ?fds a dstack:Fachdatenschema ;
+                dstack:serialisiertAls ?el ;
+                rdfs:label ?betroffen .
             BIND("Fachdatenschema" AS ?ebene)
         } UNION {
-            mus:it-landschaft dct:hasPart ?c . ?c archimate:name ?betroffen ; dct:conformsTo ?el .
+            mus:it-landschaft dct:hasPart ?c .
+            ?c archimate:name ?betroffen ;
+                dct:conformsTo ?el .
             BIND("Kommunale Komponente" AS ?ebene)
         } UNION {
-            ?cap dstack:kandidat ?el ; rdfs:label ?betroffen .
+            ?cap dstack:kandidat ?el ;
+                rdfs:label ?betroffen .
             BIND("Geplante Fähigkeit" AS ?ebene)
         }
     }

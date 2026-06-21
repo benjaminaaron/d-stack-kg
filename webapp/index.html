@@ -40,22 +40,22 @@ PREFIX dstack: <https://deutschland-stack.gov.de/vocab#>
         const queries = {
             "ql-leistungen": `# Verwaltungsleistungen, die auf OpenID Connect aufbauen
 SELECT DISTINCT ?leistung WHERE {
-    ?l a cpsv:PublicService
-        ; m8g:hasChannel/dstack:realisiertDurch ds:open-id-connect
-        ; dct:title ?leistung .
+    ?l a cpsv:PublicService ;
+        m8g:hasChannel/dstack:realisiertDurch ds:open-id-connect ;
+        dct:title ?leistung .
 } ORDER BY ?leistung`,
             "ql-behoerden": `# Zuständige Behörden hinter den Leistungen, die OpenID Connect nutzen
 SELECT DISTINCT ?behoerde WHERE {
-    ?l a cpsv:PublicService
-        ; m8g:hasChannel/dstack:realisiertDurch ds:open-id-connect
-        ; m8g:hasCompetentAuthority ?b .
+    ?l a cpsv:PublicService ;
+        m8g:hasChannel/dstack:realisiertDurch ds:open-id-connect ;
+        m8g:hasCompetentAuthority ?b .
     ?b skos:prefLabel ?behoerde .
 } ORDER BY ?behoerde`,
             "ql-lebenslagen": `# Lebenslagen, die auf OpenID Connect aufbauen
 SELECT DISTINCT ?lebenslage WHERE {
-    ?l a cpsv:PublicService
-        ; m8g:hasChannel/dstack:realisiertDurch ds:open-id-connect
-        ; m8g:isGroupedBy/dct:title ?lebenslage .
+    ?l a cpsv:PublicService ;
+        m8g:hasChannel/dstack:realisiertDurch ds:open-id-connect ;
+        m8g:isGroupedBy/dct:title ?lebenslage .
 } ORDER BY ?lebenslage`,
         }
         for (const [id, q] of Object.entries(queries)) {

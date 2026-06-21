@@ -59,7 +59,8 @@ SELECT ?node ?parent ?label ?identifier ?baustein ?fimportal ?istGruppe WHERE {
     BIND(<${fds}> AS ?fds)
     ?fds (fim:datenfeld)+ ?node .
     ?parent fim:datenfeld ?node .
-    ?node rdfs:label ?label ; dct:identifier ?identifier .
+    ?node rdfs:label ?label ;
+        dct:identifier ?identifier .
     BIND(EXISTS { ?node a fim:Datenfeldgruppe } AS ?istGruppe)
     OPTIONAL { ?node fim:baustein ?baustein }
     OPTIONAL { ?node rdfs:seeAlso ?fimportal }
@@ -161,7 +162,8 @@ const PHILOSOPHY_Q = `# Je Zustellpunkt: wie viele Leistungen teilen sich wie vi
 SELECT ?zustellpunkt ?plattform ?region ?regionName (COUNT(DISTINCT ?l) AS ?leistungen) (COUNT(DISTINCT ?fds) AS ?schemata)
        (GROUP_CONCAT(DISTINCT ?label; separator=" · ") AS ?fachdatenschemata)
        (GROUP_CONCAT(DISTINCT ?themenfeld; separator=" · ") AS ?themenfelder) WHERE {
-    ?l fitconnect:zustellpunkt ?zustellpunkt ; dct:conformsTo ?fds .
+    ?l fitconnect:zustellpunkt ?zustellpunkt ;
+        dct:conformsTo ?fds .
     ?fds rdfs:label ?label .
     FILTER NOT EXISTS { ?fds dct:provenance ?p }   # nur über den Zustellpunkt deklarierte Schemata, nicht die FIM-Vergleichsschemata
     OPTIONAL { ?l dct:subject/skos:prefLabel ?themenfeld }   # OZG-Themenfeld aus dem FIM-Steckbrief (fehlt, wo keine LeiKa)
@@ -210,7 +212,8 @@ const GALLERY = [
         sparql: `SELECT ?leistung ?datenfeld ?fimBaustein ?fimPortalSeite WHERE {
     ?l dct:title ?leistung ;
         dct:conformsTo/(fim:datenfeld)+ ?df .
-    ?df a fim:Datenfeld ; rdfs:label ?datenfeld .
+    ?df a fim:Datenfeld ;
+        rdfs:label ?datenfeld .
     OPTIONAL { ?df fim:baustein ?fimBaustein }
     OPTIONAL { ?df rdfs:seeAlso ?fimPortalSeite }
 } ORDER BY ?leistung ?datenfeld`,
@@ -220,7 +223,8 @@ const GALLERY = [
         sparql: `SELECT ?leistung ?baustein ?feld WHERE {
     ?l dct:title ?leistung ;
         dct:conformsTo/(fim:datenfeld)+ ?node .
-    ?node fim:baustein ?baustein ; rdfs:label ?feld .
+    ?node fim:baustein ?baustein ;
+        rdfs:label ?feld .
     FILTER NOT EXISTS { ?node rdfs:seeAlso ?seite }
 } ORDER BY ?leistung ?feld`,
     },
@@ -228,10 +232,12 @@ const GALLERY = [
         q: "Welche zentralen FIM-Bausteine teilen sich mehrere Leistungen?",
         sparql: `SELECT ?baustein ?bezeichnung (COUNT(DISTINCT ?l) AS ?leistungen) WHERE {
     ?l dct:conformsTo/(fim:datenfeld)+ ?node .
-    ?node fim:baustein ?baustein ; rdfs:seeAlso ?seite .
+    ?node fim:baustein ?baustein ;
+        rdfs:seeAlso ?seite .
     {   # eine echte Bezeichnung wählen, nicht die bloße Baustein-ID (manche Schemata geben dem Feld keinen Titel)
         SELECT ?baustein (SAMPLE(?lbl) AS ?bezeichnung) WHERE {
-            ?n fim:baustein ?baustein ; rdfs:label ?lbl .
+            ?n fim:baustein ?baustein ;
+                rdfs:label ?lbl .
             FILTER(STR(?lbl) != STR(?baustein))
         } GROUP BY ?baustein
     }

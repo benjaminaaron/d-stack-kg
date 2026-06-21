@@ -98,16 +98,21 @@ const scoreQ = (crit) => crit === GESAMT
 SELECT ?el ?element ?kategorie (AVG(?w) AS ?wert) WHERE {
     mus:it-landschaft dct:hasPart ?komponente .            # eine Komponente der kommunalen IT
     ?komponente dct:conformsTo ?el .                       # nutzt das D-Stack-Element ?el
-    ?el a dstack:StackElement ; skos:prefLabel ?element ; dct:subject/skos:prefLabel ?kategorie ;
+    ?el a dstack:StackElement ;
+        skos:prefLabel ?element ;
+        dct:subject/skos:prefLabel ?kategorie ;
         dstack:konformitaet/dstack:wertProzent ?w .
 } GROUP BY ?el ?element ?kategorie ORDER BY ?wert ?element`
     : `# Die von der kommunalen IT genutzten D-Stack-Elemente, bewertet nach "${crit}" (0-100 %)
 SELECT DISTINCT ?el ?element ?kategorie ?wert WHERE {
     mus:it-landschaft dct:hasPart ?komponente .            # eine Komponente der kommunalen IT
     ?komponente dct:conformsTo ?el .                       # nutzt das D-Stack-Element ?el
-    ?el a dstack:StackElement ; skos:prefLabel ?element ; dct:subject/skos:prefLabel ?kategorie ;
+    ?el a dstack:StackElement ;
+        skos:prefLabel ?element ;
+        dct:subject/skos:prefLabel ?kategorie ;
         dstack:konformitaet ?a .
-    ?a dstack:kriterium/skos:prefLabel ?crit ; dstack:wertProzent ?wert .
+    ?a dstack:kriterium/skos:prefLabel ?crit ;
+        dstack:wertProzent ?wert .
     FILTER(STR(?crit) = "${crit}")
 } ORDER BY ?wert ?element`
 
@@ -143,7 +148,11 @@ SELECT ?faehigkeit ?cand ?stackLabel ?kategorie ?optLabel WHERE {
     mus:projekt-buergerchatbot dstack:benoetigt ?f .
     ?f rdfs:label ?faehigkeit ;
         dstack:kandidat ?cand .
-    OPTIONAL { ?cand a dstack:StackElement ; skos:prefLabel ?stackLabel ; dct:subject/skos:prefLabel ?kategorie }
+    OPTIONAL {
+        ?cand a dstack:StackElement ;
+            skos:prefLabel ?stackLabel ;
+            dct:subject/skos:prefLabel ?kategorie
+    }
     OPTIONAL { ?cand rdfs:label ?optLabel }
 } ORDER BY ?faehigkeit ?stackLabel`
 
@@ -227,7 +236,8 @@ SELECT ?kategorie (COUNT(DISTINCT ?element) AS ?genutzte_elemente) WHERE {
 } GROUP BY ?kategorie ORDER BY DESC(?genutzte_elemente)`
             const uncovered = `# D-Stack-Kategorien, die die kommunale IT noch gar nicht nutzt (z.B. KI)
 SELECT DISTINCT ?kategorie WHERE {
-    ?el a dstack:StackElement ; dct:subject ?gruppe .
+    ?el a dstack:StackElement ;
+        dct:subject ?gruppe .
     ?gruppe skos:prefLabel ?kategorie .
     FILTER NOT EXISTS { mus:it-landschaft dct:hasPart ?c . ?c dct:conformsTo/dct:subject ?gruppe . }
 } ORDER BY ?kategorie`
