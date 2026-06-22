@@ -176,14 +176,6 @@ site-nav {
     border-radius: 6px;
 }
 
-/* divider in a dropdown menu, before a trailing entry like "Weitere?" */
-.menu-sep {
-    height: 0;
-    margin: 0.3rem 0.4rem;
-    border: 0;
-    border-top: 1px solid var(--border);
-}
-
 /* mobile: collapse the nav row into a burger-toggled panel */
 @media (max-width: 640px) {
     .bar { flex-wrap: wrap; }
