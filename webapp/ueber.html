@@ -49,6 +49,11 @@
             </ul>
         </details>
 
+        <h2>Strukturen zuerst</h2>
+        <p>Der Prototyp nimmt bewusst eine Infrastruktur-Perspektive ein. Statt bei einer einzelnen Lebenslage oder einem einzelnen Bedarf zu beginnen, setzt er beim gemeinsamen Unterbau an: bei den Standards und Strukturen, auf denen anschließend viele Anwendungen und Dienste aufsetzen können, ohne dass jede für sich denselben Backend-Aufwand erneut leisten müsste. Das ergänzt die nutzerzentrierte Sicht, statt sie zu ersetzen: Eine durchdachte, interoperable Grundlage führt dazu, dass Oberflächen eher zum natürlichen Ausfluss der Infrastruktur als zu einem Kraftakt für sich werden. Fehlt dieser Unterbau, drohen Insellösungen, die einzeln glänzen, aber sich nicht zu einem Ganzen fügen.</p>
+        <p>Der Deutschland-Stack ist dafür der naheliegende Kristallisationspunkt: eine übergreifende Struktur, die alle Bereiche der Verwaltungs-IT berühren soll und an der das übrige Ökosystem nach und nach andocken kann. Gerade in einem solchen Kontext lohnt sich semantische Modellierung, weil ihr Nutzen mit jeder weiteren verknüpften Quelle wächst.</p>
+        <p>Und schließlich sind gut strukturierte, bedeutungstragende Daten die belastbarste Grundlage für KI-Anwendungen, und Semantik ist die ausdrucksstärkste Art, Daten zu strukturieren. Was hier als abfragbarer Graph entsteht, ist damit zugleich ein reichhaltiges Fundament, auf dem KI aufsetzen kann.</p>
+
         <h2>Akteure und Standards, die hier zusammenkommen</h2>
         <p>Für die Anwendungsfälle werden mehrere Welten der Verwaltungsdigitalisierung zusammengeführt. Die in JSON oder XML vorliegenden Quelldaten wurden auf RDF angehoben und in einen gemeinsamen Graphen gehängt. Dabei wurden an etlichen Stellen <strong>pragmatische Modellierungsentscheidungen</strong> getroffen (Platzhalter-IRIs, manuell geratene "Brücken", aus dem MIME-Typ abgelesene Formate, "best-guess Nachnutzung" bestehender Vokabulare). Aus den jeweiligen APIs wird <strong>nur eine kleine Auswahl ausgelesen</strong> – genug, um prototypische Durchstiche zu zeigen.</p>
         <details class="disclosure">
