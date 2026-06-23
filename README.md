@@ -2,6 +2,8 @@
 
 This unofficial prototype explores possibilities that would arise from modeling the Deutschland-Stack as a knowledge graph. The data it uses is the reconstructed source artifact behind the compiled Landkarte dataset published online. The authoritative source is the official [Tech-Stack Landkarte](https://technologie.deutschland-stack.gov.de/).
 
+Many of the recurring complaints in administrative digitalisation — data stuck in silos, systems that can't talk to each other, standards reinvented in parallel, AI with nothing reliable to read — are less a list of separate problems than one structural condition: meaning lives inside individual systems and is never shared, so every connection between two things has to be rebuilt by hand. A knowledge graph works a level beneath those symptoms. It makes the relationships between standards, services and decisions explicit, shared and queryable; and where two things don't yet fit, an explicit bridge lets them work together today, with the seam recorded rather than hidden.
+
 - **Live site:** [benjaminaaron.codeberg.page/d-stack-kg](https://benjaminaaron.codeberg.page/d-stack-kg)
 - Repository: [codeberg.org/benjaminaaron/d-stack-kg](https://codeberg.org/benjaminaaron/d-stack-kg)
 - GitHub mirror (read-only): [github.com/benjaminaaron/d-stack-kg](https://github.com/benjaminaaron/d-stack-kg)
