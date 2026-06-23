@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Selbstauskunft</title>
+    <link rel="stylesheet" href="../assets/styles.css">
+    <script type="module" src="../assets/nav-bar.js"></script>
+    <script type="module" src="../assets/selbstauskunft.js"></script>
+</head>
+<body>
+    <site-nav></site-nav>
+
+    <main class="container">
+        <h1>Selbstauskunft: Annahmen & Lücken</h1>
+        <p>Die anderen Anwendungsfälle hängen neue Quellen an den Graphen. Diese Seite dreht den Blick um: Der Graph gibt über sich selbst Auskunft. Was wie eine Schwäche des Prototyps aussieht <span id="intro-anteil">(vieles ist angenommen oder als Beispiel erfunden)</span>, wird so zu seiner Stärke: <i>radikale Ehrlichkeit, abfragbar gemacht. Der Graph prüft sich selbst.</i></p>
+        <p>Das ist nicht nur Gründlichkeit. Bei großen Verwaltungs-IT-Vorhaben klafft am Ende oft eine Lücke zwischen dem, was zugesagt war, und dem, was tatsächlich geliefert wurde. Wo sich nicht nur sehen, sondern <em>berechnen</em> lässt, was abgedeckt ist und was nicht, kann Rechenschaft früh und überprüfbar abgelegt werden, statt zu versprechen, was die Daten nicht hergeben: nicht eine Behauptung über den Stand der Dinge, sondern der abfragbare Stand der Dinge selbst – für die umsetzenden Teams ein Werkzeug, den eigenen Fortschritt zu verfolgen, und für Öffentlichkeit, Rechnungshöfe und Parlamente gleichermaßen nachvollziehbar.</p>
+        <p>Die Seite stellt drei Fragen: <b>Woraus besteht der Graph? Was ruht auf einem Standard? Wo liegen Lücken und Spannungen?</b> Beantworten lässt sich das, weil jede Schicht zusätzlich als eigener benannter Graph geladen ist, sodass jede Aussage ihre <b>Herkunft</b> kennt: offiziell geliftet, transkribiert, verfasst, angenommen, fiktiv oder ein Szenario.</p>
+
+        <section>
+            <h2>1. Woraus besteht der Graph?</h2>
+            <p>Die Schichten nach ihrer Herkunft, von offiziell übernommen bis frei erfunden, jeweils mit der Zahl ihrer Aussagen. Die erfundenen und angenommenen Schichten sind eigens markiert: Sie sind klein, tragen aber das meiste Gewicht der Aussagekraft, weil sie die Brücken schlagen.</p>
+            <div id="herkunft-out" class="answer" aria-live="polite"></div>
+        </section>
+
+        <section>
+            <h2>2. Was auf einem Standard wirklich ruht</h2>
+            <p>Eine Aussage ist nur so belastbar wie ihre schwächste Kante. Wähle einen Standard und sieh als Karte, wer sich auf ihn stützt und mit welcher Herkunft. Angenommene, fiktive und szenariohafte Kanten sind gestrichelt; manche Standards tragen quer durch alle Schichten, andere hängen allein am Beschluss, ohne dass ein realer Dienst sie nutzt.</p>
+            <p class="picker-row"><label for="beruht-picker"><b>Standard:</b></label> <select id="beruht-picker"></select></p>
+            <div id="beruht-out" class="answer" aria-live="polite"></div>
+        </section>
+
+        <section>
+            <h2>3. Lücken und Spannungen</h2>
+            <p>Wo der Stack im Graphen Lücken zeigt, und wo Schichten einander widersprechen. Die deutlichste Spannung: Standards, die ein Beschluss verbindlich nennt, die die offizielle Landkarte aber nicht führt. Dazu noch offene Festlegungsbedarfe, lose Knoten und Lücken, die der Graph selbst vermerkt.</p>
+            <div id="luecken-out" class="answer" aria-live="polite"></div>
+        </section>
+
+        <section>
+            <h2>4. Beispiele weiterer Fragen, die der Graph über sich selbst beantwortet</h2>
+            <div id="gallery" class="gallery"></div>
+        </section>
+    </main>
+</body>
+</html>

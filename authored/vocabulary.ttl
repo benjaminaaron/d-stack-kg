@@ -412,6 +412,37 @@ dstack:zweitLevelKontakt a rdf:Property ;
 
 
 # =============================================================================
+# Provenance — the Schicht meta describing each named graph (loaded by graph.js)
+# -----------------------------------------------------------------------------
+# graph.js loads every layer twice: into the default graph (ordinary queries stay unchanged)
+# AND into a per-layer named graph, so GRAPH ?g { ... } reveals which layer a triple is from.
+# These terms describe each of those named graphs — its Herkunft (the file-naming convention,
+# made queryable) plus a label and the source file — so the graph can give an account of itself
+# (Selbstauskunft: Annahmen & Lücken). The meta lives in the default graph and uses only dstack: predicates,
+# so it never surfaces in ordinary label/type queries.
+# =============================================================================
+
+dstack:Schicht a rdfs:Class ;
+    rdfs:label "Schicht"@de , "Layer"@en ;
+    rdfs:comment "A named graph: one source layer of the composed graph, identified by an IRI under .../id/graph/. It bears its Herkunft, a label and its source file; the webapp joins layer content to this description via GRAPH ?g {} . ?g dstack:herkunft ?h ."@en .
+
+dstack:herkunft a rdf:Property ;
+    rdfs:label "Herkunft"@de , "provenance class"@en ;
+    rdfs:domain dstack:Schicht ;
+    rdfs:comment "The provenance class of a Schicht, mirroring the file-naming convention: 'offiziell geliftet' (machine-lifted from official sources), 'transkribiert' (hand-transcribed from dated decisions), 'verfasst' (hand-authored prose), 'angenommen' (.assumed), 'fiktiv' (.fictional), 'Szenario' (.scenario). The graph's honesty, made queryable."@en .
+
+dstack:schichtLabel a rdf:Property ;
+    rdfs:label "Schicht-Label"@de , "layer label"@en ;
+    rdfs:domain dstack:Schicht ;
+    rdfs:comment "A human-readable label for a Schicht. Deliberately a dstack: predicate (not rdfs:label), so the meta does not show up in ordinary label queries over the default graph."@en .
+
+dstack:schichtDatei a rdf:Property ;
+    rdfs:label "Schicht-Datei"@de , "layer file"@en ;
+    rdfs:domain dstack:Schicht ;
+    rdfs:comment "The source file a Schicht was loaded from (e.g. pvog-dstack-bridge.assumed.ttl); its extension encodes the Herkunft."@en .
+
+
+# =============================================================================
 # Reused vocabularies (documented here, defined elsewhere)
 # -----------------------------------------------------------------------------
 # The vocabularies are declared machine-readably via voaf:reliesOn on the node at

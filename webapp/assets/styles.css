@@ -303,6 +303,12 @@ body.full { display: flex; flex-direction: column; min-height: 100dvh; }
 /* the cross-layer footprint: one bordered group per layer, the data source in a small badge */
 .reach-group { border-left: 3px solid var(--border); padding: 0.1rem 0 0.1rem 0.7rem; margin: 0.6rem 0; }
 .reach-head { font-weight: 600; font-size: 0.95rem; margin: 0 0 0.25rem; }
+/* Selbstauskunft: larger sub-block titles in the Lücken section for clearer visual structure */
+#luecken-out .reach-head { font-size: 1.1rem; margin-top: 0.3rem; }
+/* Selbstauskunft: the dependency map (section 2) — Cytoscape needs an explicit height */
+.dep-map { height: 460px; border: 1px solid var(--border); border-radius: 4px; margin-top: 0.6rem; }
+.dep-legend { list-style: none; padding: 0; margin: 0.5rem 0 0; font-size: 0.85rem; }
+.dep-legend li { margin: 0.12rem 0; }
 .reach-src { font-size: 0.7rem; font-weight: 400; color: var(--muted); border: 1px solid var(--border); border-radius: 999px; padding: 0.05rem 0.45rem; margin-left: 0.3rem; white-space: nowrap; }
 .reach-list { margin: 0; padding-left: 1.1rem; font-size: 0.9rem; opacity: 0.8; }
 .reach-list li { margin: 0.1rem 0; }
