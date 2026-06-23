@@ -1,0 +1,129 @@
+# =============================================================================
+# 115-od-support.scenario.ttl — First-Level-Support für Onlinedienste über die 115.
+#
+# IT-PLR Beschluss 2023/11 erweitert die Behördennummer 115 um einen flächendeckenden First-Level-
+# Support für Onlinedienste (Rechtsgrundlage § 3a OZG-Änderungsgesetz). Beauskunftet wird auf Basis
+# der FIM-Leistungsbeschreibung, und ein Onlinedienst ist die Ausprägung einer LeiKa-Leistung. Diese
+# Schicht hängt an die realen PVOG-Onlinedienste, was ein 115-Agent (oder der KI-Chatbot) zur Auskunft
+# braucht: Stichworte zum Auffinden, den Betriebsstatus, erforderliche Unterlagen, Hilfe-Ressourcen und
+# die Eskalation. Die Gebühren stehen schon real in PVOG (m8g:hasCost) und werden nur mitgenutzt.
+#
+# REAL ist, woran das hängt (pvog-leistungen.ttl: Leistung, Onlinedienst, Stelle, Lebenslage, ARS und
+# die Gebühren als m8g:hasCost) sowie die Kommune-Labels unten (nur von Hand aufgelöst). ERFUNDEN sind
+# die Support-Angaben (Stichworte, Betriebsstatus, erforderliche Unterlagen, Hilfe-Ressourcen,
+# Eskalation): die echte 115-Wissensdatenbank ist intern und liegt nicht offen vor. Stichworte/Synonyme
+# und die erforderlichen Unterlagen gibt es real in FIM-Leistungsbeschreibung / XZuFi, der Lift hat sie
+# nicht erfasst; der Betriebsstatus ist das, was ein Frühwarnsystem (DIN SPEC 66336) liefert. Einzige
+# erfundene Gebühr: das Führungszeugnis, dessen Kosten PVOG leer ließ; der reale gesetzliche Betrag ist
+# als Ganzzahl (m8g:value) in einer eigenen m8g:Cost (Blank Node) ergänzt, die ihre Quelle selbst trägt.
+# Die übrigen drei Gebühren stammen direkt aus PVOG. Hand-authored.
+# =============================================================================
+
+@prefix ds:     <https://deutschland-stack.gov.de/id/> .
+@prefix dstack: <https://deutschland-stack.gov.de/vocab#> .
+@prefix skos:   <http://www.w3.org/2004/02/skos/core#> .
+@prefix schema: <http://schema.org/> .
+@prefix dct:    <http://purl.org/dc/terms/> .
+@prefix rdfs:   <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix cpsv:   <http://purl.org/vocab/cpsv#> .                            # cpsv:hasInput → m8g:Evidence (erforderliche Unterlagen)
+@prefix m8g:    <http://data.europa.eu/m8g/> .                            # m8g:Evidence; m8g:hasCost/m8g:Cost (Gebühren, real aus PVOG)
+@prefix reg:    <http://dcat-ap.de/def/politicalGeocoding/regionalKey/> .  # die ARS-Schlüssel, die dct:spatial schon nutzt
+
+# --- Betriebsstatus (eine kleine SKOS-Liste) ---------------------------------
+# "nicht-erfasst" ist die Datenqualitäts-Lücke der 115: der Onlinedienst existiert, ist aber nur lokal
+# bekanntgemacht und nie in die Wissensdatenbank gelangt, also nicht beauskunftbar.
+ds:od-betriebsstatus a skos:ConceptScheme ; rdfs:label "Betriebsstatus eines Onlinedienstes"@de .
+ds:status-verfuegbar    a skos:Concept ; skos:inScheme ds:od-betriebsstatus ; skos:prefLabel "verfügbar"@de .
+ds:status-gestoert      a skos:Concept ; skos:inScheme ds:od-betriebsstatus ; skos:prefLabel "gestört"@de .
+ds:status-nicht-erfasst a skos:Concept ; skos:inScheme ds:od-betriebsstatus ; skos:prefLabel "nur lokal, nicht in der Wissensdatenbank"@de .
+
+# --- First-Level-Support je Onlinedienst -------------------------------------
+# Stichworte (skos:altLabel = Synonym, skos:hiddenLabel = Volksmund/Irrtum) hängen an der Leistung;
+# Betriebsstatus, Hilfe und Eskalation am Onlinedienst (m8g:Channel).
+
+# Führungszeugnis (Bundesamt für Justiz, bundesweit) — verfügbar, mit Handbuch
+ds:leistung-B100019-LB-577649
+    skos:hiddenLabel "polizeiliches Führungszeugnis"@de ;          # Irrtum: nicht die Polizei, sondern das BfJ
+    skos:altLabel "Führungszeugnis für den Arbeitgeber"@de ;
+    cpsv:hasInput ds:nachweis-fz-id , ds:nachweis-fz-zweck .
+ds:onlinedienst-B100019-OD-103664010
+    dstack:betriebsstatus ds:status-verfuegbar ;
+    dstack:hilfeRessource ds:hilfe-fz-handbuch , ds:hilfe-fz-faq ;
+    dstack:zweitLevelKontakt ds:sls-bfj .
+
+# Gewerbe anmelden (Köln) — gestört, Eskalation an den technischen Second-Level-Support
+ds:leistung-L100002-LB-121345242
+    skos:altLabel "Kleingewerbe anmelden"@de ;
+    skos:hiddenLabel "Gewerbeschein beantragen"@de ;
+    cpsv:hasInput ds:nachweis-gew-id , ds:nachweis-gew-erlaubnis .
+ds:onlinedienst-L100002-OD-146561120
+    dstack:betriebsstatus ds:status-gestoert ;
+    dstack:zweitLevelKontakt ds:sls-koeln .
+
+# Wohngeld - Mietzuschuss (Berlin) — verfügbar; die Zuständigkeit verteilt sich auf viele Stellen
+ds:leistung-L100108-LB-L100108_120656
+    skos:altLabel "Mietzuschuss beantragen"@de , "Zuschuss zur Miete"@de ;
+    cpsv:hasInput ds:nachweis-wg-miete , ds:nachweis-wg-einkommen .
+ds:onlinedienst-L100108-OD-L100108_331668
+    dstack:betriebsstatus ds:status-verfuegbar .
+
+# Parkausweis für Bewohner (Berlin) — der blinde Fleck (Szenario: nur lokal bekanntgemacht)
+ds:leistung-L100108-LB-L100108_121721
+    skos:altLabel "Anwohnerparkausweis"@de ;
+    cpsv:hasInput ds:nachweis-pa-id , ds:nachweis-pa-fzg .
+ds:onlinedienst-L100108-OD-L100108_332871
+    dstack:betriebsstatus ds:status-nicht-erfasst .
+
+# --- Hilfe-Ressourcen (Beispiel-Links, erfunden) -----------------------------
+ds:hilfe-fz-handbuch a schema:CreativeWork ; dct:type "Handbuch"@de ;
+    rdfs:label "Benutzerhandbuch: Führungszeugnis online beantragen"@de ;
+    schema:url <https://example.org/115/handbuch-fuehrungszeugnis> .
+ds:hilfe-fz-faq a schema:CreativeWork ; dct:type "FAQ"@de ;
+    rdfs:label "Häufige Fragen zum Online-Führungszeugnis"@de ;
+    schema:url <https://example.org/115/faq-fuehrungszeugnis> .
+
+# --- Eskalation (Second-Level-Support) ---------------------------------------
+ds:sls-bfj a schema:ContactPoint ; schema:contactType "Technischer Second-Level-Support"@de ;
+    rdfs:label "Bundesamt für Justiz, technischer Support"@de .
+ds:sls-koeln a schema:ContactPoint ; schema:contactType "Technischer Second-Level-Support"@de ;
+    rdfs:label "Stadt Köln, technischer Betrieb Onlinedienste"@de .
+
+# --- Erforderliche Unterlagen (cpsv:hasInput → m8g:Evidence, erfunden) -------
+# Was der Anrufer mitbringen oder angeben muss. Die FIM-Leistungsbeschreibung führt das real als Modul
+# "Erforderliche Unterlagen"; der Lift hat es nicht erfasst, daher hier eine knappe Auswahl von Hand.
+ds:nachweis-fz-id         a m8g:Evidence ; dct:title "Identitätsnachweis (Personalausweis oder Reisepass)"@de .
+ds:nachweis-fz-zweck      a m8g:Evidence ; dct:title "Verwendungszweck (privat oder zur Vorlage bei einer Behörde)"@de .
+ds:nachweis-gew-id        a m8g:Evidence ; dct:title "Gültiger Personalausweis oder Reisepass"@de .
+ds:nachweis-gew-erlaubnis a m8g:Evidence ; dct:title "Bei erlaubnispflichtigem Gewerbe: die jeweilige Erlaubnis oder Genehmigung"@de .
+ds:nachweis-wg-miete      a m8g:Evidence ; dct:title "Mietvertrag oder aktuelle Mietbescheinigung"@de .
+ds:nachweis-wg-einkommen  a m8g:Evidence ; dct:title "Einkommensnachweise aller Haushaltsmitglieder"@de .
+ds:nachweis-pa-id         a m8g:Evidence ; dct:title "Personalausweis mit Wohnanschrift im Bewohnerparkgebiet"@de .
+ds:nachweis-pa-fzg        a m8g:Evidence ; dct:title "Zulassungsbescheinigung Teil I (Fahrzeugschein)"@de .
+
+# --- Gebühren: real aus PVOG; nur das Führungszeugnis hier ergänzt ------------
+# PVOG füllt m8g:hasCost für drei der vier Leistungen (Gewerbe; Wohngeld "keine"; Parkausweis "20,40
+# Euro"). Beim Führungszeugnis blieb die Kostenangabe leer. Statt den realen (leeren) PVOG-Kostenknoten
+# anzufassen, bekommt die Leistung eine zweite, eigene m8g:Cost als Blank Node: der Betrag als echte
+# Ganzzahl (m8g:value, abfragbar/summierbar), die Währung daneben, und die Herkunft direkt am selben
+# Knoten (dct:source = JVKostG, rdfs:comment = von Hand). So bleibt PVOGs leerer Knoten unangetastet und
+# die erfundene Angabe ist als eigener, selbst-belegter Knoten klar abgegrenzt.
+ds:leistung-B100019-LB-577649 m8g:hasCost [
+    a m8g:Cost ;
+    m8g:value 13 ;
+    m8g:currency "EUR" ;
+    dct:source <https://www.gesetze-im-internet.de/jvkostg/anlage.html> ;
+    rdfs:comment "Von Hand ergänzt: PVOG ließ die Kostenangabe leer. 13 Euro ist die gesetzliche Gebühr für das einfache Führungszeugnis (JVKostG, Anlage Nr. 1130 zu § 4 Abs. 1)."@de
+] .
+
+# --- Zuständigkeitsgebiet: ARS → Kommune (hand-aufgelöst) --------------------
+# dct:spatial trägt das Gebiet schon als DCAT-AP.de-Regionalschlüssel-IRI (den ARS), nur unbenannt,
+# und bei Köln auf Landesebene (…05… = NRW). Sauber wäre, die amtliche Codeliste zu laden und
+# dct:spatial → Label zu joinen: das Destatis-Gemeindeverzeichnis bzw. die DCAT-AP.de-Listen unter
+# .../politicalGeocoding/ (regionalKey = ARS, municipalityKey = AGS; XRepository ...:schluessel:rs).
+# Für vier Beispiele übertrieben, daher nur die genutzten Schlüssel benannt (Köln ergänzt aus dem
+# Fetch-ARS 053150000000 in dct:source; Berlin/bundesweit sind schon das dct:spatial der Leistungen).
+ds:leistung-L100002-LB-121345242 dct:spatial reg:053150000000 .   # Gewerbe → Stadt Köln
+
+reg:053150000000 rdfs:label "Köln"@de .
+reg:110000000000 rdfs:label "Berlin"@de .
+reg:000000000000 rdfs:label "bundesweit"@de .

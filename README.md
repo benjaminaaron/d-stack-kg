@@ -36,6 +36,7 @@ Everything below documents the full pipeline (re-generating the data from the li
         dstack --> kommune["Kommunale IT"]
         dstack --> komm["Kommunikation"]
         dstack --> beschluss["Beschlusslage"]
+        dstack --> n115["115 &amp; Onlinedienste"]
     end
     sq -- "full.json" --> kg
 
@@ -134,6 +135,7 @@ Committed:
 - `authored/musterstadt-chatbot.scenario.ttl`: a hypothetical new project (Bürger-Chatbot) for that landscape, modelled as capabilities with candidate Stack elements
 - `authored/comms.authored.ttl`: comms snippets rendered straight from the graph — `dstack:Textbaustein` is the only local term, each snippet carrying its own SPARQL query (`sh:select`); plus a per-Leistung Steckbrief and a cross-layer footprint (both `schema:Report`), on the [Kommunikation page](webapp/use-case/kommunikation.html)
 - `authored/beschlusslage.authored.ttl`: the IT-Planungsrat Beschlusslage as data — the 7 binding Standardbereiche (with their coverage in the Landkarte and the open Festlegungsbedarfe) and the 5 Basisdienste (with financing and Anbindungspflicht), transcribed from the B-2026/03 annexes plus the 50th-session Beschlüsse (B-2026/18 financing, B-2026/19 EUDI-Wallet-Anbindung), each node sourced to a dated `dstack:Beschluss`, on the [Beschlusslage page](webapp/use-case/beschlusslage.html)
+- `authored/115-od-support.scenario.ttl`: First-Level-Support facts per Onlinedienst for the Behördennummer 115 (`dstack:betriebsstatus` / `hilfeRessource` / `zweitLevelKontakt`) plus colloquial Stichworte (`skos:altLabel`/`hiddenLabel` on the Leistung), hung onto the **real** PVOG Onlinedienste. The support facts are a hand-authored **scenario** — IT-PLR Beschluss 2023/11 mandates this First-Level-Support, but the real 115-Wissensdatenbank is internal (not openly available). Plus a small block of hand-resolved (real) municipality labels on the `dct:spatial` ARS keys, standing in for loading the Destatis / DCAT-AP.de regional-key code list. On the [115 page](webapp/use-case/115.html)
 
 Gitignored: the intermediates (incl. `data/1-build-kg/landscape.ttl`), the fetched PVOG/FIM/FIT-Connect responses + lift intermediates (`data/2-enrich-kg/{pvog,fim,fit-connect}/`), the use-case projections, and `data/scratch/`.
 

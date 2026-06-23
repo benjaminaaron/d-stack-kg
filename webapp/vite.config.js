@@ -36,6 +36,7 @@ export default defineConfig({
                 kommune: resolve(root, "use-case/kommune.html"),
                 kommunikation: resolve(root, "use-case/kommunikation.html"),
                 beschlusslage: resolve(root, "use-case/beschlusslage.html"),
+                n115: resolve(root, "use-case/115.html"),
                 ideen: resolve(root, "ideen.html"),
                 export: resolve(root, "export.html"),
                 ueber: resolve(root, "ueber.html"),

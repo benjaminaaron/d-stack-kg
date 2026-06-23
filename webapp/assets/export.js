@@ -12,6 +12,7 @@ import musterstadtTtl from "../../authored/musterstadt-it-landschaft.fictional.t
 import chatbotTtl from "../../authored/musterstadt-chatbot.scenario.ttl?raw"
 import commsTtl from "../../authored/comms.authored.ttl?raw"
 import beschlusslageTtl from "../../authored/beschlusslage.authored.ttl?raw"
+import support115Ttl from "../../authored/115-od-support.scenario.ttl?raw"
 import vocabTtl from "../../authored/vocabulary.ttl?raw"
 import { turtleToJsonLdObj } from "@foerderfunke/sem-ops-utils/jsonld"
 
@@ -26,6 +27,7 @@ const ARTEFACTS = [
     { file: "musterstadt-chatbot.scenario.ttl",     label: "Chatbot-Szenario (fiktiv)",               ttl: chatbotTtl },
     { file: "comms.authored.ttl",                   label: "Kommunikation (Textbausteine & fachliche Erklärungen)", ttl: commsTtl },
     { file: "beschlusslage.authored.ttl",           label: "Beschlusslage (Standardbereiche & Basisdienste)", ttl: beschlusslageTtl },
+    { file: "115-od-support.scenario.ttl",          label: "115 First-Level-Support (Szenario)",      ttl: support115Ttl },
     { file: "vocabulary.ttl",                       label: "Vokabular",                               ttl: vocabTtl },
 ]
 

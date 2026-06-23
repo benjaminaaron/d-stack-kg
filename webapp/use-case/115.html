@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>115</title>
+    <link rel="stylesheet" href="../assets/styles.css">
+    <script type="module" src="../assets/nav-bar.js"></script>
+    <script type="module" src="../assets/115.js"></script>
+</head>
+<body>
+    <site-nav></site-nav>
+
+    <main class="container">
+        <h1>Die 115 beauskunftet aus dem Graphen</h1>
+        <p>Die Behördennummer 115 ist der telefonische Erstkontakt zur Verwaltung, für Anliegen aller Art. Beauskunftet wird aus einer internen Wissensdatenbank, gespeist aus den FIM-Leistungsbeschreibungen. Auf dieselbe Basis setzt ein vom IT-Planungsrat beauftragter Schwerpunkt auf (Beschluss 2023/11, § 3a OZG-Änderungsgesetz): der First-Level-Support für Onlinedienste. Diese Seite zeigt, wie diese interne Wissensdatenbank als offener Knowledge-Graph aussähe.</p>
+        <p>Zentral dabei ist Übersetzung: aus den Alltagsworten eines Anrufers die passende Leistung und die richtige Stelle finden, denn die Zuständigkeit hängt am Wohnort. Datengrundlage sind dieselben <a href="leistungen.html">PVOG-Leistungen</a> wie in den anderen Anwendungsfällen: <b>real</b> sind Leistung, Onlinedienst, Stelle, Lebenslage und Gebühren (je LeiKa-ID), der Wohnort über den Regionalschlüssel (ARS). <b>Erfunden</b> ist nur eine dünne Schicht, die die interne 115-Wissensdatenbank nachstellt: Status, Handbuch, Eskalation, Stichworte und Unterlagen.</p>
+
+        <section>
+            <h2>1. Vom Anliegen zur passenden Leistung</h2>
+            <p>So könnte ein Anliegen am Telefon klingen. Die Region steht meist schon fest: Der Anruf läuft ans örtliche Servicecenter, der Wohnort ist also bekannt. Zu klären bleibt die Übersetzung: Der Agent hört zu und tippt eine Suche (beim KI-Chatbot tippt der Bürger selbst), und die hinterlegten Stichworte führen auch ohne den amtlichen Titel zur richtigen Leistung. Die Beispiele stammen aus Köln und Berlin, das Führungszeugnis gilt bundesweit. Technisch ist das ein einfacher Stichwort-Treffer; ein echtes System legt darüber noch ein »fuzzy matching«.</p>
+            <div id="anliegen-buttons" class="elbuttons"></div>
+            <div id="anliegen-out" class="answer" aria-live="polite"></div>
+        </section>
+
+        <section>
+            <h2>2. Was der 115-Agent vor sich hat</h2>
+            <p>Wähle eine Leistung und sieh die interne Sicht eines 115-Agenten (oder des Chatbots): worum es geht, wer zuständig ist (und warum der Wohnort zählt), Kosten und nötige Unterlagen, und als neue Schicht der Onlinedienst mit Status, Hilfe und Eskalation. Daraus formuliert der Agent die Antwort; manches, etwa die Eskalation, bleibt intern. Alles aus einer Abfrage.</p>
+            <p class="picker-row"><label for="karte-picker"><b>Leistung:</b></label> <select id="karte-picker"></select></p>
+            <div id="karte-out" class="answer" aria-live="polite"></div>
+        </section>
+
+        <section>
+            <h2>3. Störungen und blinde Flecken</h2>
+            <p>Zwei Dinge können den Online-Weg unbrauchbar machen, und der Graph hält beide fest, aber als Verschiedenes: Eine <b>Störung</b> kann die 115 beauskunften; über ein Frühwarnsystem weiß sie davon im Idealfall schon, bevor der erste Bürger anruft. Ein nur lokal bekannter Dienst dagegen ist ein echter <b>blinder Fleck</b>, zu dem sie nichts sagen kann.</p>
+            <div id="luecken-out" class="answer" aria-live="polite"></div>
+        </section>
+
+        <section>
+            <h2>4. Weitere Fragen, die der Graph beantwortet</h2>
+            <div id="gallery" class="gallery"></div>
+        </section>
+    </main>
+</body>
+</html>

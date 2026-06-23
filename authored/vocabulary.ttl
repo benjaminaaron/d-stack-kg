@@ -386,6 +386,32 @@ dstack:Textbaustein a rdfs:Class ;
 
 
 # =============================================================================
+# Properties — the 115 First-Level-Support layer (115-od-support.scenario.ttl)
+# -----------------------------------------------------------------------------
+# These three hang First-Level-Support facts onto a real Onlinedienst (m8g:Channel) so the 115 can
+# beauskunften it: its current operating status, its help resources and its escalation contact. All
+# three values are a hand-authored stand-in (for the internal 115-Wissensdatenbank); the
+# Channel they attach to is real. The citizen-facing Stichworte reuse skos:altLabel/hiddenLabel on the
+# Leistung (see the reused block below), so no own term is needed for the semantic lookup.
+# =============================================================================
+
+dstack:betriebsstatus a rdf:Property ;
+    rdfs:label "Betriebsstatus"@de , "operating status"@en ;
+    rdfs:domain m8g:Channel ; rdfs:range skos:Concept ;
+    rdfs:comment "The current operating status of an Onlinedienst (verfügbar / gestört / nur lokal nicht erfasst), as a Frühwarnsystem (DIN SPEC 66336) would report it, so the 115 knows before the call whether it can point a citizen there."@en .
+
+dstack:hilfeRessource a rdf:Property ;
+    rdfs:label "Hilfe-Ressource"@de , "help resource"@en ;
+    rdfs:domain m8g:Channel ; rdfs:range schema:CreativeWork ;
+    rdfs:comment "A help resource for an Onlinedienst (Handbuch, FAQ, Anleitung), typed via dct:type and linked via schema:url. In reality these reach the 115 as Links in the XZuFi-Leistungsbericht; modelled here as a stand-in."@en .
+
+dstack:zweitLevelKontakt a rdf:Property ;
+    rdfs:label "Second-Level-Kontakt"@de , "second-level contact"@en ;
+    rdfs:domain m8g:Channel ; rdfs:range schema:ContactPoint ;
+    rdfs:comment "The Second-Level-Support an agent escalates to when first-level cannot resolve an Onlinedienst question (fachlich/technisch, telefonisch oder per Ticket)."@en .
+
+
+# =============================================================================
 # Reused vocabularies (documented here, defined elsewhere)
 # -----------------------------------------------------------------------------
 # The vocabularies are declared machine-readably via voaf:reliesOn on the node at
@@ -436,4 +462,16 @@ dstack:Textbaustein a rdfs:Class ;
 #   sh:select                       the snippet's OWN SPARQL SELECT, carried as a literal, run live
 #   dct:description @de-x-fachlich   a fachliche (subject-matter) register of a StackElement's description
 #   schema:Report                   a per-Leistung report definition, likewise carrying its sh:select
+#
+# 115 First-Level-Support layer (115-od-support.scenario.ttl) — three local properties above; reuses:
+#   skos:altLabel                   colloquial synonyms of a Leistung (e.g. "Mietzuschuss" → Wohngeld)
+#   skos:hiddenLabel                misnomers a citizen says (e.g. "polizeiliches Führungszeugnis")
+#   skos:ConceptScheme / Concept    the Betriebsstatus value set; skos:prefLabel its labels
+#   schema:CreativeWork             a Hilfe-Ressource (Handbuch/FAQ/Anleitung); dct:type its kind, schema:url its link
+#   schema:ContactPoint             a Second-Level-Support contact; schema:contactType its kind
+#   cpsv:hasInput → m8g:Evidence    erforderliche Unterlagen je Leistung (dct:title) — reused CPSV-AP terms
+#   m8g:hasCost → m8g:Cost          Gebühren — real aus PVOG (free-text dct:description) für drei der vier Dienste;
+#                                   beim Führungszeugnis eine zweite, eigene m8g:Cost (Blank Node), da PVOG leer war
+#   m8g:value / m8g:currency        der ergänzte Betrag als Ganzzahl + Währung auf diesem Blank Node
+#   dct:source / rdfs:comment       dessen Herkunft direkt am Knoten (JVKostG-Quelle + Von-Hand-Hinweis), statt Reifikation
 # =============================================================================

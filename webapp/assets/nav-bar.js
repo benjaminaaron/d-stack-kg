@@ -18,7 +18,8 @@ const ITEMS = [
         { label: "Kommunikation", href: link("use-case/kommunikation.html") },
         { label: "PVOG-Leistungen", href: link("use-case/leistungen.html") },
         { label: "FIM & FIT-Connect", href: link("use-case/fachdaten.html") },
-        { label: "Beschlusslage", href: link("use-case/beschlusslage.html") }
+        { label: "Beschlusslage", href: link("use-case/beschlusslage.html") },
+        { label: "115", href: link("use-case/115.html") }
     ] },
     { label: "Ideen", href: link("ideen.html") },
     { label: "Datenmodell", href: link("vocabulary.html") },
