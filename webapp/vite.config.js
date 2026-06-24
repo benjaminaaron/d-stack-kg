@@ -9,6 +9,10 @@ export default defineConfig({
     root,
     base: "/d-stack-kg/",   // codeberg.page serves the site under this subpath
     appType: "mpa",         // a plain multi-page site, not an SPA - no history fallback
+    // 3d-force-graph and three-spritetext each import "three"; force a single instance,
+    // else SpriteText (a THREE.Sprite subclass) is built against a different three than the
+    // renderer uses and silently fails to draw
+    resolve: { dedupe: ["three"] },
     plugins: [{
         // dev server serves no directory index for public/ subdirs; map the Landkarte's
         // directory URL to its index.html so the iframe renders as it does when deployed
@@ -28,6 +32,7 @@ export default defineConfig({
         rollupOptions: {
             input: {
                 index: resolve(root, "index.html"),
+                graph: resolve(root, "graph.html"),
                 vocabulary: resolve(root, "vocabulary.html"),
                 query: resolve(root, "query.html"),
                 landkarte: resolve(root, "use-case/landkarte.html"),

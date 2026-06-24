@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Erkunden</title>
+    <link rel="stylesheet" href="assets/styles.css">
+    <script type="module" src="assets/nav-bar.js"></script>
+    <script type="module" src="assets/visu/explorer.js"></script>
+</head>
+<body class="full">
+    <site-nav></site-nav>
+    <main class="graph-main">
+        <header class="graph-head">
+            <h2>Den Wissensgraph visuell erkunden <span class="alpha">(erster grober Entwurf)</span></h2>
+            <p class="graph-note">Nicht der vollständige Graph, sondern eine zur besseren Lesbarkeit reduzierte Auswahl seiner Knoten und Beziehungen.</p>
+        </header>
+        <div class="graph-stage">
+            <aside class="graph-panel">
+                <section class="gp-section">
+                    <h3>Layout</h3>
+                    <select id="ex-layout" class="ex-search"></select>
+                </section>
+                <section class="gp-section">
+                    <h3>Fragen an den Graphen</h3>
+                    <div id="ex-queries" class="ex-queries qbar--list"></div>
+                </section>
+                <section class="gp-section">
+                    <h3>Schichten <span class="gp-note">(erfunden in grau)</span></h3>
+                    <div id="ex-layers" class="ex-layers"></div>
+                </section>
+                <section class="gp-section" id="ex-detail-wrap" hidden>
+                    <h3>Ausgewählter Knoten</h3>
+                    <div id="ex-detail"></div>
+                </section>
+            </aside>
+            <div class="graph-canvas-wrap">
+                <div id="ex-graph" class="graph-canvas" aria-label="Visualisierung des Wissensgraphen (reduzierte Auswahl)"></div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

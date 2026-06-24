@@ -338,6 +338,100 @@ a.bl-chip:hover { border-color: var(--muted); }
     .answer:not(:empty) { background: #221f12; }
 }
 
+/* ===========================================================================
+   Graph visualisation — the landing hero (3D force-graph) and the Graph page
+   =========================================================================== */
+
+/* --- the landing hero: a contained, ambient cloud with question buttons under it --- */
+.hero-graph-wrap { margin: 1.4rem 0 1.8rem; }
+.hero-graph {
+    height: 420px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    /* a faint radial vignette so the cloud reads as depth even before WebGL paints */
+    background:
+        radial-gradient(120% 90% at 50% 30%, rgba(120,150,200,0.08), transparent 70%),
+        var(--code-bg);
+    overflow: hidden;
+    position: relative;
+    cursor: grab;
+}
+.hero-graph:active { cursor: grabbing; }
+.hero-graph--off { display: none; }   /* projection/WebGL unavailable: fall back to the prose below */
+.hero-controls { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem; margin-top: 1.3rem; }
+/* the hero question buttons: centred, gently orange-tinted (the Graph page list buttons are untouched) */
+.hero-controls .qbtn { text-align: center; background: color-mix(in srgb, var(--accent) 18%, var(--page-bg)); border-color: color-mix(in srgb, var(--accent) 42%, var(--border)); }
+.hero-controls .qbtn:hover { background: color-mix(in srgb, var(--accent) 26%, var(--page-bg)); border-color: var(--accent); }
+.hero-controls .qbtn.active { background: color-mix(in srgb, var(--accent) 34%, var(--page-bg)); border-color: var(--accent); font-weight: 600; }
+/* the shared question button, used by the hero bar and the Graph page bar alike */
+.qbtn {
+    font: inherit; font-size: 0.9rem; cursor: pointer; text-align: left;
+    color: var(--page-fg); background: var(--page-bg);
+    border: 1px solid var(--border); border-radius: 999px; padding: 0.32rem 0.8rem;
+}
+.qbtn:hover { border-color: var(--muted); background: var(--hover); }
+.qbtn.active { border-color: var(--accent); background: var(--hover); font-weight: 600; }
+.qbtn--clear { color: var(--muted); }
+
+.ex-d-meta .ex-erf { margin-left: 0.1rem; }
+
+/* the hover tooltip 3d-force-graph renders for a node */
+.fg-tip { font-size: 0.82rem; line-height: 1.3; }
+.fg-tip span { color: #b8c0cc; }
+
+/* --- the dedicated Graph page: a full-height stage, controls left, canvas right --- */
+.graph-main { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
+.graph-head { padding: 1.4rem 1.25rem 0.8rem; max-width: 1100px; }
+.graph-head h2 { margin: 0 0 0.3rem; }
+.graph-head .lead { margin: 0; }
+.graph-head .alpha { font-size: 0.5em; font-weight: 400; color: var(--muted); }
+.graph-head .graph-note { margin: 0.15rem 0 0; font-size: 0.85rem; color: var(--muted); }
+.gp-note { text-transform: none; letter-spacing: 0; font-weight: 400; }
+.graph-stage { flex: 1 1 auto; min-height: 0; display: flex; gap: 0; border-top: 1px solid var(--border); }
+.graph-panel {
+    flex: 0 0 290px; overflow-y: auto; padding: 1rem 1.1rem;
+    border-right: 1px solid var(--border); background: var(--page-bg);
+}
+.gp-section { margin-bottom: 1.3rem; }
+.gp-section h3 { font-size: 0.78rem; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); margin: 0 0 0.5rem; }
+.ex-queries { display: flex; flex-direction: column; align-items: flex-start; gap: 0.35rem; }
+/* the Graph page renders its questions as a concise list rather than pill chips */
+.qbar--list { gap: 0; }
+.qbar--list .qbtn { width: 100%; border: 0; border-radius: 0; padding: 0.3rem 0; background: none; }
+.qbar--list .qbtn:hover { background: none; color: var(--accent); text-decoration: underline; }
+.qbar--list .qbtn.active { background: none; color: var(--accent); font-weight: 600; }
+.qbar--list .qbtn--clear { margin-top: 0.3rem; }
+.qbar--list .qbtn--clear:hover { text-decoration: none; }
+/* the persistent "Übersicht" home/reset item, set apart from the questions below it */
+.qbar--list .qbtn--home { border-bottom: 1px solid var(--border); margin-bottom: 0.3rem; padding-bottom: 0.4rem; }
+.qbar--list .qbtn--home:hover { text-decoration: none; }
+.ex-search { width: 100%; font: inherit; color: var(--page-fg); background: var(--page-bg); border: 1px solid var(--border); border-radius: 6px; padding: 0.35rem 0.5rem; }
+.ex-layers { display: flex; flex-direction: column; gap: 0.28rem; margin-bottom: 0.6rem; }
+.ex-layer { display: flex; align-items: center; gap: 0.45rem; font-size: 0.86rem; cursor: pointer; }
+.ex-layer--erf { color: #9aa0a8; }   /* erfundene layers: faded label text, dot keeps its real colour */
+.ex-sw { width: 0.7rem; height: 0.7rem; border-radius: 50%; flex: 0 0 auto; display: inline-block; }
+.ex-erf { font-size: 0.66rem; color: var(--muted); border: 1px solid var(--border); border-radius: 999px; padding: 0 0.35rem; }
+.graph-canvas-wrap { flex: 1 1 auto; min-width: 0; position: relative; }
+.graph-canvas { position: absolute; inset: 0; cursor: grab; background: radial-gradient(120% 90% at 50% 35%, rgba(120,150,200,0.06), transparent 70%); }
+.graph-canvas:active { cursor: grabbing; }
+/* hover tooltip on a Cytoscape node: the prefixed IRI */
+.cy-tip {
+    position: absolute; z-index: 5; pointer-events: none; white-space: nowrap;
+    font-size: 0.72rem; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    color: var(--page-fg); background: color-mix(in srgb, var(--page-bg) 92%, transparent);
+    border: 1px solid var(--border); border-radius: 4px; padding: 0.1rem 0.4rem;
+    backdrop-filter: blur(3px);
+}
+.ex-d-label { font-weight: 600; margin: 0 0 0.2rem; }
+.ex-d-meta { display: flex; align-items: center; gap: 0.4rem; font-size: 0.85rem; color: var(--muted); margin: 0 0 0.4rem; }
+.ex-d-types { display: flex; flex-wrap: wrap; gap: 0.25rem; margin: 0 0 0.3rem; }
+.ex-d-deg { font-size: 0.82rem; margin: 0 0 0.4rem; }
+
+@media (max-width: 720px) {
+    .graph-stage { flex-direction: column; }
+    .graph-panel { flex: 0 0 auto; max-height: 42vh; border-right: none; border-bottom: 1px solid var(--border); }
+}
+
 /* Query page — Yasgui fills the viewport below the nav. The fake endpoint has no
    controlbar to show. Yasgui ships only a light theme; the rules below are the
    light baseline, and the @media block adds a dark variant to match the site. */

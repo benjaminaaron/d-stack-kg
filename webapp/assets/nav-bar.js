@@ -25,6 +25,7 @@ const ITEMS = [
     { label: "Ideen", href: link("ideen.html") },
     { label: "Datenmodell", href: link("vocabulary.html") },
     { label: "Query", href: link("query.html") },
+    { label: "Erkunden", href: link("graph.html") },
     { label: "Export", href: link("export.html") }
 ]
 
