@@ -93,4 +93,12 @@ SELECT ?eigenschaft ?wert WHERE { <${iri}> ?eigenschaft ?wert } LIMIT 200`
     ctrl.onBackgroundClick(clearSelection)
 
     applyFilters()   // initial render
+
+    // deep-link: ?frage=<id> pre-selects that question on load (e.g. linked from a use-case page),
+    // running and highlighting it exactly as a click would. Unknown/failing ids fall back to the overview.
+    const frageId = new URLSearchParams(location.search).get("frage")
+    if (frageId) {
+        const q = queries.find(x => x.id === frageId)
+        if (q) try { selectIds(await runQuery(store, q.sparql)); bar.activate(q.id) } catch { /* keep the overview */ }
+    }
 }

@@ -15,6 +15,7 @@ const ITEMS = [
     { label: "Anwendungsfälle", selectedPrefix: "Anwendungsfall", children: [
         { label: "Tech-Stack Landkarte", href: link("use-case/landkarte.html") },
         { label: "Kommunale IT", href: link("use-case/kommune.html") },
+        { label: "Konformitätsprüfung", href: link("use-case/konformitaet.html") },
         { label: "Kommunikation", href: link("use-case/kommunikation.html") },
         { label: "PVOG-Leistungen", href: link("use-case/leistungen.html") },
         { label: "FIM & FIT-Connect", href: link("use-case/fachdaten.html") },

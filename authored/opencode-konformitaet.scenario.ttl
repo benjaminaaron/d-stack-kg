@@ -1,0 +1,484 @@
+# =============================================================================
+# opencode-konformitaet.scenario.ttl — automated D-Stack-conformance scanning of
+# openCode repositories.
+#
+# The D-Stack publishes six conformance criteria but defers their *automated*
+# erhebung/use (its Gesamtbild foresees DevSecOps with SBOM + scanning). This layer
+# is a runnable nucleus of that deferred automation: a scanner reads the dependencies
+# an openCode repository declares in its manifests and maps each onto the D-Stack
+# standards it implements. A dependency is rarely a Landkarte tile itself but brings
+# one or more (fastapi -> REST + OpenAPI), so dstack:abgebildetAuf is many-to-many.
+#
+# Each declared dependency resolves to one of four honest outcomes:
+#   (1) a real Landkarte StackElement (ds:)            = konform;
+#   (2) a ReferenzierterStandard, inLandkarte false    = blinder Fleck;
+#   (3) a dstack:ProprietaeresProdukt                  = proprietär (open alternative named);
+#   (4) no mapping at all                              = nicht erkannt — disclosed, NOT scored
+#                                                        as a failure (the scanner's honest tail).
+#
+# Real: the ds: elements (Landkarte tiles) and the two dstack:realesProjekt repos SPARK (BMDS)
+# and FIM-Portal (FITKO), whose dependencies are the actually-declared ones (Stand Juni 2026).
+# The other two repos are clearly-marked examples, tuned to show what real open-source rarely
+# does (proprietary findings + a fully-conformant Vorbild). The package->standard mapping
+# (dstack:abgebildetAuf) is in ALL cases a HAND-CURATED, LLM-assisted heuristic to maintain —
+# its own predicate, not dct:conformsTo, because it is a guess, not a verified claim.
+#
+# Per dependency we keep only dstack:paket, dstack:ausManifest and dstack:abgebildetAuf;
+# declared versions are intentionally left out (noise here, still in the linked manifests).
+#
+# Hand-authored scenario.
+# =============================================================================
+
+@prefix oc:     <https://example.org/opencode#> .
+@prefix ds:     <https://deutschland-stack.gov.de/id/> .
+@prefix dstack: <https://deutschland-stack.gov.de/vocab#> .
+@prefix schema: <http://schema.org/> .
+@prefix dct:    <http://purl.org/dc/terms/> .
+@prefix rdfs:   <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos:   <http://www.w3.org/2004/02/skos/core#> .
+@prefix xsd:    <http://www.w3.org/2001/XMLSchema#> .
+
+# -----------------------------------------------------------------------------
+# 1) Digitaler Bauantrag (Beispiel) — Java/Spring, Gradle, Kubernetes: the classic
+#    "Fachverfahren mit Altlasten" the Vergabe lens is built for. Deliberately
+#    illustrative, because real open-source repos rarely expose this. 6 konform
+#    (darunter Kubernetes, verbindlich gefordert), 2 blinde Flecken (XBau, XRechnung),
+#    3 proprietär (Oracle-DB, Axon-Ivy-BPM, reCAPTCHA), 1 nicht erkannt (internes Modul).
+# -----------------------------------------------------------------------------
+oc:bauantrag a schema:SoftwareSourceCode ;
+    dct:title "Fachverfahren Digitaler Bauantrag"@de ;
+    schema:codeRepository <https://gitlab.opencode.de/beispiel/digitaler-bauantrag> ;
+    dct:date "2026-06-24"^^xsd:date ;
+    dct:hasPart oc:d-ba-springweb , oc:d-ba-keycloak , oc:d-ba-postgres , oc:d-ba-openapi ,
+        oc:d-ba-java , oc:d-ba-k8s , oc:d-ba-xbau , oc:d-ba-xrechnung , oc:d-ba-oracle ,
+        oc:d-ba-axonivy , oc:d-ba-recaptcha , oc:d-ba-intern .
+
+oc:d-ba-springweb a dstack:Abhaengigkeit ;
+    rdfs:label "spring-boot-starter-web"@de ;
+    dstack:paket "org.springframework.boot:spring-boot-starter-web" ; dstack:ausManifest "build.gradle" ;
+    dstack:abgebildetAuf ds:representational-state-transfer .
+
+oc:d-ba-keycloak a dstack:Abhaengigkeit ;
+    rdfs:label "keycloak-spring-boot-starter"@de ;
+    dstack:paket "org.keycloak:keycloak-spring-boot-starter" ; dstack:ausManifest "build.gradle" ;
+    dstack:abgebildetAuf ds:open-id-connect .
+
+oc:d-ba-postgres a dstack:Abhaengigkeit ;
+    rdfs:label "postgresql (JDBC)"@de ;
+    dstack:paket "org.postgresql:postgresql" ; dstack:ausManifest "build.gradle" ;
+    dstack:abgebildetAuf ds:postgresql .
+
+oc:d-ba-openapi a dstack:Abhaengigkeit ;
+    rdfs:label "springdoc-openapi"@de ;
+    dstack:paket "org.springdoc:springdoc-openapi-starter-webmvc-ui" ; dstack:ausManifest "build.gradle" ;
+    dstack:abgebildetAuf ds:openapi .
+
+oc:d-ba-java a dstack:Abhaengigkeit ;
+    rdfs:label "eclipse-temurin (Java, Container-Basis-Image)"@de ;
+    dstack:paket "eclipse-temurin" ; dstack:ausManifest "Dockerfile" ;
+    dstack:abgebildetAuf ds:java .
+
+oc:d-ba-k8s a dstack:Abhaengigkeit ;
+    rdfs:label "Kubernetes-Deployment"@de ;
+    dstack:paket "kubernetes (Deployment-Manifest)" ; dstack:ausManifest "k8s/deployment.yaml" ;
+    dstack:abgebildetAuf ds:kubernetes .
+
+oc:d-ba-xbau a dstack:Abhaengigkeit ;
+    rdfs:label "xbau-java"@de ;
+    dstack:paket "de.xleitstelle.xbau:xbau-java" ; dstack:ausManifest "build.gradle" ;
+    dstack:abgebildetAuf oc:std-xbau .
+
+oc:d-ba-xrechnung a dstack:Abhaengigkeit ;
+    rdfs:label "xrechnung-toolkit"@de ;
+    dstack:paket "de.kosit:xrechnung-toolkit" ; dstack:ausManifest "build.gradle" ;
+    dstack:abgebildetAuf oc:std-xrechnung .
+
+oc:d-ba-oracle a dstack:Abhaengigkeit ;
+    rdfs:label "ojdbc11 (Oracle-DB-Treiber)"@de ;
+    dstack:paket "com.oracle.database.jdbc:ojdbc11" ; dstack:ausManifest "build.gradle" ;
+    dstack:abgebildetAuf oc:prod-oracle .
+
+oc:d-ba-axonivy a dstack:Abhaengigkeit ;
+    rdfs:label "axonivy-engine (BPM)"@de ;
+    dstack:paket "ch.ivyteam:axonivy-engine" ; dstack:ausManifest "build.gradle" ;
+    dstack:abgebildetAuf oc:prod-axonivy .
+
+oc:d-ba-recaptcha a dstack:Abhaengigkeit ;
+    rdfs:label "recaptcha-enterprise"@de ;
+    dstack:paket "com.google.cloud:google-cloud-recaptchaenterprise" ; dstack:ausManifest "build.gradle" ;
+    dstack:abgebildetAuf oc:prod-recaptcha .
+
+oc:d-ba-intern a dstack:Abhaengigkeit ;
+    rdfs:label "fachbasis (internes Modul)"@de ;
+    dstack:paket "de.musterland.intern:fachbasis" ; dstack:ausManifest "build.gradle" .
+
+# -----------------------------------------------------------------------------
+# 2) Terminvereinbarung (Beispiel) — the Vorbild-Baustein (Go). 6 von 6 konform,
+#    keine Lücke, kein proprietärer und kein unbekannter Baustein: erhält das Siegel.
+#    Illustrativ, weil reale Repos selten makellos sind: zeigt, wie das Ziel aussieht.
+# -----------------------------------------------------------------------------
+oc:terminbuchung a schema:SoftwareSourceCode ;
+    dct:title "Terminvereinbarung"@de ;
+    schema:codeRepository <https://gitlab.opencode.de/beispiel/terminvereinbarung> ;
+    dct:date "2026-06-24"^^xsd:date ;
+    dct:hasPart oc:d-tb-go , oc:d-tb-oidc , oc:d-tb-postgres , oc:d-tb-openapi ,
+        oc:d-tb-echo , oc:d-tb-k8s .
+
+oc:d-tb-go a dstack:Abhaengigkeit ;
+    rdfs:label "golang (Container-Basis-Image)"@de ;
+    dstack:paket "golang" ; dstack:ausManifest "Dockerfile" ;
+    dstack:abgebildetAuf ds:go .
+
+oc:d-tb-oidc a dstack:Abhaengigkeit ;
+    rdfs:label "go-oidc"@de ;
+    dstack:paket "github.com/coreos/go-oidc/v3" ; dstack:ausManifest "go.mod" ;
+    dstack:abgebildetAuf ds:open-id-connect .
+
+oc:d-tb-postgres a dstack:Abhaengigkeit ;
+    rdfs:label "pgx"@de ;
+    dstack:paket "github.com/jackc/pgx/v5" ; dstack:ausManifest "go.mod" ;
+    dstack:abgebildetAuf ds:postgresql .
+
+oc:d-tb-openapi a dstack:Abhaengigkeit ;
+    rdfs:label "kin-openapi"@de ;
+    dstack:paket "github.com/getkin/kin-openapi" ; dstack:ausManifest "go.mod" ;
+    dstack:abgebildetAuf ds:openapi .
+
+oc:d-tb-echo a dstack:Abhaengigkeit ;
+    rdfs:label "echo"@de ;
+    dstack:paket "github.com/labstack/echo/v4" ; dstack:ausManifest "go.mod" ;
+    dstack:abgebildetAuf ds:representational-state-transfer .
+
+oc:d-tb-k8s a dstack:Abhaengigkeit ;
+    rdfs:label "Kubernetes-Deployment"@de ;
+    dstack:paket "kubernetes (Deployment-Manifest)" ; dstack:ausManifest "k8s/deployment.yaml" ;
+    dstack:abgebildetAuf ds:kubernetes .
+
+# -----------------------------------------------------------------------------
+# 3) SPARK — a REAL openCode project of the BMDS: the agentic planning- and
+#    permitting-acceleration platform (OSS, award-winning). Dependencies below are
+#    the ACTUAL declared ones from its manifests (root pyproject.toml + the
+#    agent_orchestration_service backend + the helm/ deployment), snapshotted June 2026.
+#    The Paket->Standard mappings are hand-curated, LLM-assisted guesses (see header):
+#    several dependencies embody more than one standard (fastapi -> REST + OpenAPI).
+#    Result: ~8 D-Stack standards exercised (3 verbindlich), Temporal as an off-Landkarte
+#    workflow technology (blinder Fleck), and an honest "nicht erkannt" tail.
+# -----------------------------------------------------------------------------
+oc:spark a schema:SoftwareSourceCode ;
+    dct:title "SPARK Planungs- und Genehmigungsbeschleunigung (BMDS)"@de ;
+    schema:codeRepository <https://gitlab.opencode.de/bmds/planungs-und-genehmigungsbeschleunigung/spark-workflow> ;
+    dstack:realesProjekt true ;
+    dstack:vollstaendigGescannt false ;   # Stichprobe: only 3 of the 40+ manifests, see header
+    dstack:manifesteGesamt 40 ;           # the monorepo declares 40+ manifests; we sampled 3 (dct:source)
+    dct:date "2026-06-24"^^xsd:date ;
+    # the actual scanned manifests: each labelled exactly as the dashboard shows it and linked to the
+    # commit-pinned original on openCode. Only real projects carry these source links; the (Beispiel)
+    # repos keep their manifest names as plain text. Reuses dct:source (the conformance data is
+    # derived from these files), so no new vocab term.
+    dct:source
+        [ rdfs:label "pyproject.toml" ; schema:url <https://gitlab.opencode.de/bmds/planungs-und-genehmigungsbeschleunigung/spark-workflow/-/blob/e3c7ec3f74e1437af6396f9030769490189687b3/pyproject.toml> ] ,
+        [ rdfs:label "agent_orchestration_service/pyproject.toml" ; schema:url <https://gitlab.opencode.de/bmds/planungs-und-genehmigungsbeschleunigung/spark-workflow/-/blob/e3c7ec3f74e1437af6396f9030769490189687b3/02-backend/agent_orchestration_service/pyproject.toml> ] ,
+        [ rdfs:label "helm/" ; schema:url <https://gitlab.opencode.de/bmds/planungs-und-genehmigungsbeschleunigung/spark-workflow/-/tree/e3c7ec3f74e1437af6396f9030769490189687b3/helm/charts/00-spark-workflow> ] ;
+    dct:hasPart oc:d-spark-fastapi , oc:d-spark-uvicorn , oc:d-spark-starlette , oc:d-spark-httpx ,
+        oc:d-spark-requests , oc:d-spark-pyyaml , oc:d-spark-psycopg , oc:d-spark-pyjwt ,
+        oc:d-spark-temporalio , oc:d-spark-k8s , oc:d-spark-python ,
+        oc:d-spark-prometheus , oc:d-spark-pydantic , oc:d-spark-tenacity , oc:d-spark-greenlet ,
+        oc:d-spark-puremagic , oc:d-spark-asynclru , oc:d-spark-multipart , oc:d-spark-typingext .
+
+# fastapi embodies two standards at once: it serves REST and auto-generates an OpenAPI description.
+oc:d-spark-fastapi a dstack:Abhaengigkeit ;
+    rdfs:label "fastapi"@de ;
+    dstack:paket "fastapi" ; dstack:ausManifest "agent_orchestration_service/pyproject.toml" ;
+    dstack:abgebildetAuf ds:representational-state-transfer , ds:openapi .
+
+oc:d-spark-uvicorn a dstack:Abhaengigkeit ;
+    rdfs:label "uvicorn (ASGI-Server)"@de ;
+    dstack:paket "uvicorn" ; dstack:ausManifest "agent_orchestration_service/pyproject.toml" ;
+    dstack:abgebildetAuf ds:hypertext-transfer-protocol .
+
+oc:d-spark-starlette a dstack:Abhaengigkeit ;
+    rdfs:label "starlette (ASGI-Framework)"@de ;
+    dstack:paket "starlette" ; dstack:ausManifest "pyproject.toml" ;
+    dstack:abgebildetAuf ds:representational-state-transfer .
+
+oc:d-spark-httpx a dstack:Abhaengigkeit ;
+    rdfs:label "httpx"@de ;
+    dstack:paket "httpx" ; dstack:ausManifest "agent_orchestration_service/pyproject.toml" ;
+    dstack:abgebildetAuf ds:hypertext-transfer-protocol .
+
+oc:d-spark-requests a dstack:Abhaengigkeit ;
+    rdfs:label "requests"@de ;
+    dstack:paket "requests" ; dstack:ausManifest "agent_orchestration_service/pyproject.toml" ;
+    dstack:abgebildetAuf ds:hypertext-transfer-protocol .
+
+oc:d-spark-pyyaml a dstack:Abhaengigkeit ;
+    rdfs:label "pyyaml"@de ;
+    dstack:paket "pyyaml" ; dstack:ausManifest "agent_orchestration_service/pyproject.toml" ;
+    dstack:abgebildetAuf ds:yaml-ain-t-markup-language .
+
+oc:d-spark-psycopg a dstack:Abhaengigkeit ;
+    rdfs:label "psycopg[binary]"@de ;
+    dstack:paket "psycopg[binary]" ; dstack:ausManifest "agent_orchestration_service/pyproject.toml" ;
+    dstack:abgebildetAuf ds:postgresql .
+
+oc:d-spark-pyjwt a dstack:Abhaengigkeit ;
+    rdfs:label "pyjwt"@de ;
+    dstack:paket "pyjwt" ; dstack:ausManifest "pyproject.toml" ;
+    dstack:abgebildetAuf ds:json-web-tokens .
+
+oc:d-spark-temporalio a dstack:Abhaengigkeit ;
+    rdfs:label "temporalio (Workflow-SDK)"@de ;
+    dstack:paket "temporalio" ; dstack:ausManifest "agent_orchestration_service/pyproject.toml" ;
+    dstack:abgebildetAuf oc:std-temporal .
+
+oc:d-spark-k8s a dstack:Abhaengigkeit ;
+    rdfs:label "Kubernetes (Helm-Chart)"@de ;
+    dstack:paket "kubernetes (helm/)" ; dstack:ausManifest "helm/" ;
+    dstack:abgebildetAuf ds:kubernetes .
+
+oc:d-spark-python a dstack:Abhaengigkeit ;
+    rdfs:label "Python (requires-python)"@de ;
+    dstack:paket "python" ; dstack:ausManifest "pyproject.toml" ;
+    dstack:abgebildetAuf ds:python .
+
+# the honest "nicht erkannt" tail: real declared dependencies with no hand-curated D-Stack mapping
+# (general-purpose libraries, observability, config, internal helpers). Not a failure, just out of scope.
+oc:d-spark-prometheus a dstack:Abhaengigkeit ;
+    rdfs:label "prometheus-fastapi-instrumentator"@de ;
+    dstack:paket "prometheus-fastapi-instrumentator" ; dstack:ausManifest "agent_orchestration_service/pyproject.toml" .
+
+oc:d-spark-pydantic a dstack:Abhaengigkeit ;
+    rdfs:label "pydantic-settings"@de ;
+    dstack:paket "pydantic-settings" ; dstack:ausManifest "agent_orchestration_service/pyproject.toml" .
+
+oc:d-spark-tenacity a dstack:Abhaengigkeit ;
+    rdfs:label "tenacity"@de ;
+    dstack:paket "tenacity" ; dstack:ausManifest "agent_orchestration_service/pyproject.toml" .
+
+oc:d-spark-greenlet a dstack:Abhaengigkeit ;
+    rdfs:label "greenlet"@de ;
+    dstack:paket "greenlet" ; dstack:ausManifest "agent_orchestration_service/pyproject.toml" .
+
+oc:d-spark-puremagic a dstack:Abhaengigkeit ;
+    rdfs:label "puremagic"@de ;
+    dstack:paket "puremagic" ; dstack:ausManifest "agent_orchestration_service/pyproject.toml" .
+
+oc:d-spark-asynclru a dstack:Abhaengigkeit ;
+    rdfs:label "async-lru"@de ;
+    dstack:paket "async-lru" ; dstack:ausManifest "agent_orchestration_service/pyproject.toml" .
+
+oc:d-spark-multipart a dstack:Abhaengigkeit ;
+    rdfs:label "python-multipart"@de ;
+    dstack:paket "python-multipart" ; dstack:ausManifest "agent_orchestration_service/pyproject.toml" .
+
+oc:d-spark-typingext a dstack:Abhaengigkeit ;
+    rdfs:label "typing-extensions"@de ;
+    dstack:paket "typing-extensions" ; dstack:ausManifest "agent_orchestration_service/pyproject.toml" .
+
+# -----------------------------------------------------------------------------
+# 4) FIM-Portal — a SECOND REAL openCode project, built by the FITKO: the central
+#    portal for the Föderales Informationsmanagement (FIM). A polyglot monorepo
+#    (Python/FastAPI backend, three Rust/axum onlineformular services, a TypeScript
+#    frontend). Dependencies below are the ACTUAL declared ones from its manifests
+#    (root pyproject.toml + package.json + the onlineformular-backend Cargo.toml),
+#    snapshotted June 2026. Mappings hand-curated/LLM-assisted (see header). It shows
+#    the same core standards (REST, OpenAPI, HTTP, PostgreSQL) reached through a totally
+#    different stack than SPARK — the scan is language-agnostic — with an honest "nicht
+#    erkannt" tail and (as a clean real example) no proprietary or blind-spot findings.
+# -----------------------------------------------------------------------------
+oc:fim-portal a schema:SoftwareSourceCode ;
+    dct:title "FIM-Portal (FITKO)"@de ;
+    schema:codeRepository <https://gitlab.opencode.de/fitko/fim/portal> ;
+    dstack:realesProjekt true ;
+    dstack:vollstaendigGescannt true ;   # small repo: all 5 manifests scanned, so "0 Befunde" is a safe claim
+    dct:date "2026-06-24"^^xsd:date ;
+    # all five manifests of the repo (the three Rust backends share a dependency set; onlineformular-backend
+    # is the superset, so its dependencies below represent the Rust services). The general-purpose libraries
+    # without a D-Stack mapping are not all enumerated below, but every manifest was checked for findings.
+    dct:source
+        [ rdfs:label "pyproject.toml" ; schema:url <https://gitlab.opencode.de/fitko/fim/portal/-/blob/01037a76541b5ddc6f643fc631fd26951bb87ead/pyproject.toml> ] ,
+        [ rdfs:label "package.json" ; schema:url <https://gitlab.opencode.de/fitko/fim/portal/-/blob/01037a76541b5ddc6f643fc631fd26951bb87ead/package.json> ] ,
+        [ rdfs:label "onlineformular-backend/Cargo.toml" ; schema:url <https://gitlab.opencode.de/fitko/fim/portal/-/blob/01037a76541b5ddc6f643fc631fd26951bb87ead/onlineformular-backend/Cargo.toml> ] ,
+        [ rdfs:label "onlineformular-dokumentsteckbrief-backend/Cargo.toml" ; schema:url <https://gitlab.opencode.de/fitko/fim/portal/-/blob/01037a76541b5ddc6f643fc631fd26951bb87ead/onlineformular-dokumentsteckbrief-backend/Cargo.toml> ] ,
+        [ rdfs:label "onlineformular-leistungszuschnitt-backend/Cargo.toml" ; schema:url <https://gitlab.opencode.de/fitko/fim/portal/-/blob/01037a76541b5ddc6f643fc631fd26951bb87ead/onlineformular-leistungszuschnitt-backend/Cargo.toml> ] ;
+    dct:hasPart oc:d-fim-fastapi , oc:d-fim-uvicorn , oc:d-fim-httpx , oc:d-fim-gunicorn ,
+        oc:d-fim-asyncpg , oc:d-fim-python , oc:d-fim-axum , oc:d-fim-reqwest ,
+        oc:d-fim-typescript , oc:d-fim-jinja2 , oc:d-fim-orjson , oc:d-fim-sentry ,
+        oc:d-fim-tokio , oc:d-fim-serde , oc:d-fim-rusqlite , oc:d-fim-uuid ,
+        oc:d-fim-vite , oc:d-fim-bootstrap .
+
+# fastapi again embodies REST + OpenAPI; the Rust axum service serves REST too — same standard,
+# different language: the scan does not care whether it is Python or Rust.
+oc:d-fim-fastapi a dstack:Abhaengigkeit ;
+    rdfs:label "fastapi"@de ;
+    dstack:paket "fastapi" ; dstack:ausManifest "pyproject.toml" ;
+    dstack:abgebildetAuf ds:representational-state-transfer , ds:openapi .
+
+oc:d-fim-uvicorn a dstack:Abhaengigkeit ;
+    rdfs:label "uvicorn (ASGI-Server)"@de ;
+    dstack:paket "uvicorn" ; dstack:ausManifest "pyproject.toml" ;
+    dstack:abgebildetAuf ds:hypertext-transfer-protocol .
+
+oc:d-fim-httpx a dstack:Abhaengigkeit ;
+    rdfs:label "httpx"@de ;
+    dstack:paket "httpx" ; dstack:ausManifest "pyproject.toml" ;
+    dstack:abgebildetAuf ds:hypertext-transfer-protocol .
+
+oc:d-fim-gunicorn a dstack:Abhaengigkeit ;
+    rdfs:label "gunicorn (WSGI-Server)"@de ;
+    dstack:paket "gunicorn" ; dstack:ausManifest "pyproject.toml" ;
+    dstack:abgebildetAuf ds:hypertext-transfer-protocol .
+
+oc:d-fim-asyncpg a dstack:Abhaengigkeit ;
+    rdfs:label "asyncpg"@de ;
+    dstack:paket "asyncpg" ; dstack:ausManifest "pyproject.toml" ;
+    dstack:abgebildetAuf ds:postgresql .
+
+oc:d-fim-python a dstack:Abhaengigkeit ;
+    rdfs:label "Python"@de ;
+    dstack:paket "python" ; dstack:ausManifest "pyproject.toml" ;
+    dstack:abgebildetAuf ds:python .
+
+oc:d-fim-axum a dstack:Abhaengigkeit ;
+    rdfs:label "axum (Rust-Web-Framework)"@de ;
+    dstack:paket "axum" ; dstack:ausManifest "onlineformular-backend/Cargo.toml" ;
+    dstack:abgebildetAuf ds:representational-state-transfer .
+
+oc:d-fim-reqwest a dstack:Abhaengigkeit ;
+    rdfs:label "reqwest"@de ;
+    dstack:paket "reqwest" ; dstack:ausManifest "onlineformular-backend/Cargo.toml" ;
+    dstack:abgebildetAuf ds:hypertext-transfer-protocol .
+
+oc:d-fim-typescript a dstack:Abhaengigkeit ;
+    rdfs:label "typescript"@de ;
+    dstack:paket "typescript" ; dstack:ausManifest "package.json" ;
+    dstack:abgebildetAuf ds:typescript .
+
+# the honest "nicht erkannt" tail: real declared dependencies with no hand-curated mapping
+# (async runtime, serialisation, templating, embedded SQLite, observability, build tooling, CSS).
+oc:d-fim-jinja2 a dstack:Abhaengigkeit ;
+    rdfs:label "jinja2"@de ;
+    dstack:paket "jinja2" ; dstack:ausManifest "pyproject.toml" .
+
+oc:d-fim-orjson a dstack:Abhaengigkeit ;
+    rdfs:label "orjson"@de ;
+    dstack:paket "orjson" ; dstack:ausManifest "pyproject.toml" .
+
+oc:d-fim-sentry a dstack:Abhaengigkeit ;
+    rdfs:label "sentry-sdk"@de ;
+    dstack:paket "sentry-sdk" ; dstack:ausManifest "pyproject.toml" .
+
+oc:d-fim-tokio a dstack:Abhaengigkeit ;
+    rdfs:label "tokio (async runtime)"@de ;
+    dstack:paket "tokio" ; dstack:ausManifest "onlineformular-backend/Cargo.toml" .
+
+oc:d-fim-serde a dstack:Abhaengigkeit ;
+    rdfs:label "serde"@de ;
+    dstack:paket "serde" ; dstack:ausManifest "onlineformular-backend/Cargo.toml" .
+
+oc:d-fim-rusqlite a dstack:Abhaengigkeit ;
+    rdfs:label "rusqlite (SQLite)"@de ;
+    dstack:paket "rusqlite" ; dstack:ausManifest "onlineformular-backend/Cargo.toml" .
+
+oc:d-fim-uuid a dstack:Abhaengigkeit ;
+    rdfs:label "uuid"@de ;
+    dstack:paket "uuid" ; dstack:ausManifest "onlineformular-backend/Cargo.toml" .
+
+oc:d-fim-vite a dstack:Abhaengigkeit ;
+    rdfs:label "vite"@de ;
+    dstack:paket "vite" ; dstack:ausManifest "package.json" .
+
+oc:d-fim-bootstrap a dstack:Abhaengigkeit ;
+    rdfs:label "bootstrap"@de ;
+    dstack:paket "bootstrap" ; dstack:ausManifest "package.json" .
+
+# -----------------------------------------------------------------------------
+# Recognised proprietary products (dstack:ProprietaeresProdukt): closed products
+# a scanner positively knows. Where the D-Stack offers an open equivalent it is named
+# concisely via dstack:offeneAlternative (plus a fuller dct:description); a captcha service
+# has none. Distinct from "nicht erkannt" (a dependency with no mapping at all),
+# so the two are never conflated.
+# -----------------------------------------------------------------------------
+oc:prod-recaptcha a dstack:ProprietaeresProdukt ;
+    rdfs:label "Google reCAPTCHA Enterprise"@de ;
+    dct:description "Proprietärer Captcha-Dienst (Google Cloud, USA), kein offener Standard im D-Stack. Souveränitätsrisiko."@de .
+
+oc:prod-oracle a dstack:ProprietaeresProdukt ;
+    rdfs:label "Oracle Database"@de ;
+    dstack:offeneAlternative "PostgreSQL"@de ;
+    dct:description "Proprietäre Datenbank neben PostgreSQL; im D-Stack stünde mit PostgreSQL eine offene Alternative."@de .
+
+oc:prod-axonivy a dstack:ProprietaeresProdukt ;
+    rdfs:label "Axon Ivy (BPM)"@de ;
+    dstack:offeneAlternative "Workflowautomatisierung (Low-Code)"@de ;
+    dct:description "Proprietäre BPM-/Workflow-Engine; im D-Stack-Standardbereich Workflowautomatisierung (Low-Code) gäbe es offene Alternativen."@de .
+
+# -----------------------------------------------------------------------------
+# Referenced standards without a Landkarte tile (blinde Flecken). Same
+# dstack:ReferenzierterStandard + dstack:inLandkarte machinery as the kommunale
+# IT landscape and the Beschlusslage layer: real, governed standards a repo uses
+# that the Tech-Stack-Landkarte does not (yet) list. A finding, not a claim that
+# they belong there.
+# -----------------------------------------------------------------------------
+oc:std-xrechnung a dstack:ReferenzierterStandard ;
+    rdfs:label "XRechnung (XÖV-Standard für elektronische Rechnungen)"@de ;
+    dstack:inLandkarte false ;
+    dct:source <https://www.xrepository.de/details/urn:xoev-de:kosit:standard:xrechnung> .
+
+oc:std-xbau a dstack:ReferenzierterStandard ;
+    rdfs:label "XBau (XÖV-Standard im Bauwesen)"@de ;
+    dstack:inLandkarte false ;
+    dct:source <https://www.xrepository.de/details/urn:xoev-de:fim:standard:xbau> .
+
+# Temporal is a workflow-orchestration technology SPARK builds on. The Landkarte's
+# Workflowautomatisierung area lists other tools but not Temporal, so it surfaces here as
+# an off-Landkarte finding (an Anregung to extend the map), not as a defect.
+oc:std-temporal a dstack:ReferenzierterStandard ;
+    rdfs:label "Temporal (Workflow-Orchestrierung, ohne Landkarte-Kachel)"@de ;
+    dstack:inLandkarte false ;
+    dct:source <https://temporal.io/> .
+
+# -----------------------------------------------------------------------------
+# How this fits openCode's existing, LIVE badge system (BSI/ZenDiS, opencode.de).
+# openCode already badges repositories in five dimensions. Each is modelled as a
+# dstack:OpenCodeBadge and crosswalked (skos:closeMatch / relatedMatch) to the
+# D-Stack's own six Konformität-Kriterien, so where the two systems overlap and
+# where the D-Stack adds something becomes queryable. The sixth badge is a clearly
+# marked PROPOSAL of this prototype (dstack:vorgeschlagen true), NOT an official
+# openCode badge: it scores the architecture-sovereignty axes openCode does not
+# (Souveränität, Interoperabilität, Zukunftsfähigkeit), from the same dependency/SBOM data.
+# -----------------------------------------------------------------------------
+oc:badge-maintenance a dstack:OpenCodeBadge ;
+    rdfs:label "Aktive Wartung"@de ;
+    dct:description "Commit-Frequenz, Reaktionszeit auf Issues, mehrere aktive Maintainer."@de ;
+    schema:url <https://opencode.de/de/wissen/softwareverzeichnis/badges> ;
+    skos:closeMatch ds:kriterium-nachhaltigkeit .
+
+oc:badge-reuse a dstack:OpenCodeBadge ;
+    rdfs:label "Aktive Nachnutzung"@de ;
+    dct:description "CI-Erfolg und tatsächlicher Einsatz in (mehreren) Organisationen."@de ;
+    schema:url <https://opencode.de/de/wissen/softwareverzeichnis/badges> ;
+    skos:closeMatch ds:kriterium-marktrelevanz .
+
+oc:badge-licensing a dstack:OpenCodeBadge ;
+    rdfs:label "Open-Source-Lizenz"@de ;
+    dct:description "Eine von ZenDiS anerkannte Open-Source-Lizenz."@de ;
+    schema:url <https://opencode.de/de/wissen/softwareverzeichnis/badges> ;
+    skos:relatedMatch ds:kriterium-digitale-souveraenitaet .
+
+oc:badge-security a dstack:OpenCodeBadge ;
+    rdfs:label "Sicherheit"@de ;
+    dct:description "Geschützte Branches, Code-Review, Behebung bekannter Schwachstellen (CVE) — Level 3: kritische Lücken binnen eines Tages."@de ;
+    schema:url <https://opencode.de/de/wissen/softwareverzeichnis/badges> ;
+    skos:closeMatch ds:kriterium-vertrauenswuerdigkeit .
+
+oc:badge-supplychain a dstack:OpenCodeBadge ;
+    rdfs:label "Lieferketten-Transparenz"@de ;
+    dct:description "SLSA-Konformität, SBOM, VEX und Build-/Source-Provenance der Lieferkette."@de ;
+    schema:url <https://opencode.de/de/wissen/softwareverzeichnis/badges> .
+
+# the proposed sixth dimension — a prototype proposal, not an official openCode badge
+oc:badge-dstack a dstack:OpenCodeBadge ;
+    rdfs:label "Deutschland-Stack-Konformität"@de ;
+    dstack:vorgeschlagen true ;
+    dct:description "Vorschlag dieses Prototyps (nicht offiziell von openCode): bewertet aus denselben Manifest-/SBOM-Daten, ob ein Projekt auf die verbindlichen, souveränen D-Stack-Standards setzt — die Architektur-Achsen, die die fünf bestehenden Badges nicht abdecken."@de .

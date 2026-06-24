@@ -26,6 +26,7 @@ import chatbotTtl from "../../authored/musterstadt-chatbot.scenario.ttl?raw"
 import commsTtl from "../../authored/comms.authored.ttl?raw"
 import beschlusslageTtl from "../../authored/beschlusslage.authored.ttl?raw"
 import support115Ttl from "../../authored/115-od-support.scenario.ttl?raw"
+import konformitaetTtl from "../../authored/opencode-konformitaet.scenario.ttl?raw"
 import { newStore, parser, getRdf } from "@foerderfunke/sem-ops-utils/core"
 
 const rdf = getRdf()
@@ -46,6 +47,7 @@ export const LAYERS = [
     { ttl: musterstadtTtl,   key: "musterstadt",   datei: "musterstadt-it-landschaft.fictional.ttl", herkunft: "fiktiv",          label: "Kommunale IT-Landschaft (Musterstadt)" },
     { ttl: chatbotTtl,       key: "chatbot",       datei: "musterstadt-chatbot.scenario.ttl",     herkunft: "Szenario",           label: "Chatbot (Musterstadt)" },
     { ttl: support115Ttl,    key: "support115",    datei: "115-od-support.scenario.ttl",          herkunft: "Szenario",           label: "115 First-Level-Support" },
+    { ttl: konformitaetTtl,  key: "konformitaet",  datei: "opencode-konformitaet.scenario.ttl",   herkunft: "Szenario",           label: "openCode-Konformitätsprüfung" },
 ]
 
 const esc = (s) => String(s).replace(/"/g, '\\"')

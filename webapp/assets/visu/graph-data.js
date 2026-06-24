@@ -14,15 +14,16 @@ import { parser } from "@foerderfunke/sem-ops-utils/core"
 // dct:source URLs, the dcat-ap.de geocoding concepts) is not drawn as a node
 const ID = "https://deutschland-stack.gov.de/id/"
 const MUS = "https://example.org/musterstadt#"
+const OC = "https://example.org/opencode#"   // the openCode conformance scenario (repos, deps, products)
 // the comms Textbausteine (and report definitions) are authored under the vocab# namespace, not
 // id/, yet they are graph instances we want to draw — so vocab# counts as an instance namespace too.
 // (Class/property terms under vocab# only ever appear as rdf:type objects or predicates, both filtered.)
 const VOCAB = "https://deutschland-stack.gov.de/vocab#"
-export const isInstance = (iri) => iri.startsWith(ID) || iri.startsWith(MUS) || iri.startsWith(VOCAB)
+export const isInstance = (iri) => iri.startsWith(ID) || iri.startsWith(MUS) || iri.startsWith(OC) || iri.startsWith(VOCAB)
 
 // an IRI in prefixed (CURIE) form — shown on hover so nodes whose only label is a derived local
 // name stay identifiable: ds: for instances, dstack: for the vocabulary, mus: for Musterstadt
-const PREFIXES = [["ds:", ID], ["dstack:", VOCAB], ["mus:", MUS]]
+const PREFIXES = [["ds:", ID], ["dstack:", VOCAB], ["mus:", MUS], ["oc:", OC]]
 export const prefixIRI = (iri) => {
     for (const [pfx, ns] of PREFIXES) if (iri.startsWith(ns)) return pfx + iri.slice(ns.length)
     return iri
@@ -39,6 +40,7 @@ const STRUCTURAL = new Set([
     "http://data.europa.eu/m8g/hasInput",              // Leistung → Nachweis
     "https://deutschland-stack.gov.de/vocab#realisiertDurch", // Onlinedienst/Basisdienst → Technik
     "https://deutschland-stack.gov.de/vocab#nenntStandard",   // Standardbereich → Standard
+    "https://deutschland-stack.gov.de/vocab#abgebildetAuf",   // Abhängigkeit → D-Stack-Element/Produkt/Standard
     "https://deutschland-stack.gov.de/vocab#serialisiertAls", // Fachdatenschema → Format
     "https://deutschland-stack.gov.de/vocab#kandidat",        // Fähigkeit → Kandidat
     "https://deutschland-stack.gov.de/vocab#benoetigt",       // Vorhaben → Fähigkeit
@@ -78,8 +80,9 @@ export const LAYER_META = {
     "musterstadt":  { color: "#7b8aa0", label: "Kommunale IT, Musterstadt" },
     "chatbot":      { color: "#b89cf5", label: "Chatbot-Szenario (Musterstadt)" },
     "support115":   { color: "#fb7a3c", label: "115 First-Level-Support" },
+    "konformitaet": { color: "#c9a227", label: "openCode-Konformität" },
 }
-export const ERFUNDEN_LAYERS = new Set(["bridge", "musterstadt", "chatbot", "support115"])
+export const ERFUNDEN_LAYERS = new Set(["bridge", "musterstadt", "chatbot", "support115", "konformitaet"])
 export const layerColor = (key) => LAYER_META[key]?.color || "#8a93a0"
 
 // the six Herkunft (provenance) classes, most official to most invented — the alternative colouring,

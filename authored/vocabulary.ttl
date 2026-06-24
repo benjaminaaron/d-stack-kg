@@ -367,6 +367,73 @@ dstack:kandidat a rdf:Property ;
 
 
 # =============================================================================
+# Properties — the openCode conformance layer (opencode-konformitaet.scenario.ttl)
+# -----------------------------------------------------------------------------
+# An automated scan of openCode repositories. A repository (schema:SoftwareSourceCode,
+# schema:codeRepository) dct:hasPart the dstack:Abhaengigkeit entries a scanner reads from its
+# manifests. Each maps (dstack:abgebildetAuf) onto one of three targets — a Landkarte StackElement
+# (konform), a dstack:ReferenzierterStandard without a tile (blinder Fleck), or a
+# dstack:ProprietaeresProdukt (proprietär) — or onto nothing at all (nicht erkannt: the scanner has
+# no mapping, an honestly disclosed limit rather than a silent failure). The package coordinate
+# (dstack:paket) and manifest file (dstack:ausManifest) carry the evidence; declared versions are
+# omitted in the scenario. abgebildetAuf is a heuristic mapping from a package name, not a verified conformance
+# claim, so it is deliberately a separate predicate from dct:conformsTo.
+# =============================================================================
+
+dstack:Abhaengigkeit a rdfs:Class ;
+    rdfs:label "Abhängigkeit"@de , "dependency"@en ;
+    rdfs:comment "A dependency an automated scanner read from a repository's manifest (package.json, build.gradle, requirements.txt, go.mod, Dockerfile, k8s manifest). It carries its package coordinate (dstack:paket) and the manifest file it came from (dstack:ausManifest), and is mapped via dstack:abgebildetAuf to a StackElement, a ReferenzierterStandard or a ProprietaeresProdukt — or to nothing, which means nicht erkannt."@en .
+
+dstack:ProprietaeresProdukt a rdfs:Class ;
+    rdfs:label "proprietäres Produkt"@de , "proprietary product"@en ;
+    rdfs:comment "A recognised closed product a dependency maps to (Oracle Database, OpenAI API, ...): no open D-Stack equivalent, an open Stack alternative usually named in dct:description. Distinct from a dependency with no mapping at all (nicht erkannt), so a positive proprietary finding is never conflated with the scanner's blind tail."@en .
+
+dstack:abgebildetAuf a rdf:Property ;
+    rdfs:label "abgebildet auf"@de , "mapped to"@en ;
+    rdfs:domain dstack:Abhaengigkeit ;
+    rdfs:comment "The target(s) a scanner heuristically maps this dependency to: a Landkarte StackElement (konform), a dstack:ReferenzierterStandard the Landkarte lacks (blinder Fleck), or a dstack:ProprietaeresProdukt (proprietär). The relation is many-to-many: a dependency can embody several standards (a web framework -> REST and OpenAPI). It is a hand-curated, LLM-assisted mapping that must be actively maintained, not a verified conformance claim, so deliberately distinct from dct:conformsTo. Its absence means nicht erkannt: the scanner has no mapping, disclosed rather than counted as a failure."@en .
+
+dstack:realesProjekt a rdf:Property ;
+    rdfs:label "reales Projekt"@de , "real project"@en ;
+    rdfs:domain schema:SoftwareSourceCode ; rdfs:range xsd:boolean ;
+    rdfs:comment "true marks a scanned repository as a real openCode project: its dependencies are the actual declared ones from its manifests, snapshotted via dct:source/dct:date. Its absence marks an illustrative example. In both cases the package->standard mapping (dstack:abgebildetAuf) is a hand-curated heuristic, not part of the real manifest."@en .
+
+dstack:vollstaendigGescannt a rdf:Property ;
+    rdfs:label "vollständig gescannt"@de , "fully scanned"@en ;
+    rdfs:domain schema:SoftwareSourceCode ; rdfs:range xsd:boolean ;
+    rdfs:comment "true means every manifest of the repository was scanned, so absence-of-finding claims (no proprietary, no blind spot) are safe and the standards count is exact. false marks a Stichprobe (only a sample of the manifests, e.g. a large monorepo): findings still hold, but the standards count is only a lower bound and no overall conformance verdict is issued. An honesty marker, so a count over a sample is never read as a conformance score."@en .
+
+dstack:manifesteGesamt a rdf:Property ;
+    rdfs:label "Manifeste gesamt"@de , "total manifests"@en ;
+    rdfs:domain schema:SoftwareSourceCode ; rdfs:range xsd:integer ;
+    rdfs:comment "For a sampled repository (dstack:vollstaendigGescannt false), the total number of manifest files it declares, so the scan scope can be shown honestly as 'N of over M' rather than just N. Lets a Stichprobe state its own denominator."@en .
+
+dstack:offeneAlternative a rdf:Property ;
+    rdfs:label "offene Alternative"@de , "open alternative"@en ;
+    rdfs:domain dstack:ProprietaeresProdukt ; rdfs:range rdfs:Literal ;
+    rdfs:comment "A short label of the open D-Stack alternative to a proprietary product (e.g. 'PostgreSQL' for Oracle), so the conformance view can name the alternative concisely without the full prose description (which stays in dct:description). Not every proprietary product has one (e.g. a captcha service has no open D-Stack equivalent)."@en .
+
+dstack:OpenCodeBadge a rdfs:Class ;
+    rdfs:label "openCode-Badge"@de , "openCode badge"@en ;
+    rdfs:comment "A quality dimension in openCode's live, BSI-aligned badge system (active maintenance, reuse, open-source licence, security, supply-chain transparency), crosswalked via skos:closeMatch / skos:relatedMatch to the D-Stack's Konformität-Kriterien — so where the two systems overlap and where the D-Stack adds something is queryable. A sixth, dstack:vorgeschlagen, is this prototype's proposed Deutschland-Stack-conformance badge, not an official openCode badge."@en .
+
+dstack:vorgeschlagen a rdf:Property ;
+    rdfs:label "vorgeschlagen"@de , "proposed"@en ;
+    rdfs:range xsd:boolean ;
+    rdfs:comment "true marks a node as a proposal of this prototype rather than an existing/official artefact (e.g. the proposed sixth openCode badge). An honesty marker, kept queryable."@en .
+
+dstack:paket a rdf:Property ;
+    rdfs:label "Paket"@de , "package"@en ;
+    rdfs:domain dstack:Abhaengigkeit ; rdfs:range xsd:string ;
+    rdfs:comment "The package coordinate as it appears in the manifest (e.g. \"openid-client\", \"org.postgresql:postgresql\", \"github.com/coreos/go-oidc/v3\")."@en .
+
+dstack:ausManifest a rdf:Property ;
+    rdfs:label "aus Manifest"@de , "from manifest"@en ;
+    rdfs:domain dstack:Abhaengigkeit ; rdfs:range xsd:string ;
+    rdfs:comment "The manifest file a dependency was declared in (package.json, build.gradle, requirements.txt, go.mod, Dockerfile, k8s/deployment.yaml): the provenance of the scan finding."@en .
+
+
+# =============================================================================
 # The communication layer — comms snippets rendered straight from the graph
 # -----------------------------------------------------------------------------
 # Explanations about the Stack are hung onto the graph (authored/comms.authored.ttl) instead of

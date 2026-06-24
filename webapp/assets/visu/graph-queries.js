@@ -18,6 +18,7 @@ PREFIX fim: <https://deutschland-stack.gov.de/fim#>
 PREFIX fitconnect: <https://deutschland-stack.gov.de/fit-connect#>
 PREFIX ds: <https://deutschland-stack.gov.de/id/>
 PREFIX mus: <https://example.org/musterstadt#>
+PREFIX oc: <https://example.org/opencode#>
 PREFIX dstack: <https://deutschland-stack.gov.de/vocab#>`
 
 export const QUERIES = [
@@ -115,6 +116,18 @@ export const QUERIES = [
         sparql: `SELECT DISTINCT ?n WHERE {
     { ?n a dstack:Textbaustein }
     UNION { ?tb a dstack:Textbaustein ; schema:about ?n . FILTER(isIRI(?n)) }
+}`,
+    },
+    {
+        id: "konformitaet",
+        label: "Wie hängt ein openCode-Repo am Stack? (SPARK)",
+        caption: "Das reale BMDS-Projekt SPARK zieht zusammen, was in seinen Manifesten steht: jede Abhängigkeit und die D-Stack-Standards, die sie verkörpert (fastapi → REST und OpenAPI, psycopg → PostgreSQL, …) — oder, wo es keinen Anschluss gibt, ein blinder Fleck (Temporal) oder gar nicht erkannt. Die Zuordnung Paket→Standard ist handkuratiert.",
+        page: "use-case/konformitaet.html",
+        surfaces: ["explorer"],
+        sparql: `SELECT DISTINCT ?n WHERE {
+    { VALUES ?n { oc:spark } }
+    UNION { oc:spark dct:hasPart ?n }
+    UNION { oc:spark dct:hasPart ?d . ?d dstack:abgebildetAuf ?n }
 }`,
     },
 ]

@@ -321,6 +321,36 @@ body.full { display: flex; flex-direction: column; min-height: 100dvh; }
 a.bl-chip { color: inherit; text-decoration: none; }
 a.bl-chip:hover { border-color: var(--muted); }
 .bl-chip.gap { color: var(--muted); border-style: dashed; }
+/* the "D-Stack ✓" marker: gently green to read as a positive/konform tag */
+.bl-chip.ds { color: #2e7d32; border-color: rgba(46, 125, 50, 0.45); background: rgba(46, 125, 50, 0.08); }
+@media (prefers-color-scheme: dark) { .bl-chip.ds { color: #8fd6a3; border-color: rgba(143, 214, 163, 0.45); background: rgba(143, 214, 163, 0.10); } }
+/* the "open alternative" hint: the good news, gently highlighted in the same positive green */
+.offen { color: #2e7d32; }
+@media (prefers-color-scheme: dark) { .offen { color: #8fd6a3; } }
+/* instant, discoverable tooltip (no native title delay): mark an element with data-tip="…" */
+[data-tip] { position: relative; cursor: help; }
+[data-tip]:hover::after {
+    content: attr(data-tip);
+    position: absolute;
+    left: 0;
+    top: calc(100% + 5px);
+    z-index: 30;
+    width: max-content;
+    max-width: 280px;
+    white-space: normal;
+    font-size: 0.78rem;
+    font-weight: 400;
+    line-height: 1.35;
+    color: var(--page-bg);
+    background: var(--page-fg);
+    padding: 0.4rem 0.6rem;
+    border-radius: 6px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.28);
+    pointer-events: none;
+}
+/* the dependency list is primary content and carries the instant tooltips; keep it at full
+   opacity so the tooltip (a descendant) does not inherit a faded opacity group */
+#assessment .answer-list { opacity: 1; }
 .bl-fb-list { margin: 0.15rem 0 0; padding-left: 1.1rem; font-size: 0.82rem; color: var(--muted); }
 .bl-fb-list li { margin: 0.12rem 0; }
 /* the Quellen aside: gray text, with links in the same gray but underlined (not the accent colour) */
@@ -333,6 +363,9 @@ a.bl-chip:hover { border-color: var(--muted); }
 .uc-table th, .uc-table td { text-align: left; padding: 0.4rem 0.6rem; border-bottom: 1px solid var(--border); vertical-align: top; }
 .uc-table th { font-weight: 600; }
 .uc-table td.alt { color: var(--muted); }
+/* manifest column: smaller, links underlined but in the surrounding text colour (not accent) */
+.uc-table td.mf-cell { font-size: 0.8rem; }
+.uc-table td.mf-cell a { color: inherit; text-decoration: underline; }
 
 @media (prefers-color-scheme: dark) {
     .answer:not(:empty) { background: #221f12; }

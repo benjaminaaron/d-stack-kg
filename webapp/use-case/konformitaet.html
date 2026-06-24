@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Konformitätsprüfung</title>
+    <link rel="stylesheet" href="../assets/styles.css">
+    <script type="module" src="../assets/nav-bar.js"></script>
+    <script type="module" src="../assets/konformitaet.js"></script>
+</head>
+<body>
+    <site-nav></site-nav>
+
+    <main class="container">
+        <h1>openCode-Repositories automatisch auf D-Stack-Konformität prüfen</h1>
+        <p>Der Deutschland-Stack bewertet seine Standards und Technologien anhand von sechs offiziellen <a href="https://deutschland-stack.gov.de/kriterien/" target="_blank" rel="noopener">Konformitäts-Kriterien</a> (Digitale Souveränität, Interoperabilität, Zukunftsfähigkeit, Marktrelevanz, Vertrauenswürdigkeit, Nachhaltigkeit). Ein Reifegradmodell, das diese Kriterien automatisiert erhebt und nutzt, ist laut derselben Seite vorerst zurückgestellt. Eine automatisierte Prüfung steht also noch aus; diese Seite skizziert, wie eine solche unter Nutzung des Wissensgraphen aussehen könnte.</p>
+        <p>Der <a href="https://gitlab.opencode.de/dstack/d-stack-home" target="_blank" rel="noopener">D-Stack</a> wird auf <a href="https://opencode.de/" target="_blank" rel="noopener">openCode</a> veröffentlicht und setzt laut <a href="https://deutschland-stack.gov.de/gesamtbild/" target="_blank" rel="noopener">Gesamtbild</a> auf DevSecOps mit SBOM (einer Software-Stückliste der verwendeten Komponenten) und Mechanismen für Scanning und Analyse. Welche Bausteine ein Projekt nutzt, steht in seinen Abhängigkeiten (Dependencies): den Manifest-Dateien wie <code>package.json</code>, <code>build.gradle</code> oder <code>pyproject.toml</code>, die zu praktisch jeder Software gehören. Ein Scanner liest die Abhängigkeiten aus und ordnet jeder die D-Stack-Standards zu, die hinter ihr stecken. Denn eine Abhängigkeit deckt sich selten direkt mit einer Kachel der Landkarte, setzt aber meist mehrere um: <code>fastapi</code> etwa fehlt in der Landkarte, implementiert aber REST und OpenAPI; <code>psycopg</code> spricht das PostgreSQL-Protokoll.</p>
+        <details class="disclosure">
+            <summary>Die geprüften Repositories: was real ist und was geschätzt</summary>
+            <p>Aufgenommen sind zwei <b>reale</b> openCode-Projekte und zwei klar als <b>(Beispiel)</b> markierte, erfundene Repositories. Real sind <b><a href="https://gitlab.opencode.de/bmds/planungs-und-genehmigungsbeschleunigung/spark-workflow" target="_blank" rel="noopener">SPARK</a></b>, das quelloffene Beschleunigungs-Projekt des BMDS für Planungs- und Genehmigungsverfahren (ein Python-Monorepo mit über 40 Manifest-Dateien), und das <b><a href="https://gitlab.opencode.de/fitko/fim/portal" target="_blank" rel="noopener">FIM-Portal</a></b> der FITKO für das Föderale Informationsmanagement (Python, Rust und TypeScript); ihre Abhängigkeiten sind die tatsächlich deklarierten (Stand Juni 2026), die gescannten Dateien im Dashboard verlinken auf die Originale. Die beiden erfundenen Beispiele zeigen gezielt, was reale Projekte selten offenlegen: eines, das auf proprietäre Produkte setzt (das Souveränitätsrisiko, um das es bei der Vergabe geht), und eines, das durchgängig auf offene D-Stack-Standards aufbaut (das Vorbild).</p>
+            <p>Das Auslesen der Manifeste ließe sich vollständig automatisieren; der aufwendige Teil ist die Zuordnung der Pakete zu Standards. Darum steht hier bewusst eine repräsentative Auswahl aus einigen Manifesten statt jeder einzelnen Abhängigkeit.</p>
+            <p>Die D-Stack-Standards, auf die abgebildet wird, sind <b>real</b> (die Kacheln der Tech-Stack Landkarte). Die Zuordnung Paket → Standard (<code>dstack:abgebildetAuf</code>) ist dagegen in allen Fällen eine <b>handkuratierte Schätzung</b>, die aktiv gepflegt werden muss, keine geprüfte Konformitätsaussage (deshalb ein eigenes Prädikat statt <code>dct:conformsTo</code>). Sie ist eine eigene, wachsende Wissensschicht: was hinter einer Abhängigkeit steckt, lässt sich einmal erfassen und für jedes weitere Projekt wiederverwenden. Wo keine Zuordnung vorliegt, wird das Paket als <b>nicht erkannt</b> ausgewiesen.</p>
+        </details>
+
+        <section>
+            <h2>1. Reporting-Dashboard: alle Repositories auf einen Blick</h2>
+            <p>Die automatisierte Prüfung über mehrere Repositories, wie sie bspw. ein Dashboard zeigen würde: je Repository die geprüften Manifeste samt Prüfumfang, wie viele D-Stack-Standards seine Abhängigkeiten nachweislich nutzen und wie viele davon verbindlich sind (also von einem Standardbereich des IT-Planungsrats gefordert), wo blinde Flecken (reale Standards ohne Landkarte-Kachel) und proprietäre Bausteine liegen, und eine zusammenfassende Bewertung.</p>
+            <div id="dashboard" class="answer" aria-live="polite"></div>
+        </section>
+
+        <section>
+            <h2>2. Steckbrief eines Repositories: Befunde und Bewertung</h2>
+            <p>Der Blick auf ein einzelnes Repository. Zuerst die formale Prüfung, Datei für Datei: die deklarierten Abhängigkeiten und ihr Befund, also konform (bildet ein D-Stack-Element ab, ggf. auch mehrere), blinder Fleck (ein realer Standard ohne Kachel), proprietär (ein erkanntes geschlossenes Produkt mit offener Stack-Alternative) oder nicht erkannt (der Scanner hat keine Zuordnung, also bewusst keine Aussage). Verbindlich geforderte Standardbereich-Bausteine sind eigens markiert.</p>
+            <p class="picker-row"><label for="repo-picker"><b>Repository:</b></label> <select id="repo-picker"></select></p>
+            <div id="assessment" class="answer" aria-live="polite"></div>
+            <p>Jedes D-Stack-Element trägt zusätzlich eine eigene Bewertung auf sechs Kriterien (0 bis 100 %), von Souveränität bis Nachhaltigkeit, hier für die Bausteine, die dieses Repository nutzt. Für ein bestehendes Projekt wie SPARK oder das FIM-Portal ist das eine Standortbestimmung; bei einer künftigen Vergabe wären es die Kriterien, an denen sich Angebote messen lassen. Das Kriterium ist wählbar.</p>
+            <p class="picker-row"><label for="kriterium-picker"><b>Kriterium:</b></label> <select id="kriterium-picker"></select></p>
+            <div id="scores" class="answer" aria-live="polite"></div>
+        </section>
+
+        <section>
+            <h2>3. Wie sich das in openCode einfügt</h2>
+            <p>openCode bewertet Repositories bereits automatisch in fünf <a href="https://opencode.de/de/wissen/softwareverzeichnis/badges" target="_blank" rel="noopener">Badge-Dimensionen</a> (Wartung, Nachnutzung, Lizenz, Sicherheit, Lieferketten-Transparenz), abgestimmt mit dem BSI im Rahmen der <a href="https://www.bsi.bund.de/DE/Service-Navi/Presse/Pressemitteilungen/Presse2025/250410_ZenDiS_sichere_Lieferketten.html" target="_blank" rel="noopener">Strategie für sichere Softwarelieferketten</a>. Bekannte Schwachstellen (CVE) liefern dabei externe Quellen wie OSV; die D-Stack-Konformität ließe sich als <b>sechste Dimension</b> aus denselben Manifest- und SBOM-Daten ergänzen, ohne etwas am bestehenden System zu ändern. Drei der sechs D-Stack-Kriterien deckt openCode schon ab, die anderen drei sind genau das, was ein D-Stack-Badge hinzufügt.</p>
+            <p class="muted">Der sechste Badge ist ein Vorschlag dieses Prototyps, kein offizieller openCode-Badge; die fünf bestehenden sind reale openCode-Badges.</p>
+            <div id="einbettung" class="answer" aria-live="polite"></div>
+        </section>
+
+        <section>
+            <h2>4. Weitere Fragen, die der Graph beantwortet</h2>
+            <div id="gallery" class="gallery"></div>
+        </section>
+    </main>
+</body>
+</html>
