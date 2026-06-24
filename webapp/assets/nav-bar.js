@@ -12,16 +12,22 @@ const REPO = "https://codeberg.org/benjaminaaron/d-stack-kg"
 
 const ITEMS = [
     { label: "Über", href: link("ueber.html") },
-    { label: "Anwendungsfälle", selectedPrefix: "Anwendungsfall", children: [
-        { label: "Tech-Stack Landkarte", href: link("use-case/landkarte.html") },
-        { label: "Kommunale IT", href: link("use-case/kommune.html") },
-        { label: "Konformitätsprüfung", href: link("use-case/konformitaet.html") },
-        { label: "Kommunikation", href: link("use-case/kommunikation.html") },
-        { label: "PVOG-Leistungen", href: link("use-case/leistungen.html") },
-        { label: "FIM & FIT-Connect", href: link("use-case/fachdaten.html") },
-        { label: "Beschlusslage", href: link("use-case/beschlusslage.html") },
-        { label: "115", href: link("use-case/115.html") },
-        { label: "Selbstauskunft", href: link("use-case/selbstauskunft.html") }
+    { label: "Anwendungsfälle", selectedPrefix: "Anwendungsfall", groups: [
+        { label: "Worauf der Staat läuft", children: [
+            { label: "Tech-Stack Landkarte", href: link("use-case/landkarte.html") },
+            { label: "Kommunale IT", href: link("use-case/kommune.html") },
+            { label: "Konformitätsprüfung", href: link("use-case/konformitaet.html") }
+        ] },
+        { label: "Was er damit tut", children: [
+            { label: "PVOG-Leistungen", href: link("use-case/leistungen.html") },
+            { label: "FIM & FIT-Connect", href: link("use-case/fachdaten.html") },
+            { label: "115", href: link("use-case/115.html") },
+            { label: "Kommunikation", href: link("use-case/kommunikation.html") }
+        ] },
+        { label: "Was darüber entschieden wird", children: [
+            { label: "Beschlusslage", href: link("use-case/beschlusslage.html") },
+            { label: "Selbstauskunft", href: link("use-case/selbstauskunft.html") }
+        ] }
     ] },
     { label: "Ideen", href: link("ideen.html") },
     { label: "Datenmodell", href: link("vocabulary.html") },
@@ -44,11 +50,16 @@ const renderLink = item =>
     `<a class="navlink" href="${item.href}"${current(item.href)}>${item.label}</a>`
 
 const renderDropdown = item => {
+    // children grouped under labelled sections (the three Sichten); flatten to find the open one
+    const all = item.groups.flatMap(g => g.children)
     // when a child use case is open, surface it in the button: "Anwendungsfall: <selected>"
-    const selected = item.children.find(c => isActive(c.href))
+    const selected = all.find(c => isActive(c.href))
     const label = selected ? `${item.selectedPrefix}: ${selected.label}` : item.label
-    const menu = item.children.map(c =>
-        `<a role="menuitem" class="menuitem" href="${c.href}"${current(c.href)}>${c.label}</a>`
+    const menu = item.groups.map(g =>
+        `<div class="menu-group">${g.label}</div>` +
+        g.children.map(c =>
+            `<a role="menuitem" class="menuitem" href="${c.href}"${current(c.href)}>${c.label}</a>`
+        ).join("")
     ).join("")
     return `
         <div class="dropdown">
@@ -68,7 +79,7 @@ class SiteNav extends HTMLElement {
                     <span></span><span></span><span></span>
                 </button>
                 <div class="navitems" id="navitems">
-                    ${ITEMS.map(i => i.children ? renderDropdown(i) : renderLink(i)).join("")}
+                    ${ITEMS.map(i => i.groups ? renderDropdown(i) : renderLink(i)).join("")}
                     <a class="repo" href="${REPO}" target="_blank" rel="noopener noreferrer">Code</a>
                 </div>
             </nav>`

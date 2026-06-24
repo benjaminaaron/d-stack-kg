@@ -159,7 +159,7 @@ site-nav {
     position: absolute;
     top: calc(100% + 4px);
     left: 0;
-    min-width: 220px;
+    min-width: 240px;
     background: var(--page-bg);
     border: 1px solid var(--border);
     border-radius: 8px;
@@ -169,10 +169,20 @@ site-nav {
 
 .dropdown.open .menu { display: block; }
 
+/* the three Sichten as section headers inside the use-case menu */
+.menu-group {
+    padding: 0.5rem 0.6rem 0.15rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--muted);
+    opacity: 0.65;
+}
+.menu-group:first-child { padding-top: 0.15rem; }
+
 .menuitem {
     display: block;
     color: var(--muted);
-    padding: 0.45rem 0.6rem;
+    padding: 0.45rem 0.6rem 0.45rem 1.1rem;   /* indented under their category header */
     border-radius: 6px;
 }
 
@@ -392,10 +402,8 @@ a.bl-chip:hover { border-color: var(--muted); }
 .hero-graph:active { cursor: grabbing; }
 .hero-graph--off { display: none; }   /* projection/WebGL unavailable: fall back to the prose below */
 .hero-controls { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem; margin-top: 1.3rem; }
-/* the hero question buttons: centred, gently orange-tinted (the Graph page list buttons are untouched) */
-.hero-controls .qbtn { text-align: center; background: color-mix(in srgb, var(--accent) 18%, var(--page-bg)); border-color: color-mix(in srgb, var(--accent) 42%, var(--border)); }
-.hero-controls .qbtn:hover { background: color-mix(in srgb, var(--accent) 26%, var(--page-bg)); border-color: var(--accent); }
-.hero-controls .qbtn.active { background: color-mix(in srgb, var(--accent) 34%, var(--page-bg)); border-color: var(--accent); font-weight: 600; }
+/* the hero question buttons: centred and a touch more compact so the five fall into two rows; otherwise the plain, modest qbtn look (hover/active inherited) */
+.hero-controls .qbtn { text-align: center; font-size: 0.8rem; padding: 0.3rem 0.75rem; }
 /* the shared question button, used by the hero bar and the Graph page bar alike */
 .qbtn {
     font: inherit; font-size: 0.9rem; cursor: pointer; text-align: left;

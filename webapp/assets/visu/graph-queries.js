@@ -68,6 +68,20 @@ export const QUERIES = [
 }`,
     },
     {
+        id: "eudi",
+        label: "Was steckt hinter der EUDI-Wallet?",
+        caption: "Die EUDI-Wallet ist im Stack nicht nur ein Standard, sondern ein politisch gesetztes Bundesprodukt: Der Basisdienst »Identität und Vertrauen« wird durch eID und EUDI-Wallet realisiert, vom Bund finanziert (B-2026/18) und mit verbindlicher Verwaltungsanbindung beschlossen (B-2026/19). Beide erfüllen OpenID Connect und OAuth, die der Standardbereich IT-Sicherheit verbindlich nennt.",
+        page: "use-case/beschlusslage.html",
+        surfaces: ["hero", "explorer"],
+        sparql: `SELECT DISTINCT ?n WHERE {
+    { VALUES ?n { ds:basisdienst-identitaet-vertrauen } }
+    UNION { ds:basisdienst-identitaet-vertrauen dstack:realisiertDurch ?n }
+    UNION { ds:basisdienst-identitaet-vertrauen dstack:realisiertDurch ?p . ?p dct:source ?n }
+    UNION { ds:basisdienst-identitaet-vertrauen dstack:realisiertDurch ?p . ?p dct:conformsTo ?n }
+    UNION { ds:basisdienst-identitaet-vertrauen dstack:realisiertDurch ?p . ?p dct:conformsTo ?s . ?n dstack:nenntStandard ?s }
+}`,
+    },
+    {
         id: "musterstadt",
         label: "Wie hängt eine Kommune am Stack?",
         caption: "Eine (fiktive) kommunale IT-Landschaft prüft sich gegen den Stack: jede Komponente, die Standards, denen sie folgt — und die Lücken, wo sie auf etwas baut, das die Landkarte noch gar nicht führt (XMeld, WMS).",
@@ -105,17 +119,6 @@ export const QUERIES = [
     UNION { ?ref dstack:inLandkarte false . ?n dstack:nenntStandard ?ref }
     UNION { ?ref dstack:inLandkarte false . ?n dct:conformsTo ?ref }
     UNION { ?ref dstack:inLandkarte false . ?n dstack:serialisiertAls ?ref }
-}`,
-    },
-    {
-        id: "comms",
-        label: "Wie erklärt sich der Graph selbst?",
-        caption: "Die Kommunikations-Schicht: Textbausteine, die ihre eigene Erklärung tragen, jeweils an dem Graph-Knoten verankert (schema:about), über den sie sprechen — Kommunikation direkt aus dem Graphen statt aus veraltenden Dokumenten.",
-        page: "use-case/kommunikation.html",
-        surfaces: ["explorer"],
-        sparql: `SELECT DISTINCT ?n WHERE {
-    { ?n a dstack:Textbaustein }
-    UNION { ?tb a dstack:Textbaustein ; schema:about ?n . FILTER(isIRI(?n)) }
 }`,
     },
     {

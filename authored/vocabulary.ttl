@@ -18,8 +18,19 @@
 # authorities, online-service channels and life events — modelled with the EU
 # public-service vocabularies (CPSV-AP and the CCCEV / Core Public Service "m8g"
 # cluster) directly, not re-invented here. It is bridged to the technical layer by
-# the single predicate dstack:realisiertDurch — a hand-curated proposal for which
-# real Landkarte StackElements an Onlinedienst is built on.
+# the predicate dstack:realisiertDurch — a hand-curated proposal for which real
+# Landkarte StackElements an Onlinedienst is built on.
+#
+# A governance layer sits above both: the IT-Planungsrat's binding Standardbereiche
+# and the five Basisdienste (each realised by an exchangeable Produkt, again via
+# dstack:realisiertDurch), every fact dct:source'd to a dated dstack:Beschluss;
+# dstack:nenntStandard links a Standardbereich to the Landkarte tiles it makes binding.
+#
+# Further authored and scenario layers reuse this core and mint only a few terms of
+# their own (all defined below): communication snippets (dstack:Textbaustein) and an
+# openCode D-Stack-conformance scan (dstack:Abhaengigkeit, dstack:abgebildetAuf); a
+# fictional municipal IT-landscape reuses ArchiMate by IRI. graph.js lists every layer
+# with its provenance class.
 # =============================================================================
 
 @prefix dstack: <https://deutschland-stack.gov.de/vocab#> .
