@@ -39,6 +39,7 @@ export async function createForceGraph(container, data, opts = {}) {
     let nodeFilter = null        // active node-visibility predicate, or null = all visible
     let edgeMode = "all"         // "all" | "cross" (only edges that join two Schichten)
     let colorMode = opts.colorMode ?? "layer"   // "layer" | "herkunft"
+    let introDolly = false       // hero intro: tick() eases the camera in while autoRotate already spins
     const labelEntries = []
 
     // graded highlight: a selected node's colour fades toward a neutral as its hop distance grows,
@@ -76,6 +77,9 @@ export async function createForceGraph(container, data, opts = {}) {
 
     const Graph = ForceGraph3D({ controlType: "orbit" })(container)
         .numDimensions(opts.dim ?? 3)
+        // pre-settle the hero layout before first paint, so the intro dolly-in lands on a stable frame
+        // instead of chasing a cloud that is still rapidly expanding (which caused the clunky zoom)
+        .warmupTicks(introEnabled ? 80 : 0)
         // a clone: 3d-force-graph rewrites link.source/target to node refs in place, which would
         // corrupt the shared projection for the other renderers and the page's stats
         .graphData({ nodes: data.nodes.map(n => ({ ...n })), links: data.links.map(l => ({ ...l })) })
@@ -118,31 +122,36 @@ export async function createForceGraph(container, data, opts = {}) {
         try { controls.mouseButtons = { LEFT: 2, MIDDLE: 1, RIGHT: 2 } } catch {}   // left/right = pan, wheel = zoom
     }
     let resumeTimer
-    controls.addEventListener?.("start", () => { controls.autoRotate = false; clearTimeout(resumeTimer) })
+    controls.addEventListener?.("start", () => { controls.autoRotate = false; introDolly = false; clearTimeout(resumeTimer) })
     controls.addEventListener?.("end", () => { resumeTimer = setTimeout(() => { controls.autoRotate = autoRotate }, 2500) })
 
-    // frame the dense core at a close distance (75th-percentile radius, so outliers don't push back)
-    const frameCore = (duration, swing = 0) => {
+    // the dense core's centre + a close framing distance (75th-percentile radius, so outliers don't push back)
+    const coreFrame = () => {
         const ns = Graph.graphData().nodes.filter(n => (n.degree || 0) >= 2 && n.x != null)
-        if (!ns.length) return
+        if (!ns.length) return null
         let cx = 0, cy = 0, cz = 0
         for (const n of ns) { cx += n.x; cy += n.y; cz += n.z }
         cx /= ns.length; cy /= ns.length; cz /= ns.length
         const dists = ns.map(n => Math.hypot(n.x - cx, n.y - cy, n.z - cz)).sort((a, b) => a - b)
         const r = dists[Math.floor(dists.length * 0.75)] || dists[dists.length - 1] || 80
+        return { cx, cy, cz, dist: r * 1.6 + 26 }
+    }
+    const frameCore = (duration, swing = 0) => {
+        const cf = coreFrame(); if (!cf) return
+        const { cx, cy, cz, dist } = cf
         const cam = Graph.camera()
         let dx = cam.position.x - cx, dz = cam.position.z - cz
         const dy = cam.position.y - cy
         if (swing) { const a = Math.atan2(dx, dz) + swing, h = Math.hypot(dx, dz); dx = h * Math.sin(a); dz = h * Math.cos(a) }
         const len = Math.hypot(dx, dy, dz) || 1
-        const dist = r * 1.6 + 26
-        controls.target.set(cx, cy, cz)
+        // cameraPosition tweens the look-at over `duration`; setting controls.target here would snap it
         Graph.cameraPosition({ x: cx + dx / len * dist, y: cy + dy / len * dist, z: cz + dz / len * dist }, { x: cx, y: cy, z: cz }, duration)
     }
 
-    // framing. For the hero we do NOT wait for the layout to settle (that looked like the cloud forming
-    // far away, then a late zoom-in): we start easing the camera in right away and re-frame a couple of
-    // times as the cloud expands, so the zoom-in happens *while* it forms. Plain fit-on-settle otherwise.
+    // framing. The hero pre-settles its layout (warmupTicks above), then tick() eases the camera in
+    // from the very first frame while OrbitControls already auto-rotates — a smooth spiral-in (the
+    // dolly changes only the distance, auto-rotate only the angle, so they compose). Onto a stable
+    // pre-settled frame, so it neither chases the expansion nor zooms back out. Fit-on-settle otherwise.
     let framed = false
     const onSettle = () => {
         if (framed || forced) return
@@ -150,14 +159,10 @@ export async function createForceGraph(container, data, opts = {}) {
         frameCore(700, 0)
     }
     if (introEnabled) {
-        framed = true                 // we drive the intro ourselves; keep onEngineStop from reframing
-        controls.autoRotate = false
-        const steps = [300, 1400, 2700]
-        steps.forEach((t, i) => setTimeout(() => {
-            if (forced) return
-            frameCore(i === 0 ? 1600 : 1300, i === 0 ? Math.PI * 0.3 : 0)
-            if (i === steps.length - 1) controls.autoRotate = autoRotate
-        }, t))
+        framed = true                       // tick() drives the intro; keep onEngineStop from reframing
+        introDolly = true                   // ease the camera in from the first frame…
+        controls.autoRotate = autoRotate    // …while it already auto-rotates → a spiral-in
+        setTimeout(() => { introDolly = false }, 4000)   // safety cap if it never converges
     } else {
         Graph.onEngineStop(onSettle)
         setTimeout(onSettle, 4000)
@@ -201,6 +206,18 @@ export async function createForceGraph(container, data, opts = {}) {
     let raf
     const tick = () => {
         const cam = Graph.camera()
+        if (introDolly && !forced && cam) {
+            const cf = coreFrame()
+            if (cf) {
+                const t = controls.target
+                t.x += (cf.cx - t.x) * 0.05; t.y += (cf.cy - t.y) * 0.05; t.z += (cf.cz - t.z) * 0.05
+                const ox = cam.position.x - t.x, oy = cam.position.y - t.y, oz = cam.position.z - t.z
+                const cur = Math.hypot(ox, oy, oz) || 1
+                const s = (cur + (cf.dist - cur) * 0.035) / cur   // ease the distance; the angle is auto-rotate's job
+                cam.position.set(t.x + ox * s, t.y + oy * s, t.z + oz * s)
+                if (Math.abs(cf.dist - cur) < cf.dist * 0.04) introDolly = false   // converged → hand off
+            }
+        }
         if (cam && labelEntries.length) {
             const vis = []
             for (const e of labelEntries) {
@@ -221,7 +238,7 @@ export async function createForceGraph(container, data, opts = {}) {
         highlight(sel) {
             forced = sel instanceof Map ? sel : new Map((sel || []).map(id => [id, 0]))
             const keys = new Set(forced.keys())
-            framed = true
+            framed = true; introDolly = false
             autoRotate = false; controls.autoRotate = false
             refresh()
             Graph.d3Force("charge")?.strength(chargeStrength)   // re-evaluate now that `forced` changed:
