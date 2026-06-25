@@ -3,7 +3,9 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>d-stack-kg</title>
+    <title>Deutschland-Stack als Wissensgraph</title>
+    <meta name="description" content="Inoffizieller Prototyp: der Deutschland-Stack als abfragbarer Wissensgraph. Standards, Verwaltungsleistungen und die Beschlusslage des IT-Planungsrats in einem Graphen.">
+    <link rel="canonical" href="https://benjaminaaron.codeberg.page/d-stack-kg/">
     <link rel="stylesheet" href="assets/styles.css">
     <script type="module" src="assets/nav-bar.js"></script>
     <script type="module" src="assets/visu/hero.js"></script>
@@ -14,16 +16,47 @@
         <h1>Der Deutschland-Stack als Wissensgraph</h1>
 
         <p>Heute liegt der D-Stack in getrennten Quellen: eine Landkarte der Standards und Technologien, Verzeichnisse von Verwaltungsleistungen, Beschlüsse als PDF. Jede für sich ist nützlich, aber statisch und unverbunden. Was wäre, wenn daraus ein <strong>abfragbarer Wissensgraph</strong> (Knowledge Graph) würde?</p>
+
+        <figure class="hero-graph-wrap">
+            <div id="hero-graph" class="hero-graph" role="img" aria-label="Bewegte 3D-Visualisierung des Wissensgraphen"></div>
+            <div id="hero-controls" class="hero-controls"></div>
+        </figure>
+
         <p>Dieser inoffizielle Prototyp bringt drei bisher getrennte Sichten in einen gemeinsamen Graphen: <strong>worauf der Staat läuft</strong> (Standards und Technologien), <strong>was er damit tut</strong> (Verwaltungsleistungen aus PVOG, FIM und FIT-Connect) und <strong>was darüber entschieden wird</strong> (die Beschlusslage des IT-Planungsrats). So wächst die Zahl der beantwortbaren Fragen überproportional dank Netzwerkeffekt. Ein Beispiel für eine solche Frage:</p>
         <div class="landing-example">
             <p class="le-q">Was hängt an einem einzigen D-Stack-Baustein wie OpenID Connect?</p>
             <p class="le-a">OpenID Connect ist der Login-Standard hinter vielen Online-Anträgen. Der Graph zeigt, was betroffen wäre, fiele er aus: <a class="le-link" id="ql-leistungen" href="query.html" target="_blank" rel="noopener">4 Verwaltungsleistungen ↗</a>, dahinter <a class="le-link" id="ql-behoerden" href="query.html" target="_blank" rel="noopener">53 zuständige Behörden ↗</a> und <a class="le-link" id="ql-lebenslagen" href="query.html" target="_blank" rel="noopener">7 Lebenslagen ↗</a>, bis hinein in eine kommunale IT-Landschaft. Eine gute Grundlage für eine Folgenabschätzung.</p>
         </div>
 
-        <figure class="hero-graph-wrap">
-            <div id="hero-graph" class="hero-graph" role="img" aria-label="Bewegte 3D-Visualisierung des Wissensgraphen"></div>
-            <div id="hero-controls" class="hero-controls"></div>
-        </figure>
+        <section class="landing-ramp">
+            <h2 class="ramp-head">Anwendungsfälle, die andeuten, was möglich wird</h2>
+            <div class="ramp-cards">
+                <div class="ramp-card">
+                    <h3>Worauf der Staat läuft</h3>
+                    <ul>
+                        <li><a href="use-case/landkarte.html">Tech-Stack Landkarte</a></li>
+                        <li><a href="use-case/kommune.html">Kommunale IT</a></li>
+                        <li><a href="use-case/konformitaet.html">Konformitätsprüfung</a></li>
+                    </ul>
+                </div>
+                <div class="ramp-card">
+                    <h3>Was er damit tut</h3>
+                    <ul>
+                        <li><a href="use-case/leistungen.html">PVOG-Leistungen</a></li>
+                        <li><a href="use-case/fachdaten.html">FIM &amp; FIT-Connect</a></li>
+                        <li><a href="use-case/115.html">115</a></li>
+                        <li><a href="use-case/kommunikation.html">Kommunikation</a></li>
+                    </ul>
+                </div>
+                <div class="ramp-card">
+                    <h3>Was darüber entschieden wird</h3>
+                    <ul>
+                        <li><a href="use-case/beschlusslage.html">Beschlusslage</a></li>
+                        <li><a href="use-case/selbstauskunft.html">Selbstauskunft</a></li>
+                    </ul>
+                </div>
+            </div>
+        </section>
 
         <p class="landing-signals-intro">Der Prototyp greift eine Richtung auf, die der IT-Planungsrat selbst eingeschlagen hat:</p>
         <ul class="landing-signals">

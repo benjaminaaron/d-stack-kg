@@ -51,6 +51,22 @@ a { color: var(--accent); }
 .landing-signals li { margin: 0.35rem 0; }
 .landing-signals a, .landing-signals-intro a { color: inherit; text-decoration: underline; }
 
+/* landing: the three-Sichten on-ramp into the use cases */
+.landing-ramp { margin: 2rem 0 1.4rem; }
+.ramp-head { font-size: 1.15rem; margin: 0 0 0.9rem; }
+.ramp-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.9rem; }
+.ramp-card { border: 1px solid var(--border); border-radius: 8px; padding: 0.85rem 1rem 0.95rem; }
+.ramp-card h3 { font-size: 0.95rem; margin: 0 0 0.5rem; }
+.ramp-card > p { color: var(--muted); font-size: 0.85rem; margin: 0 0 0.6rem; }
+.ramp-card ul { list-style: none; margin: 0; padding: 0; }
+.ramp-card li { margin: 0.3rem 0; }
+.ramp-card li a { text-decoration: none; }
+.ramp-card li a::before { content: "\203a\00a0"; color: var(--muted); }
+.ramp-card li a:hover { text-decoration: underline; }
+@media (max-width: 640px) {
+    .ramp-cards { grid-template-columns: 1fr; }
+}
+
 /* small, gray "who built this" line at the foot of the landing page */
 .page-footer { margin-top: 2.5rem; padding-top: 1rem; border-top: 1px solid var(--border); font-size: 0.8rem; color: var(--muted); opacity: 0.75; }
 .page-footer a { color: inherit; text-decoration: underline; }
@@ -169,15 +185,25 @@ site-nav {
 
 .dropdown.open .menu { display: block; }
 
-/* the three Sichten as section headers inside the use-case menu */
+/* the three Sichten as centered section dividers: label between two bright-gray rules */
 .menu-group {
-    padding: 0.5rem 0.6rem 0.15rem;
-    font-size: 0.72rem;
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.5rem 0.5rem 0.3rem;
+    font-size: 0.7rem;
     font-weight: 600;
     color: var(--muted);
-    opacity: 0.65;
+    opacity: 0.8;
 }
-.menu-group:first-child { padding-top: 0.15rem; }
+.menu-group::before,
+.menu-group::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+}
+.menu-group:first-child { padding-top: 0.3rem; }
 
 .menuitem {
     display: block;
@@ -185,6 +211,8 @@ site-nav {
     padding: 0.45rem 0.6rem 0.45rem 1.1rem;   /* indented under their category header */
     border-radius: 6px;
 }
+/* a flat dropdown (no Sichten headers, e.g. Werkzeuge) needs no hanging indent */
+.menu.flat .menuitem { padding-left: 0.6rem; }
 
 /* mobile: collapse the nav row into a burger-toggled panel */
 @media (max-width: 640px) {

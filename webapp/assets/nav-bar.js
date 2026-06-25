@@ -29,11 +29,13 @@ const ITEMS = [
             { label: "Selbstauskunft", href: link("use-case/selbstauskunft.html") }
         ] }
     ] },
-    { label: "Ideen", href: link("ideen.html") },
-    { label: "Datenmodell", href: link("vocabulary.html") },
-    { label: "Query", href: link("query.html") },
-    { label: "Erkunden", href: link("graph.html") },
-    { label: "Export", href: link("export.html") }
+    { label: "Werkzeuge", selectedPrefix: "Werkzeug", children: [
+        { label: "Datenmodell", href: link("vocabulary.html") },
+        { label: "Erkunden", href: link("graph.html") },
+        { label: "Query", href: link("query.html") },
+        { label: "Export", href: link("export.html") }
+    ] },
+    { label: "Ideen", href: link("ideen.html") }
 ]
 
 const isActive = href => {
@@ -50,13 +52,16 @@ const renderLink = item =>
     `<a class="navlink" href="${item.href}"${current(item.href)}>${item.label}</a>`
 
 const renderDropdown = item => {
-    // children grouped under labelled sections (the three Sichten); flatten to find the open one
-    const all = item.groups.flatMap(g => g.children)
-    // when a child use case is open, surface it in the button: "Anwendungsfall: <selected>"
+    // a dropdown is either flat (item.children) or split into labelled sections (item.groups,
+    // the three Sichten); normalise to groups and flatten to find the open child
+    const groups = item.groups ?? [{ children: item.children }]
+    const flat = groups.every(g => !g.label)
+    const all = groups.flatMap(g => g.children)
+    // when a child is open, surface it in the button: "Anwendungsfall: <selected>"
     const selected = all.find(c => isActive(c.href))
     const label = selected ? `${item.selectedPrefix}: ${selected.label}` : item.label
-    const menu = item.groups.map(g =>
-        `<div class="menu-group">${g.label}</div>` +
+    const menu = groups.map(g =>
+        (g.label ? `<div class="menu-group">${g.label}</div>` : "") +
         g.children.map(c =>
             `<a role="menuitem" class="menuitem" href="${c.href}"${current(c.href)}>${c.label}</a>`
         ).join("")
@@ -66,7 +71,7 @@ const renderDropdown = item => {
             <button type="button" class="navlink${selected ? " active" : ""}" aria-haspopup="true" aria-expanded="false">
                 ${label}<span class="caret" aria-hidden="true"></span>
             </button>
-            <div class="menu" role="menu">${menu}</div>
+            <div class="menu${flat ? " flat" : ""}" role="menu">${menu}</div>
         </div>`
 }
 
@@ -79,7 +84,7 @@ class SiteNav extends HTMLElement {
                     <span></span><span></span><span></span>
                 </button>
                 <div class="navitems" id="navitems">
-                    ${ITEMS.map(i => i.groups ? renderDropdown(i) : renderLink(i)).join("")}
+                    ${ITEMS.map(i => (i.groups || i.children) ? renderDropdown(i) : renderLink(i)).join("")}
                     <a class="repo" href="${REPO}" target="_blank" rel="noopener noreferrer">Code</a>
                 </div>
             </nav>`
