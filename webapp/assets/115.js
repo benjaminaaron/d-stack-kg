@@ -20,7 +20,7 @@ PREFIX fim: <https://deutschland-stack.gov.de/fim#>
 PREFIX ds: <https://deutschland-stack.gov.de/id/>
 PREFIX dstack: <https://deutschland-stack.gov.de/vocab#>`
 
-const { select, queryLink, renderGallery } = useCase(PRE)
+const { select, queryLink, runLink, renderGallery } = useCase(PRE)
 
 // status word -> the contextual note the agent would act on
 const STATUS_NOTE = {
@@ -28,9 +28,6 @@ const STATUS_NOTE = {
     "gestört": "Aktuell gestört. Ein Frühwarnsystem (DIN SPEC 66336) meldet der 115 solche Ausfälle idealerweise schon, bevor der erste Bürger deswegen anruft. Der Agent bestätigt es dann sofort und übergibt an den technischen Second-Level-Support.",
     "nur lokal, nicht in der Wissensdatenbank": "Der 115 liegt zu diesem Dienst nichts vor (nur lokal bekanntgemacht). Sie kann nur beauskunften, was in der Wissensdatenbank steht.",
 }
-
-const runLinkP = (q, label = "Diese Abfrage ausführen") =>
-    `<p><a class="run-link" href="${queryLink(q)}" target="_blank" rel="noopener">${label} ↗</a></p>`
 
 const shorten = (t, n = 220) => t.length > n ? `${t.slice(0, t.lastIndexOf(" ", n)).trim()} …` : t
 
@@ -75,7 +72,7 @@ const renderAnliegen = async (phrase) => {
     const hits = bestPerLeistung(await select(q))
     if (!hits.length) {
         $("anliegen-out").innerHTML = `<p class="answer-head">Kein Stichwort-Treffer für »${esc(phrase)}«.</p>
-            ${runLinkP(q, "Abfrage ansehen")}`
+            ${runLink(q, "Abfrage ansehen")}`
         return
     }
     const items = hits.map(r => `<li><b>${esc(r.leistung)}</b>${r.ort ? ` <span class="muted">(${esc(r.ort)})</span>` : ""} &mdash; gefunden über das hinterlegte Stichwort »${esc(r.stichwort)}« (${esc(r.art)}).<br>
@@ -83,7 +80,7 @@ const renderAnliegen = async (phrase) => {
         ${r.status ? ` &middot; Status: <b>${esc(r.status)}</b>` : ""}</li>`).join("")
     $("anliegen-out").innerHTML = `<p class="answer-head">Anliegen: »${esc(phrase)}«</p>
         <ul class="answer-list">${items}</ul>
-        ${runLinkP(q, "Diese Abfrage ausführen")}`
+        ${runLink(q, "Diese Abfrage ausführen")}`
 }
 
 const renderExampleButtons = () => {
@@ -157,7 +154,7 @@ const zustaendigkeitBlock = (stellen, qStellen, ort) => {
         <p class="reach-head">Zuständigkeit${ort ? ` <span class="reach-src">${esc(ort)}</span>` : ""}</p>
         ${hint}
         <ul class="reach-list">${shown}${rest}</ul>
-        ${runLinkP(qStellen, "Zuständigkeiten abfragen")}
+        ${runLink(qStellen, "Zuständigkeiten abfragen")}
     </div>`
 }
 
@@ -228,13 +225,13 @@ const renderLuecken = async () => {
             <p class="reach-head">Gerade gestört <span class="reach-src">Frühwarnsystem</span></p>
             <p class="comms-hinweis">Den Ausfall kennt die 115 über ein Frühwarnsystem idealerweise schon, bevor der erste Bürger deswegen anruft; sie bestätigt ihn dann sofort und verweist auf den analogen Weg oder eskaliert.</p>
             ${list(gestoert, r => `<li><b>${esc(r.leistung)}</b> &mdash; ${r.url ? `<a href="${esc(r.url)}" target="_blank" rel="noopener">${esc(r.dienst)}</a>` : esc(r.dienst)}</li>`)}
-            ${runLinkP(GESTOERT_Q, "Abfrage ausführen")}
+            ${runLink(GESTOERT_Q, "Abfrage ausführen")}
         </div>
         <div class="reach-group">
             <p class="reach-head">Nur lokal, der 115 nicht bekannt <span class="reach-src">blinder Fleck</span></p>
             <p class="comms-hinweis">Hier kann die 115 nichts sagen: der Onlinedienst hat es nie in die Wissensdatenbank geschafft.</p>
             ${list(fehlt, r => `<li><b>${esc(r.leistung)}</b> &mdash; ${esc(r.dienst)}</li>`)}
-            ${runLinkP(NICHT_ERFASST_Q, "Abfrage ausführen")}
+            ${runLink(NICHT_ERFASST_Q, "Abfrage ausführen")}
         </div>`
 }
 

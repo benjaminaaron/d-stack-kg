@@ -3,7 +3,8 @@
  *
  * Profiles the full composed knowledge graph (the same layers graph.js loads: technical,
  * PVOG/FIM/FIT-Connect, the assumed bridge, the fictional Musterstadt landscape + chatbot
- * scenario, and the comms layer — Textbausteine that carry their own query) and emits the
+ * scenario, the comms layer, the Beschlusslage, the 115 First-Level-Support layer and the
+ * openCode conformity scan) and emits the
  * SHACL config that drives the in-browser visual query builder:
  * one NodeShape per class,
  * one property shape per predicate actually used on that class's instances, with the
@@ -17,7 +18,7 @@
 
 import { ROOT, DSTACK_TTL, PVOG_LEISTUNGEN_TTL, FIM_LEISTUNGEN_TTL, FIT_CONNECT_TTL,
     PVOG_DSTACK_BRIDGE_TTL, MUSTERSTADT_LANDSCHAFT_TTL, MUSTERSTADT_CHATBOT_TTL, COMMS_TTL,
-    BESCHLUSSLAGE_TTL, VOCABULARY_TTL } from "../../common/utils.js"
+    BESCHLUSSLAGE_TTL, SUPPORT115_TTL, OPENCODE_KONFORMITAET_TTL, VOCABULARY_TTL } from "../../common/utils.js"
 import { storeFromTurtles } from "@foerderfunke/sem-ops-utils/core"
 import { queryEngine } from "@foerderfunke/sem-ops-utils/sparql"
 import fs from "fs"
@@ -126,6 +127,20 @@ const EXTERNAL_LABELS = {
     [DCT + "publisher"]: { en: "publisher", de: "Herausgeber" },
     [DCT + "provenance"]: { en: "provenance", de: "Herkunft" },
     [DCT + "alternative"]: { en: "alternative name", de: "alternative Bezeichnung" },
+    // the 115 First-Level-Support layer + the openCode conformity scan (scenario layers); the
+    // dstack: terms they add (Abhaengigkeit, abgebildetAuf, betriebsstatus, …) are labelled in vocabulary.ttl
+    [SCHEMA + "SoftwareSourceCode"]: { en: "Repository", de: "Repository" },
+    [SCHEMA + "CreativeWork"]: { en: "Help resource", de: "Hilfe-Ressource" },
+    [SCHEMA + "ContactPoint"]: { en: "Contact point", de: "Kontaktstelle" },
+    [SCHEMA + "contactType"]: { en: "contact type", de: "Kontaktart" },
+    [M8G + "Evidence"]: { en: "Evidence", de: "Nachweis" },
+    [CPSV + "hasInput"]: { en: "required input", de: "erforderliche Unterlage" },
+    [DCT + "type"]: { en: "type", de: "Art" },
+    [SKOS + "hiddenLabel"]: { en: "hidden keyword", de: "Volksmund-Stichwort" },
+    [SKOS + "closeMatch"]: { en: "close match", de: "enge Entsprechung" },
+    [SKOS + "relatedMatch"]: { en: "related match", de: "verwandte Entsprechung" },
+    [M8G + "value"]: { en: "value", de: "Betrag" },
+    [M8G + "currency"]: { en: "currency", de: "Währung" },
 }
 
 const NUMERIC = new Set(["integer", "decimal", "double", "float", "long", "int", "short",
@@ -138,10 +153,12 @@ const TEMPORAL = new Set([XSD + "date", XSD + "dateTime"])
 // profile the whole graph the Query page exposes (the same layers graph.js composes): the
 // technical layer, the administrative layers (PVOG services, FIM Steckbriefe, FIT-Connect
 // schemas, the assumed bridge), the fictional municipal IT landscape + its chatbot scenario,
-// and the comms layer (Textbausteine + Blickwinkel + the fachlich register)
+// the comms layer (Textbausteine + Blickwinkel + the fachlich register), the Beschlusslage,
+// the 115 First-Level-Support layer and the openCode conformity scan
 const graph = storeFromTurtles([
     DSTACK_TTL, PVOG_LEISTUNGEN_TTL, FIM_LEISTUNGEN_TTL, FIT_CONNECT_TTL,
     PVOG_DSTACK_BRIDGE_TTL, MUSTERSTADT_LANDSCHAFT_TTL, MUSTERSTADT_CHATBOT_TTL, COMMS_TTL, BESCHLUSSLAGE_TTL,
+    SUPPORT115_TTL, OPENCODE_KONFORMITAET_TTL,
 ].map(f => fs.readFileSync(f, "utf8")))
 const vocab = storeFromTurtles([fs.readFileSync(VOCABULARY_TTL, "utf8")])
 

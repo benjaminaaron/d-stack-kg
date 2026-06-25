@@ -166,6 +166,7 @@ Potential reuse targets and enrichment tasks: which existing vocabularies to reu
 ## Disclaimer
 
 - Not an authoritative source. This is an unofficial reconstruction of official artifacts.
+- The code in this repository is licensed under **Apache-2.0** (see `LICENSE`). The licensing notes below concern the upstream and derived *data*, not the code.
 - The Landkarte data (`data/1-build-kg/upstream/full.json`) is content of the BMDS / Datenlabor BMI. No license is stated upstream; `data/1-build-kg/upstream/full.meta.json` is kept as provenance documentation.
 - The item logos are kept verbatim in `data/1-build-kg/upstream/logos.zip` only to rebuild the site; no rights to them are claimed.
 - The administrative data (`data/2-enrich-kg/pvog-leistungen.ttl`, `fim-leistungen.ttl`, `fit-connect.ttl`) is public-sector content derived from the FITKO PVOG Suchdienst, the FIM Portal and FIT-Connect; each ingested record (Leistung, Zustellpunkt, Schema) carries its exact `dct:source` and retrieval date as provenance. The raw API responses are gitignored working files, not committed.

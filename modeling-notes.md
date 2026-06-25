@@ -6,8 +6,8 @@ Across all layers, the model uses RDF/RDFS and SKOS; it defines no OWL axioms or
 
 ## Lift, then transform
 
-1. **Lift**: [SPARQL Anything](https://sparql-anything.cc) triplifies `landscape.yml` into the raw, generic Facade-X model, dumped verbatim (`sparql/lift.sparql`). No interpretation.
-2. **Transform**: `CONSTRUCT` queries (`sparql/transform/*.sparql`) navigate that raw model into the graph. They run one after another but are independent, so order makes no difference.
+1. **Lift**: [SPARQL Anything](https://sparql-anything.cc) triplifies `landscape.yml` into the raw, generic Facade-X model, dumped verbatim (`src/common/sparql/lift.sparql`). No interpretation.
+2. **Transform**: `CONSTRUCT` queries (`src/1-build-kg/sparql/transform/*.sparql`) navigate that raw model into the graph. They run one after another but are independent, so order makes no difference.
 
 It reuses international vocabularies (**SKOS** for the taxonomy, **Dublin Core** and **schema.org** for item metadata) plus a small `dstack:` namespace where nothing standard fits:
 

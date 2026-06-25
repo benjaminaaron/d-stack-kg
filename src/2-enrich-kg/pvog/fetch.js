@@ -81,13 +81,15 @@ const getJson = async url => {
 }
 
 // resolve (leikaId, ARS) → lbid, then fetch the v6 detail; save the raw response and
-// return a working copy cleaned + annotated with exact provenance for the transform
-const fetchDetail = async ({ leikaId, ars, note, optional }) => {
+// return a working copy cleaned + annotated with exact provenance for the transform.
+// A service that returns no content is skipped (optional defaults true) so one empty
+// response can't abort the whole refresh; the run fails only if every service is empty.
+const fetchDetail = async ({ leikaId, ars, note, optional = true }) => {
     const page = await getJson(`${SUCHDIENST}/v3/servicedescriptions/leikaid?leikaIds=${leikaId}&ars=${ars}&validDate=${today}`)
     const lbid = page.content?.[0]?.id
     if (!lbid) {
         if (optional) { console.warn(`  skip (no content): ${note}`); return null }
-        throw new Error(`no PVOG content for ${note} (leikaId ${leikaId}, ars ${ars}) — set optional:true to allow skipping`)
+        throw new Error(`required PVOG service has no content: ${note} (leikaId ${leikaId}, ars ${ars})`)
     }
     // the v6 detail needs the (padded) ARS + validDate; keep the exact URL as provenance
     const sourceUrl = `${SUCHDIENST}/v6/servicedescriptions/${lbid}/detail?ars=${pad12(ars)}&validDate=${today}`
@@ -124,6 +126,7 @@ fs.mkdirSync(SCRATCH, { recursive: true })
 // 1. fetch the raw v6 detail responses from live PVOG
 console.log(`fetching ${SERVICES.length} Leistung(en) from ${SUCHDIENST} (validDate ${today})`)
 const details = (await Promise.all(SERVICES.map(fetchDetail))).filter(Boolean)
+if (!details.length) throw new Error(`no PVOG content for any of the ${SERVICES.length} services — refusing to overwrite ${path.relative(ENRICH_KG, OUT_TTL)}`)
 
 // 2. lift the combined responses to raw Facade-X with SPARQL Anything
 await ensureJar()

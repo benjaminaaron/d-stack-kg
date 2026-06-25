@@ -12,8 +12,9 @@
 <body>
     <site-nav></site-nav>
     <main class="container">
+        <h1>Datenmodell</h1>
         <h2 id="artefakte">Alle semantischen Artefakte</h2>
-        <p class="lead">Die Artefakte, die in den Graphen fließen. Das Vokabular darunter beschreibt ihre Strukturen:</p>
+        <p class="lead">Die Artefakte, die in den Graphen fließen. Das Vokabular weiter unten beschreibt ihre Strukturen:</p>
         <ul>
             <li><a href="https://codeberg.org/benjaminaaron/d-stack-kg/src/branch/main/data/2-enrich-kg/d-stack-kg.ttl" target="_blank" rel="noopener">d-stack-kg.ttl</a> &rarr; die Standards und Technologien aus der Tech-Stack Landkarte</li>
             <li><a href="https://codeberg.org/benjaminaaron/d-stack-kg/src/branch/main/data/2-enrich-kg/pvog-leistungen.ttl" target="_blank" rel="noopener">pvog-leistungen.ttl</a> &rarr; eine Handvoll PVOG-Leistungen</li>
@@ -24,10 +25,10 @@
             <li><a href="https://codeberg.org/benjaminaaron/d-stack-kg/src/branch/main/authored/musterstadt-chatbot.scenario.ttl" target="_blank" rel="noopener">musterstadt-chatbot.scenario.ttl</a> &rarr; ein hypothetisches Vorhaben für diese Landschaft</li>
             <li><a href="https://codeberg.org/benjaminaaron/d-stack-kg/src/branch/main/authored/comms.authored.ttl" target="_blank" rel="noopener">comms.authored.ttl</a> &rarr; Kommunikations-Textbausteine und fachliche Erklärungen je Baustein</li>
             <li><a href="https://codeberg.org/benjaminaaron/d-stack-kg/src/branch/main/authored/beschlusslage.authored.ttl" target="_blank" rel="noopener">beschlusslage.authored.ttl</a> &rarr; die Beschlusslage des IT-Planungsrats</li>
-            <li><a href="https://codeberg.org/benjaminaaron/d-stack-kg/src/branch/main/authored/115-od-support.scenario.ttl" target="_blank" rel="noopener">115-od-support.scenario.ttl</a> &rarr; First-Level-Support-Infos je Onlinedienst für die 115 (erfundenes Szenario auf realen Diensten)</li>
-            <li><a href="https://codeberg.org/benjaminaaron/d-stack-kg/src/branch/main/authored/opencode-konformitaet.scenario.ttl" target="_blank" rel="noopener">opencode-konformitaet.scenario.ttl</a> &rarr; openCode-Repositories (das reale BMDS-Projekt SPARK plus markierte Beispiele) mit ihren Manifest-Abhängigkeiten, handkuratiert auf die D-Stack-Standards abgebildet, die sie verkörpern</li>
+            <li><a href="https://codeberg.org/benjaminaaron/d-stack-kg/src/branch/main/authored/115-od-support.scenario.ttl" target="_blank" rel="noopener">115-od-support.scenario.ttl</a> &rarr; First-Level-Support-Infos je Onlinedienst für die 115</li>
+            <li><a href="https://codeberg.org/benjaminaaron/d-stack-kg/src/branch/main/authored/opencode-konformitaet.scenario.ttl" target="_blank" rel="noopener">opencode-konformitaet.scenario.ttl</a> &rarr; openCode-Repositories mit ihren Manifest-Abhängigkeiten</li>
         </ul>
-        <p>Jedes Artefakt fließt in den gemeinsamen Graphen und wird zugleich als eigener <strong>benannter Graph</strong> geladen. So bleibt die <strong>Herkunft</strong> jeder Aussage abfragbar (offiziell geliftet, transkribiert, verfasst, angenommen, fiktiv oder Szenario); was sich damit zeigen lässt, führt der Anwendungsfall <a href="use-case/selbstauskunft.html">Selbstauskunft: Annahmen & Lücken</a> vor.</p>
+        <p>Jedes Artefakt fließt in den gemeinsamen Graphen und wird zugleich als eigener <strong>benannter Graph</strong> geladen. So bleibt die <strong>Herkunft</strong> jeder Aussage abfragbar (offiziell geliftet, transkribiert, verfasst, angenommen, fiktiv oder Szenario); was sich damit zeigen lässt, führt der Anwendungsfall <a href="use-case/selbstauskunft.html">Selbstauskunft: Annahmen &amp; Lücken</a> vor.</p>
 
         <h2>Vokabular</h2>
         <p class="lead">Hinweis zum Modellierungsgrad: Dies ist bewusst ein leichtgewichtiges <strong>RDFS-Vokabular</strong> ergänzt um SKOS für die Begriffsschemata. Es ist keine formale <strong>OWL-Ontologie</strong>. Eine spätere Anhebung in eine ausdrucksstärkere Ontologie wäre denkbar.</p>
