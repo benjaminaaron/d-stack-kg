@@ -86,16 +86,18 @@ export const ERFUNDEN_LAYERS = new Set(["bridge", "musterstadt", "chatbot", "sup
 export const layerColor = (key) => LAYER_META[key]?.color || "#8a93a0"
 
 // the six Herkunft (provenance) classes, most official to most invented — the alternative colouring,
-// matching the Selbstauskunft page. ERFUNDEN_HERKUNFT marks the three that are not asserted fact.
+// matching the Selbstauskunft page. Keyed by the local names of the dstack:Herkunft individuals
+// (authored/vocabulary.ttl), as graph.js's LAYERS carry them; the label is the German prefLabel.
+// ERFUNDEN_HERKUNFT marks the three that are not asserted fact.
 export const HERKUNFT_META = {
-    "offiziell geliftet": { color: "#2b8a9e", label: "offiziell geliftet" },
-    "transkribiert":      { color: "#6b46c1", label: "transkribiert" },
-    "verfasst":           { color: "#2f855a", label: "verfasst" },
-    "angenommen":         { color: "#c05621", label: "angenommen" },
-    "fiktiv":             { color: "#718096", label: "fiktiv" },
-    "Szenario":           { color: "#9aa0aa", label: "Szenario" },
+    Geliftet:          { color: "#2b8a9e", label: "geliftet" },
+    Transkribiert:     { color: "#6b46c1", label: "transkribiert" },
+    Verfasst:          { color: "#2f855a", label: "verfasst" },
+    Angenommen:        { color: "#c05621", label: "angenommen" },
+    Fiktiv:            { color: "#718096", label: "fiktiv" },
+    Szenario:          { color: "#9aa0aa", label: "Szenario" },
 }
-export const ERFUNDEN_HERKUNFT = new Set(["angenommen", "fiktiv", "Szenario"])
+export const ERFUNDEN_HERKUNFT = new Set(["Angenommen", "Fiktiv", "Szenario"])
 export const herkunftColor = (h) => HERKUNFT_META[h]?.color || "#8a93a0"
 
 // a readable fallback label from an IRI's local name ("open-id-connect" → "open id connect")

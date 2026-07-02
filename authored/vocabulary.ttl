@@ -490,24 +490,56 @@ dstack:zweitLevelKontakt a rdf:Property ;
 
 
 # =============================================================================
-# Provenance — the Schicht meta describing each named graph (loaded by graph.js)
+# Meta / prototype inspection — the Schicht meta and the Herkunft value set
 # -----------------------------------------------------------------------------
 # graph.js loads every layer twice: into the default graph (ordinary queries stay unchanged)
 # AND into a per-layer named graph, so GRAPH ?g { ... } reveals which layer a triple is from.
-# These terms describe each of those named graphs — its Herkunft (the file-naming convention,
-# made queryable) plus a label and the source file — so the graph can give an account of itself
-# (Selbstauskunft: Annahmen & Lücken). The meta lives in the default graph and uses only dstack: predicates,
-# so it never surfaces in ordinary label/type queries.
+# These terms describe each of those named graphs — its Herkunft plus a label and the source
+# file — so the graph can give an account of itself (Selbstauskunft: Annahmen & Lücken).
+# The six Herkunft values are individuals with IRIs (dstack:Geliftet …
+# dstack:Szenario), not string tags: each carries its own label and definition, and queries
+# reference them robustly. The meta lives in the default graph and uses only dstack:
+# predicates, so it never surfaces in ordinary label/type queries.
 # =============================================================================
 
 dstack:Schicht a rdfs:Class ;
     rdfs:label "Schicht"@de , "Layer"@en ;
     rdfs:comment "A named graph: one source layer of the composed graph, identified by an IRI under .../id/graph/. It bears its Herkunft, a label and its source file; the webapp joins layer content to this description via GRAPH ?g {} . ?g dstack:herkunft ?h ."@en .
 
+dstack:Herkunft a rdfs:Class ;
+    rdfs:subClassOf skos:Concept ;
+    rdfs:label "Herkunft"@de , "Provenance class"@en ;
+    rdfs:comment "The provenance class of a Schicht, mirroring the file-naming convention. Six fixed individuals below, from most official to most invented."@en .
+
+dstack:Geliftet a dstack:Herkunft ;
+    skos:prefLabel "geliftet"@de , "lifted"@en ;
+    skos:definition "maschinell aus offiziellen Quellen in den Wissensgraphen gehoben"@de .
+
+dstack:Transkribiert a dstack:Herkunft ;
+    skos:prefLabel "transkribiert"@de , "transcribed"@en ;
+    skos:definition "von Hand aus datierten Beschlüssen übertragen"@de .
+
+dstack:Verfasst a dstack:Herkunft ;
+    skos:prefLabel "verfasst"@de , "authored"@en ;
+    skos:definition "von Hand formuliert"@de .
+
+dstack:Angenommen a dstack:Herkunft ;
+    skos:prefLabel "angenommen"@de , "assumed"@en ;
+    skos:definition "fachlich begründete Vermutung, keine belegte Tatsache"@de .
+
+dstack:Fiktiv a dstack:Herkunft ;
+    skos:prefLabel "fiktiv"@de , "fictional"@en ;
+    skos:definition "frei erfunden, um ein Konzept zu zeigen"@de .
+
+dstack:Szenario a dstack:Herkunft ;
+    skos:prefLabel "Szenario"@de , "scenario"@en ;
+    skos:definition "erfundenes Szenario auf echten Daten"@de .
+
 dstack:herkunft a rdf:Property ;
     rdfs:label "Herkunft"@de , "provenance class"@en ;
     rdfs:domain dstack:Schicht ;
-    rdfs:comment "The provenance class of a Schicht, mirroring the file-naming convention: 'offiziell geliftet' (machine-lifted from official sources), 'transkribiert' (hand-transcribed from dated decisions), 'verfasst' (hand-authored prose), 'angenommen' (.assumed), 'fiktiv' (.fictional), 'Szenario' (.scenario). The graph's honesty, made queryable."@en .
+    rdfs:range dstack:Herkunft ;
+    rdfs:comment "The provenance class of a Schicht: one of the six dstack:Herkunft individuals, mirroring the file-naming convention — lifted data/ is dstack:Geliftet (the sources are official, the lifting itself is not), dated decisions dstack:Transkribiert, authored prose dstack:Verfasst, .assumed dstack:Angenommen, .fictional dstack:Fiktiv, .scenario dstack:Szenario. The graph's honesty, made queryable."@en .
 
 dstack:schichtLabel a rdf:Property ;
     rdfs:label "Schicht-Label"@de , "layer label"@en ;

@@ -347,6 +347,9 @@ body.full { display: flex; flex-direction: column; min-height: 100dvh; }
 .dep-map { height: 460px; border: 1px solid var(--border); border-radius: 4px; margin-top: 0.6rem; }
 .dep-legend { list-style: none; padding: 0; margin: 0.5rem 0 0; font-size: 0.85rem; }
 .dep-legend li { margin: 0.12rem 0; }
+/* Selbstauskunft: the Delta table (section 4) — no scroll-wrap, so the ?-tooltips never clip */
+.delta-table { margin-top: 0.6rem; }
+.tip { display: inline-flex; align-items: center; justify-content: center; width: 1.05rem; height: 1.05rem; margin-left: 0.35rem; border: 1px solid var(--border); border-radius: 50%; font-size: 0.7rem; font-weight: 600; color: var(--muted); vertical-align: middle; }
 .reach-src { font-size: 0.7rem; font-weight: 400; color: var(--muted); border: 1px solid var(--border); border-radius: 999px; padding: 0.05rem 0.45rem; margin-left: 0.3rem; white-space: nowrap; }
 .reach-list { margin: 0; padding-left: 1.1rem; font-size: 0.9rem; opacity: 0.8; }
 .reach-list li { margin: 0.1rem 0; }
@@ -367,7 +370,8 @@ a.bl-chip:hover { border-color: var(--muted); }
 @media (prefers-color-scheme: dark) { .offen { color: #8fd6a3; } }
 /* instant, discoverable tooltip (no native title delay): mark an element with data-tip="…" */
 [data-tip] { position: relative; cursor: help; }
-[data-tip]:hover::after {
+[data-tip]:hover::after,
+[data-tip]:focus-visible::after {
     content: attr(data-tip);
     position: absolute;
     left: 0;

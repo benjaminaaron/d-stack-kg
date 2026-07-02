@@ -6,7 +6,7 @@
 // path, node search, Herkunft colouring, per-node suggestions, deep-link URL state) were pulled back
 // out on purpose, to be rebuilt deliberately later — this keeps one thing that works.
 
-import { projectGraph, LAYER_META, ERFUNDEN_LAYERS } from "./graph-data.js"
+import { projectGraph, LAYER_META, HERKUNFT_META, ERFUNDEN_LAYERS } from "./graph-data.js"
 import { createCytoscape, cytoLayouts, layoutLabel } from "./render-cyto.js"
 import { buildStore, runQuery, mountQueryBar } from "./graph-shared.js"
 import { PRE, queriesFor } from "./graph-queries.js"
@@ -79,7 +79,7 @@ SELECT ?eigenschaft ?wert WHERE { <${iri}> ?eigenschaft ?wert } LIMIT 200`
         const n = nodeById.get(id); if (!n || !detail) return
         const deep = "query.html?query=" + encodeURIComponent(PRE + "\n\n" + nodeQuery(id))
         detail.innerHTML = `<p class="ex-d-label">${esc(n.label)}</p>
-            <p class="ex-d-meta"><span class="ex-sw" style="background:${LAYER_META[n.layer]?.color}"></span>${esc(LAYER_META[n.layer]?.label || n.layer)} <span class="ex-erf">${esc(n.herkunft)}</span></p>
+            <p class="ex-d-meta"><span class="ex-sw" style="background:${LAYER_META[n.layer]?.color}"></span>${esc(LAYER_META[n.layer]?.label || n.layer)} <span class="ex-erf">${esc(HERKUNFT_META[n.herkunft]?.label || n.herkunft)}</span></p>
             ${n.types.length ? `<p class="ex-d-types">${n.types.map(t => `<span class="bl-chip">${esc(t)}</span>`).join(" ")}</p>` : ""}
             <p class="ex-d-deg muted">${n.degree} ${n.degree === 1 ? "Verbindung" : "Verbindungen"}</p>
             <p><a class="run-link" href="${deep}" target="_blank" rel="noopener">In der Query-Konsole öffnen ↗</a></p>`
