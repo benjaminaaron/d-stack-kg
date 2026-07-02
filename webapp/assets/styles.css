@@ -368,6 +368,16 @@ a.bl-chip:hover { border-color: var(--muted); }
 /* the "open alternative" hint: the good news, gently highlighted in the same positive green */
 .offen { color: #2e7d32; }
 @media (prefers-color-scheme: dark) { .offen { color: #8fd6a3; } }
+/* use-case pages: section anchors (anchors.js) — the copy-link icon appears left of the h2 on
+   hover; scroll-margin keeps an anchored section from landing under the sticky nav */
+main section { scroll-margin-top: 3.5rem; }
+main section > h2 { position: relative; }
+.anchor { position: absolute; left: -1.4rem; top: 50%; transform: translateY(-50%); display: inline-flex; padding: 0.1rem; color: var(--muted); opacity: 0; }
+main section > h2:hover .anchor, .anchor:focus-visible, .anchor.copied { opacity: 1; }
+.anchor:hover { color: var(--page-fg); }
+.anchor.copied svg { display: none; }
+.anchor.copied::after { content: "✓"; font-size: 0.8rem; line-height: 1; }
+
 /* instant, discoverable tooltip (no native title delay): mark an element with data-tip="…" */
 [data-tip] { position: relative; cursor: help; }
 [data-tip]:hover::after,
