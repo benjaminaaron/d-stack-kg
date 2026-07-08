@@ -34,7 +34,8 @@ mus:it-landschaft a dcat:Dataset ;
     dct:conformsTo <https://purl.org/archimate#> ;       # modelled with the ArchiMate ontology (Apache-2.0)
     dct:references <https://deutschland-stack.gov.de/> ;  # the Stack it is checked against
     dct:hasPart mus:meldewesen , mus:antragsportal , mus:geo-fachverfahren , mus:dms ,   # ihre Komponenten
-        mus:servicekonto , mus:api-gateway , mus:xoev-gateway , mus:datenbank , mus:container-plattform ;
+        mus:servicekonto , mus:api-gateway , mus:xoev-gateway , mus:datenbank , mus:container-plattform ,
+        mus:cloud-infrastruktur ;
     rdfs:seeAlso
         <https://www.ssg-sachsen.de/de/projekte/digital-lotsen-sachsen/dlsn-aktuelles/2026/was-ist-ein-referenzarchitekturmodell-fuer-kommunen/> , # layer structure: Saxon municipal reference
         <https://github.com/VNG-Realisatie/GEMMA-Archi-repository> , # GEMMA (NL): real municipal ArchiMate, machine-readable
@@ -83,6 +84,11 @@ mus:datenbank a archimate:SystemSoftware ;
 mus:container-plattform a archimate:Node ;
     archimate:name "Container-Plattform"@de ;
     dct:conformsTo ds:kubernetes .
+
+mus:cloud-infrastruktur a archimate:Node ;
+    archimate:name "Cloud-Infrastruktur (SCS-konform)"@de ;
+    archimate:serving mus:container-plattform ;
+    dct:conformsTo ds:sovereign-cloud-stack .           # SCS: vom Beschluss benannt, keine Landkarte-Kachel
 
 # --- referenzierte Standards ohne Landkarte-Kachel ---------------------------
 # Real, governed standards this landscape uses that the Landkarte does not (yet)

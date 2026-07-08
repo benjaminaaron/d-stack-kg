@@ -162,7 +162,8 @@ SELECT DISTINCT ?ebene ?betroffen ?ueber ?imStack WHERE {
         BIND(EXISTS { ?el a dstack:StackElement } AS ?imStack)
     } UNION {
         { <${iri}> dstack:realisiertDurch/dct:conformsTo ?el } UNION { <${iri}> dstack:nenntStandard ?el }
-        ?el skos:prefLabel ?ueber .
+        OPTIONAL { ?el skos:prefLabel ?uePl } OPTIONAL { ?el rdfs:label ?ueRl }   # Kachel trägt prefLabel, referenzierter Standard rdfs:label
+        BIND(COALESCE(?uePl, ?ueRl) AS ?ueber)
         {
             ?l a cpsv:PublicService ;
                 dct:title ?betroffen ;

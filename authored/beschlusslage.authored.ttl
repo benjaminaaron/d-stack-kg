@@ -6,8 +6,10 @@
 # B-2026/03 annex PDFs. Each node dct:source's a dated dstack:Beschluss.
 #   - 7 dstack:Standardbereich: each nennt the standards it binds (a Landkarte tile, or a
 #     dstack:ReferenzierterStandard where the Landkarte lacks it) and carries the open
-#     Festlegungsbedarfe verbatim. The gap is modelled in full only for Semantische
-#     Technologien; other areas' non-tile practices/frameworks (CI/CD, EVB-IT, …) are not nodes.
+#     Festlegungsbedarfe verbatim. Every genuine standard the Anlage names but the Landkarte
+#     does not tile is captured (all areas), so each area's coverage is queryable. Only the
+#     Anlage entries that are practices/tools/orgs/procurement terms (GIT, CI/CD, IaC/PaC,
+#     SBOM, OWASP, EVB-IT) are not modelled as standards.
 #   - 5 dstack:Basisdienst: each a swappable DPI slot realised by a Produkt; schema:funder marks
 #     Bund financing (B-2026/18), its absence on ZBDS/ZaPuK the queryable distinction.
 # Honesty boundary: membership, Basisdienst→Produkt and financing are TRANSCRIBED; the
@@ -93,7 +95,9 @@ ds:standardbereich-virtualisierte-infrastruktur a dstack:Standardbereich ;
     skos:inScheme ds:standardbereiche ;
     skos:prefLabel "Virtualisierte softwarebasierte Infrastruktur"@de ;
     dct:source ds:beschluss-b-2026-03 ;
-    dstack:nenntStandard ds:sd-wan-service-attributes-and-service-framework ;
+    # MEF 70 (SD-WAN) ist eine Kachel; NFV benannt, aber nicht in der Landkarte
+    dstack:nenntStandard ds:sd-wan-service-attributes-and-service-framework ,
+        ds:network-function-virtualization ;
     dstack:festlegungsbedarf
         "Format für Software-Defined Storage (SDS)"@de ,
         "Format für Verwaltung von virtuellen Maschinen und Ressourcen"@de .
@@ -102,10 +106,13 @@ ds:standardbereich-devsecops a dstack:Standardbereich ;
     skos:inScheme ds:standardbereiche ;
     skos:prefLabel "Integrierter Lebenszyklus (DevSecOps) und Schnittstellenmanagement"@de ;
     dct:source ds:beschluss-b-2026-03 ;
+    # Kacheln: openAPI, REST, Kubernetes, GraphQL, gRPC, IPv6, FTPS, SMTPS, QUIC
+    # benannt, aber nicht in der Landkarte: MQTT und HTTPS (HTTP und TLS sind Kacheln, HTTPS nicht)
     dstack:nenntStandard ds:openapi , ds:representational-state-transfer , ds:kubernetes ,
         ds:graphql , ds:general-purpose-remote-procedure-calls , ds:internet-protocol-version-6 ,
         ds:file-transfer-protocol-uber-tls , ds:simple-mail-transfer-protocol-secure ,
-        ds:quick-udp-internet-connections ;
+        ds:quick-udp-internet-connections ,
+        ds:message-queuing-telemetry-transport , ds:hypertext-transfer-protocol-secure ;
     dstack:festlegungsbedarf
         "Formate für Scan, Test, Analyse, Logs, Observability, Security (u.a. SIEM, IDS, EDR, SAST, DAST, CS)"@de ,
         "Formate für Package Management, Distribution, Load Balancing, Proxies, Gateways, Service Mesh und Service Discovery"@de .
@@ -114,6 +121,8 @@ ds:standardbereich-managed-services-cloud a dstack:Standardbereich ;
     skos:inScheme ds:standardbereiche ;
     skos:prefLabel "Managed Services und Cloud"@de ;
     dct:source ds:beschluss-b-2026-03 ;
+    # der ganze Bereich fehlt in der Landkarte: keiner dieser Standards ist eine Kachel
+    dstack:nenntStandard ds:sovereign-cloud-stack , ds:openstack , ds:deutsche-verwaltungscloud ;
     dstack:festlegungsbedarf
         "Formate für standardisierte, bedarfsorientierte Service Levels, Berichtsmechanismen und Geschäftsbedingungen zu Leistungen in insbesondere Compute, Storage, Communication, Logging, Observability, Backup, Support, Cost Calculation, License und Performance Management"@de .
 
@@ -121,9 +130,13 @@ ds:standardbereich-it-sicherheit a dstack:Standardbereich ;
     skos:inScheme ds:standardbereiche ;
     skos:prefLabel "IT-Sicherheit"@de ;
     dct:source ds:beschluss-b-2026-03 ;
+    # Kacheln: AES, RSA, ML-KEM, OAuth, OIDC, JWT, OTP
+    # benannt, aber nicht in der Landkarte: ECC sowie die BSI-Kataloge (IT-Grundschutz, TR, C5)
     dstack:nenntStandard ds:advanced-encryption-standard , ds:rivest-shamir-adleman ,
         ds:module-lattice-based-key-encapsulation-mechanism ,
-        ds:open-authorization , ds:open-id-connect , ds:json-web-tokens , ds:one-time-password ;
+        ds:open-authorization , ds:open-id-connect , ds:json-web-tokens , ds:one-time-password ,
+        ds:elliptic-curve-cryptography , ds:bsi-it-grundschutz ,
+        ds:technische-richtlinien-bsi , ds:cloud-computing-compliance-criteria-catalogue ;
     dstack:festlegungsbedarf
         "Format zu Sensibilisierung von Nutzenden"@de ,
         "Format für Krypto-Agilität"@de .
@@ -142,12 +155,19 @@ ds:standardbereich-workflowautomatisierung a dstack:Standardbereich ;
 # Named binding, but not (yet) a tile in the Tech-Stack-Landkarte
 # -----------------------------------------------------------------------------
 # The same dstack:ReferenzierterStandard + dstack:inLandkarte machinery the
-# FIT-Connect layer uses for XÖV standards the Landkarte lacks. Here the referencing
-# source is the Beschluss (dct:source). These are the named standards under
-# Semantische Technologien that the Landkarte does not list. The pointed case:
-# SPARQL, OWL and SKOS — the IT-Planungsrat names them binding, this prototype runs
-# on all three, the Landkarte lists none. A sourced finding, not a claim they belong.
+# FIT-Connect/Musterstadt layers use for standards the Landkarte lacks; here the
+# referencing source is the Beschluss (dct:source). Every genuine standard the Anlage
+# Standards names but the Landkarte does not tile is captured below, across all seven
+# areas — so each Standardbereich's coverage (tiled vs. not) is queryable, not just
+# Semantische Technologien's. The pointed case stays SPARQL, OWL and SKOS: named
+# binding, this prototype runs on all three, the Landkarte lists none.
+# Deliberately NOT modelled as standards: the Anlage entries that are practices, tools,
+# organisations or procurement terms rather than governed technical standards —
+# GIT, CI/CD, IaC/PaC, SBOM, OWASP (DevSecOps) and EVB-IT (Managed Services).
+# A sourced finding, not a claim any of these belong in the Landkarte.
 # =============================================================================
+
+# --- Semantische Technologien -----------------------------------------------
 
 ds:sparql a dstack:ReferenzierterStandard ;
     rdfs:label "SPARQL" ;
@@ -189,6 +209,78 @@ ds:open-database-connectivity a dstack:ReferenzierterStandard ;
 
 ds:java-database-connectivity a dstack:ReferenzierterStandard ;
     rdfs:label "JDBC (Java Database Connectivity)" ;
+    dct:source ds:beschluss-b-2026-03 ;
+    dstack:inLandkarte false .
+
+
+# --- Virtualisierte softwarebasierte Infrastruktur --------------------------
+ds:network-function-virtualization a dstack:ReferenzierterStandard ;
+    rdfs:label "NFV (Network Function Virtualization)" ;
+    dct:source ds:beschluss-b-2026-03 ;
+    dstack:inLandkarte false ;
+    rdfs:seeAlso <https://www.etsi.org/technologies/nfv> .
+
+
+# --- Integrierter Lebenszyklus (DevSecOps) und Schnittstellenmanagement ------
+ds:message-queuing-telemetry-transport a dstack:ReferenzierterStandard ;
+    rdfs:label "MQTT (Message Queuing Telemetry Transport)" ;
+    dct:source ds:beschluss-b-2026-03 ;
+    dstack:inLandkarte false ;
+    rdfs:seeAlso <https://mqtt.org/> .
+
+# HTTPS als solches ist keine Kachel — anders als FTPS und SMTPS, deren TLS-gesicherte
+# Varianten die Landkarte führt; HTTP und TLS sind als getrennte Kacheln vorhanden.
+ds:hypertext-transfer-protocol-secure a dstack:ReferenzierterStandard ;
+    rdfs:label "HTTPS (Hypertext Transfer Protocol Secure)" ;
+    dct:source ds:beschluss-b-2026-03 ;
+    dstack:inLandkarte false ;
+    rdfs:seeAlso <https://www.rfc-editor.org/rfc/rfc9110> .
+
+
+# --- Managed Services und Cloud (der gesamte Bereich fehlt in der Landkarte) --
+# SCS ist die im Beschluss B-2026/03 verbindlich gemachte Referenz für souveräne
+# Cloud- und Managed-Service-Umgebungen; die Landkarte führt weder SCS noch OpenStack
+# oder die DVC-Standards als Kachel.
+ds:sovereign-cloud-stack a dstack:ReferenzierterStandard ;
+    rdfs:label "SCS (Sovereign Cloud Stack)" ;
+    dct:source ds:beschluss-b-2026-03 ;
+    dstack:inLandkarte false ;
+    rdfs:seeAlso <https://scs.community/> .
+
+ds:openstack a dstack:ReferenzierterStandard ;
+    rdfs:label "OpenStack" ;
+    dct:source ds:beschluss-b-2026-03 ;
+    dstack:inLandkarte false ;
+    rdfs:seeAlso <https://www.openstack.org/> .
+
+ds:deutsche-verwaltungscloud a dstack:ReferenzierterStandard ;
+    rdfs:label "DVC (Standards der Deutschen Verwaltungscloud)" ;
+    dct:source ds:beschluss-b-2026-03 ;
+    dstack:inLandkarte false .
+
+
+# --- IT-Sicherheit -----------------------------------------------------------
+# Die Landkarte führt ECIES (Elliptic Curve Integrated Encryption Scheme), ein
+# verwandtes, aber anderes Verfahren; ECC selbst ist keine Kachel.
+ds:elliptic-curve-cryptography a dstack:ReferenzierterStandard ;
+    rdfs:label "ECC (Elliptic Curve Cryptography)" ;
+    dct:source ds:beschluss-b-2026-03 ;
+    dstack:inLandkarte false .
+
+# BSI-Kataloge und -Richtlinien: verbindlich benannt, aber nicht in der Landkarte
+ds:bsi-it-grundschutz a dstack:ReferenzierterStandard ;
+    rdfs:label "BSI IT-Grundschutz" ;
+    dct:source ds:beschluss-b-2026-03 ;
+    dstack:inLandkarte false ;
+    rdfs:seeAlso <https://www.bsi.bund.de/DE/Themen/Unternehmen-und-Organisationen/Standards-und-Zertifizierung/IT-Grundschutz/it-grundschutz_node.html> .
+
+ds:technische-richtlinien-bsi a dstack:ReferenzierterStandard ;
+    rdfs:label "Technische Richtlinien des BSI (BSI TR)" ;
+    dct:source ds:beschluss-b-2026-03 ;
+    dstack:inLandkarte false .
+
+ds:cloud-computing-compliance-criteria-catalogue a dstack:ReferenzierterStandard ;
+    rdfs:label "C5 (Cloud Computing Compliance Criteria Catalogue)" ;
     dct:source ds:beschluss-b-2026-03 ;
     dstack:inLandkarte false .
 

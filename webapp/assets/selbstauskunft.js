@@ -278,22 +278,19 @@ const renderLuecken = async () => {
     const [beschlossen, festlegung, basisdienste, honesty] = await Promise.all(
         [GAP_BESCHLOSSEN_Q, GAP_FESTLEGUNG_Q, GAP_BASISDIENST_Q, GAP_HONESTY_Q].map(select))
 
-    // (a) beschlossen aber nicht kartiert. When only one Bereich has this gap modelled (currently
-    // Semantische Technologien), say so honestly rather than letting it read as an arbitrary spotlight.
+    // (a) beschlossen aber nicht kartiert. This spans mehrere Standardbereiche (SCS/OpenStack/DVC,
+    // NFV, MQTT/HTTPS, ECC und die BSI-Kataloge …), nicht mehr nur Semantische Technologien.
     const bereiche = [...new Set(beschlossen.map(r => r.bereich))]
     const beschluss = (beschlossen[0] || {}).beschluss || ""
     const chips = beschlossen.map(r => `<span class="bl-chip gap">${esc(r.standard)}</span>`).join("")
-    // the Beschluss defines "Semantische Technologien" broadly as a data area, so seemingly
-    // non-semantic standards (SQL/ODBC/JDBC, ODF, PDF/UA) legitimately sit there — say so.
-    const semTech = bereiche.length === 1 && /Semantische/.test(bereiche[0])
-        ? " Der Beschluss fasst diesen Bereich weit als Datenbereich; daher stehen dort neben RDF/SPARQL/OWL/SKOS auch SQL, ODBC, JDBC und Formate wie ODF."
-        : ""
-    const nurEiner = bereiche.length === 1
-        ? " Es ist der einzige Bereich, für den diese Spannung hier vollständig modelliert ist."
+    // where "Semantische Technologien" is among them, note the Beschluss defines it broadly as a
+    // data area, so seemingly non-semantic members (SQL/ODBC/JDBC, ODF, PDF/UA) legitimately sit there.
+    const semTech = bereiche.some(b => /Semantische/.test(b))
+        ? " Den Bereich Semantische Technologien fasst der Beschluss dabei weit als Datenbereich; daher stehen dort neben RDF/SPARQL/OWL/SKOS auch SQL, ODBC, JDBC und Formate wie ODF."
         : ""
     const aBlock = `<div class="reach-group">
         <p class="reach-head">Beschlossen, aber nicht in der Landkarte</p>
-        <p class="bericht-intro"><b>${beschlossen.length}</b> Standards nennt der Beschluss${beschluss ? ` (${esc(beschluss)})` : ""} im Bereich ${bereiche.map(esc).join(", ")} verbindlich, doch die Tech-Stack Landkarte führt sie nicht als Kachel.${semTech}${nurEiner} Die Deckung aller Standardbereiche zeigt die <a href="beschlusslage.html">Beschlusslage</a>.</p>
+        <p class="bericht-intro"><b>${beschlossen.length}</b> Standards nennt der Beschluss${beschluss ? ` (${esc(beschluss)})` : ""} in ${bereiche.length} der sieben Standardbereiche verbindlich, doch die Tech-Stack Landkarte führt sie nicht als Kachel.${semTech} Die Deckung aller Standardbereiche zeigt die <a href="beschlusslage.html">Beschlusslage</a>.</p>
         <div class="bl-chips">${chips}</div>
         ${runLink(GAP_BESCHLOSSEN_Q)}</div>`
 
